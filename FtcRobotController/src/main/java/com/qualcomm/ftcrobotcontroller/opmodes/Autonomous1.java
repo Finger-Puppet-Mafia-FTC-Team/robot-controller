@@ -41,82 +41,82 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * TeleOp Mode
- *
+ * <p/>
  * Hardware:
  * Motors:
- *  - motor_1
- *  - motor_2
+ * - motor_1
+ * - motor_2
  * Sensors:
- *  - light_1
- *
+ * - light_1
+ * <p/>
  * Drives the robot straight until it detects tape using ODS
  */
 public class Autonomous1 extends OpMode {
-	boolean drive = false;
+    boolean drive = false;
 
-	DcMotor motorRight;
-	DcMotor motorLeft;
-	OpticalDistanceSensor lightSensor;
-	int count = 0;
+    DcMotor motorRight;
+    DcMotor motorLeft;
+    OpticalDistanceSensor lightSensor;
+    int count = 0;
 
-	double lightAmount = 0;
+    double lightAmount = 0;
 
-	/**
-	 * Constructor
-	 */
-	public Autonomous1() {
+    /**
+     * Constructor
+     */
+    public Autonomous1() {
 
-	}
+    }
 
-	/**
-	 * Code to run when the op mode is first enabled goes here
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-	 */
-	@Override
-	public void init() {
-		telemetry.addData("test", "init!");
-		drive = false;
+    /**
+     * Code to run when the op mode is first enabled goes here
+     *
+     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
+     */
+    @Override
+    public void init() {
+        telemetry.addData("test", "init!");
+        drive = false;
 
 		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
+         * Use the hardwareMap to get the dc motors and servos by name. Note
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-		lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
-		motorRight = hardwareMap.dcMotor.get("motor_2");
-		motorLeft = hardwareMap.dcMotor.get("motor_1");
-		motorLeft.setDirection(DcMotor.Direction.REVERSE);
-	}
+        lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
+        motorRight = hardwareMap.dcMotor.get("motor_2");
+        motorLeft = hardwareMap.dcMotor.get("motor_1");
+        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+    }
 
-	/**
-	 * This method will be called repeatedly in a loop
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
-	 */
-	@Override
-	public void loop() {
-		count += 1;
-		// The f turns it into a float number.
-		float right = 0.05f;
-		float left = 0.05f;
+    /**
+     * This method will be called repeatedly in a loop
+     *
+     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
+     */
+    @Override
+    public void loop() {
+        count += 1;
+        // The f turns it into a float number.
+        float right = 0.05f;
+        float left = 0.05f;
 
-		lightAmount = lightSensor.getLightDetected();
+        lightAmount = lightSensor.getLightDetected();
 
-		if(lightAmount > 0.2) {
-			// tape brightness in the robotics room is 0.2
-			// TODO: figure out why it is so low
-			// don't move after we have found the tape
-			left = 0;
-			right = 0;
-			telemetry.addData("light material", "tape");
-		} else {
-			telemetry.addData("light material", "other");
-		}
-		//telemetry.addData("light connection", lightSensor.getConnectionInfo());
-		telemetry.addData("light brightness", lightSensor.getLightDetected());
-		telemetry.addData("light", lightSensor.getLightDetectedRaw());
-		//telemetry.addData("light status", lightSensor.status());
+        if (lightAmount > 0.2) {
+            // tape brightness in the robotics room is 0.2
+            // TODO: figure out why it is so low
+            // don't move after we have found the tape
+            left = 0;
+            right = 0;
+            telemetry.addData("light material", "tape");
+        } else {
+            telemetry.addData("light material", "other");
+        }
+        //telemetry.addData("light connection", lightSensor.getConnectionInfo());
+        telemetry.addData("light brightness", lightSensor.getLightDetected());
+        telemetry.addData("light", lightSensor.getLightDetectedRaw());
+        //telemetry.addData("light status", lightSensor.status());
 
 		/*
 		 * Gamepad 1
@@ -124,30 +124,30 @@ public class Autonomous1 extends OpMode {
 		 * Stops/starts the robot with Y
 		 */
 
-		// toggle drive when a is pressed
-		if (gamepad1.a) {
+        // toggle drive when a is pressed
+        if (gamepad1.a) {
 
-			drive = !drive;
-		}
+            drive = !drive;
+        }
 
-		if(drive == false) {
-			// gamepad1.a was pressed. Don't move.
-			right = 0;
-			left = 0;
-		}
+        if (drive == false) {
+            // gamepad1.a was pressed. Don't move.
+            right = 0;
+            left = 0;
+        }
 
-		motorRight.setPower(right);
-		motorLeft.setPower(left);
-	}
+        motorRight.setPower(right);
+        motorLeft.setPower(left);
+    }
 
-	/*
-	 * Code to run when the op mode is first disabled goes here
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
-	 */
-	@Override
-	public void stop() {
-		telemetry.addData("Text", "stop");
-		telemetry.addData("Light", lightSensor.getLightDetected());
-	}
+    /*
+     * Code to run when the op mode is first disabled goes here
+     *
+     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
+     */
+    @Override
+    public void stop() {
+        telemetry.addData("Text", "stop");
+        telemetry.addData("Light", lightSensor.getLightDetected());
+    }
 }
