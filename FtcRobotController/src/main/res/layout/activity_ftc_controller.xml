@@ -7,13 +7,7 @@
     android:id="@+id/entire_screen"
     android:orientation="vertical">
 
-  <FrameLayout
-      android:layout_width="500dp"
-      android:layout_height="500dp"
-      android:layout_below="@+id/textErrorMessage"
-      android:layout_centerHorizontal="true"
-      android:id="@+id/previewLayout">
-  </FrameLayout>
+
 
   <!-- black bar on top -->
   <RelativeLayout
@@ -121,6 +115,14 @@
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="10dp"
       android:text="" />
-
+    <FrameLayout
+        android:background="#ff00ff"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/textErrorMessage"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/previewLayout">
+    </FrameLayout>
   </RelativeLayout>
+
 </LinearLayout>
