@@ -41,33 +41,18 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * TeleOp Mode
- * <p>
- * Enables control of the robot via the gamepad
+ *
+ * Hardware:
+ * Motors:
+ *  - motor_1
+ *  - motor_2
+ * Sensors:
+ *  - light_1
+ *
+ * Drives the robot straight until it detects tape using ODS
  */
 public class Autonomous1 extends OpMode {
-
-	/*
-	 * Note: the configuration of the servos is such that
-	 * as the arm servo approaches 0, the arm position moves up (away from the floor).
-	 * Also, as the claw servo approaches 0, the claw opens up (drops the game element).
-	 */
-	// TETRIX VALUES.
-	final static double ARM_MIN_RANGE  = 0.20;
-	final static double ARM_MAX_RANGE  = 0.90;
-	final static double CLAW_MIN_RANGE  = 0.20;
-	final static double CLAW_MAX_RANGE  = 0.7;
 	boolean drive = false;
-	// position of the arm servo.
-	double armPosition;
-
-	// amount to change the arm servo position.
-	double armDelta = 0.1;
-
-	// position of the claw servo
-	double clawPosition;
-
-	// amount to change the claw servo position by
-	double clawDelta = 0.1;
 
 	DcMotor motorRight;
 	DcMotor motorLeft;
@@ -80,18 +65,16 @@ public class Autonomous1 extends OpMode {
 	 * Constructor
 	 */
 	public Autonomous1() {
-		telemetry.addData("test", "constructor!");
 
 	}
 
-	/*
+	/**
 	 * Code to run when the op mode is first enabled goes here
 	 * 
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
 	 */
 	@Override
 	public void init() {
-		//super.start ();
 		telemetry.addData("test", "init!");
 		drive = false;
 
@@ -100,27 +83,13 @@ public class Autonomous1 extends OpMode {
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-
 		lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
-
-		//lightSensor.enableLed(true);
-
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *   
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
-		 */
 		motorRight = hardwareMap.dcMotor.get("motor_2");
 		motorLeft = hardwareMap.dcMotor.get("motor_1");
 		motorLeft.setDirection(DcMotor.Direction.REVERSE);
 	}
 
-	/*
+	/**
 	 * This method will be called repeatedly in a loop
 	 * 
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
@@ -128,11 +97,16 @@ public class Autonomous1 extends OpMode {
 	@Override
 	public void loop() {
 		count += 1;
+		// The f turns it into a float number.
 		float right = 0.05f;
 		float left = 0.05f;
 
 		lightAmount = lightSensor.getLightDetected();
+
 		if(lightAmount > 0.2) {
+			// tape brightness in the robotics room is 0.2
+			// TODO: figure out why it is so low
+			// don't move after we have found the tape
 			left = 0;
 			right = 0;
 			telemetry.addData("light material", "tape");
@@ -143,84 +117,27 @@ public class Autonomous1 extends OpMode {
 		telemetry.addData("light brightness", lightSensor.getLightDetected());
 		telemetry.addData("light", lightSensor.getLightDetectedRaw());
 		//telemetry.addData("light status", lightSensor.status());
+
 		/*
 		 * Gamepad 1
 		 * 
-		 * Gamepad 1 controls the motors via the left stick, and it controls the
-		 * wrist/claw via the a,b, x, y buttons
+		 * Stops/starts the robot with Y
 		 */
 
-		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
-		// 1 is full down
-		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
-		// and 1 is full right
-		float throttle = -gamepad1.left_stick_y;
-		float direction = gamepad1.left_stick_x;
-
-		// clip the right/left values so that the values never exceed +/- 1
-		//right = Range.clip(right, -1, 1);
-		//left = Range.clip(left, -1, 1);
-
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
-		//right = (float)scaleInput(right);
-		//left =  (float)scaleInput(left);
-		
-		// write the values to the motors
-
-
-		// update the position of the arm.
+		// toggle drive when a is pressed
 		if (gamepad1.a) {
-			// if the A button is pushed on gamepad1, increment the position of
-			// the arm servo.
+
 			drive = !drive;
-			//left += 0.5;
 		}
-
-		if (gamepad1.y) {
-			// if the Y button is pushed on gamepad1, decrease the position of
-			// the arm servo.
-			left += 0.5;
-		}
-
-		// update the position of the claw
-		if (gamepad1.x) {
-			left += 0.5;
-		}
-
-		if (gamepad1.b) {
-			left += 0.5;
-		}
-
-
-        // clip the position values so that they never exceed their allowed range.
-        armPosition = Range.clip(armPosition, ARM_MIN_RANGE, ARM_MAX_RANGE);
-        clawPosition = Range.clip(clawPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
-
-		// write position values to the wrist and claw servo
-		//arm.setPosition(armPosition);
-		//claw.setPosition(clawPosition);
 
 		if(drive == false) {
+			// gamepad1.a was pressed. Don't move.
 			right = 0;
 			left = 0;
 		}
 
 		motorRight.setPower(right);
 		motorLeft.setPower(left);
-
-		/*
-		 * Send telemetry data back to driver station. Note that if we are using
-		 * a legacy NXT-compatible motor controller, then the getPower() method
-		 * will return a null value. The legacy NXT-compatible motor controllers
-		 * are currently write only.
-		 */
-        //telemetry.addData("Text", "*** Robot Data***");
-        //telemetry.addData("arm", "arm:  " + String.format("%.2f", armPosition));
-        //telemetry.addData("claw", "claw:  " + String.format("%.2f", clawPosition));
-        //telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
-        //telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
-
 	}
 
 	/*
@@ -232,42 +149,5 @@ public class Autonomous1 extends OpMode {
 	public void stop() {
 		telemetry.addData("Text", "stop");
 		telemetry.addData("Light", lightSensor.getLightDetected());
-		//lightSensor.enableLed(false);
 	}
-
-    	
-	/*
-	 * This method scales the joystick input so for low joystick values, the 
-	 * scaled value is less than linear.  This is to make it easier to drive
-	 * the robot more precisely at slower speeds.
-	 */
-	double scaleInput(double dVal)  {
-		double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-				0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
-		
-		// get the corresponding index for the scaleInput array.
-		int index = (int) (dVal * 16.0);
-		
-		// index should be positive.
-		if (index < 0) {
-			index = -index;
-		}
-
-		// index cannot exceed size of array minus 1.
-		if (index > 16) {
-			index = 16;
-		}
-
-		// get value from the array.
-		double dScale = 0.0;
-		if (dVal < 0) {
-			dScale = -scaleArray[index];
-		} else {
-			dScale = scaleArray[index];
-		}
-
-		// return scaled value.
-		return dScale;
-	}
-
 }
