@@ -51,6 +51,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import  android.view.ViewGroup;
 
+import java.util.Date;
+
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -189,7 +191,8 @@ public class FtcRobotControllerActivity extends Activity {
     debugText = (TextView)findViewById(R.id.textErrorMessage);
     final Thread testThread = new Thread(new Runnable() {
       public void run() {
-        debugText.append("added in thread");
+        Date date = new Date();
+        debugText.setText(date.getSeconds() + "added in thread");
         handler.postDelayed(this, 1000);
       }
     });
