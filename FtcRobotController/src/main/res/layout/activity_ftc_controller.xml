@@ -86,6 +86,13 @@
       android:layout_height="wrap_content"
       android:layout_below="@+id/textRobotStatus"
       android:text="" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textDebug"
+        android:layout_below="@+id/textErrorMessage"
+        android:text="No Message"
+        />
 
     <TextView
       android:id="@+id/textErrorMessage"
@@ -117,10 +124,11 @@
       android:text="" />
     <FrameLayout
         android:background="#ff00ff"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_below="@+id/textErrorMessage"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
         android:id="@+id/previewLayout">
     </FrameLayout>
   </RelativeLayout>

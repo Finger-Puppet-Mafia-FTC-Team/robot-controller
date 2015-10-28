@@ -41,6 +41,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -90,6 +91,7 @@ public class FtcRobotControllerActivity extends Activity {
 
   protected UpdateUI.Callback callback;
   protected Context context;
+  public Context context2;
   private Utility utility;
   protected ImageButton buttonMenu;
 
@@ -108,6 +110,9 @@ public class FtcRobotControllerActivity extends Activity {
   protected FtcRobotControllerService controllerService;
 
   protected FtcEventLoop eventLoop;
+  public Handler handler = new Handler();
+  public TextView debugText;
+
 
   protected class RobotRestarter implements Restarter {
 
@@ -181,6 +186,14 @@ public class FtcRobotControllerActivity extends Activity {
 
     if (USE_DEVICE_EMULATION) { ModernRoboticsHardwareFactory.enableDeviceEmulation(); }
     camera=openFrontFacingCamera();
+    debugText = (TextView)findViewById(R.id.textErrorMessage);
+    final Thread testThread = new Thread(new Runnable() {
+      public void run() {
+        debugText.append("added in thread");
+        handler.postDelayed(this, 1000);
+      }
+    });
+    handler.postDelayed(testThread, 1000);
   }
 
   @Override
@@ -419,5 +432,8 @@ public class FtcRobotControllerActivity extends Activity {
         previewLayout.addView(context.preview);
       }
     });
+
   }
+
+
 }
