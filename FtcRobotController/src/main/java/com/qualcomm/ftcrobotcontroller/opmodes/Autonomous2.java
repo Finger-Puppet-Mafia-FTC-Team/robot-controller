@@ -1,8 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.ftcrobotcontroller.opmodes.findTape;
-import com.qualcomm.ftcrobotcontroller.opmodes.followTape;
 
 /**
  * TeleOp Mode
@@ -17,14 +15,14 @@ import com.qualcomm.ftcrobotcontroller.opmodes.followTape;
  * Drives the robot straight until it detects tape using ODS
  */
 public class Autonomous2 extends OpMode {
-    findTape test = new findTape();
-    final static double MOTOR_POWER = 10; // Higher values will cause the robot to move faster
-    boolean drive = false;
 
+    FindTape findTape = new FindTape();
+    AutonomouseHardware hardware = new AutonomouseHardware();
+    FollowTape followTape = new FollowTape();
 
-    int count = 0;
+    boolean continueToNextStep = false;
 
-
+    String step = "";
 
     /**
      * Constructor
@@ -40,14 +38,15 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void init() {
+        step = "FindTape";
         telemetry.addData("test", "init!");
-        drive = false;
 
 		/*
          * Use the hardwareMap to get the dc motors and servos by name. Note
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
+        hardware.init();
 
     }
 
@@ -58,9 +57,13 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
-        //telemetry.addData("test", test.run());
-        count += 1;
-
+        if(step == "FindTape") {
+            findTape.init();
+            findTape.run();
+            if(findTape.shouldContinue == true) {
+                telemetry.addData("continue", true);
+            }
+        }
     }
 
     /*

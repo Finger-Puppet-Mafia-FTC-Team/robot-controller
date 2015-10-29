@@ -1,13 +1,12 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.ftccommon.DbgLog;
 
 /**
  * Created by Micaiah on 10/29/15.
  */
-public class findTape extends autonomouseHardware {
+public class FindTape extends AutonomouseHardware {
     boolean didInit = false;
     double lightAmount = 0;
+    public boolean shouldContinue = false;
 
     void init() {
         if(didInit == true) {
@@ -16,6 +15,8 @@ public class findTape extends autonomouseHardware {
         didInit = true;
 
     }
+
+
     void run () {
         // The f turns it into a float number.
         float right = .5f;
