@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 public class FindTape extends AutonomouseHardware {
     boolean didInit = false;
     double lightAmount = 0;
+    boolean foundTape = false;
     public boolean shouldContinue = false;
 
     void initStep() {
@@ -24,17 +25,19 @@ public class FindTape extends AutonomouseHardware {
         motorLeft.setPower(left);
         lightAmount = lightSensor.getLightDetected();
 
-        if (lightAmount > 0.2) {
+        if (lightAmount > 0.2 || foundTape == true) {
             // tape brightness in the robotics room is 0.2
             // TODO: figure out why it is so low
             // don't move after we have found the tape
             left = 0;
             right = 0;
+            foundTape = true;
+            shouldContinue = true;
            // telemetry.addData("light material", "tape");
         }
 
         //telemetry.addData("light connection", lightSensor.getConnectionInfo());
-       // telemetry.addData("light brightness", lightSensor.getLightDetected());
+        telemetry.addData("light brightness", lightSensor.getLightDetected());
         //telemetry.addData("light", lightSensor.getLightDetectedRaw());
         //telemetry.addData("light status", lightSensor.status());
 
