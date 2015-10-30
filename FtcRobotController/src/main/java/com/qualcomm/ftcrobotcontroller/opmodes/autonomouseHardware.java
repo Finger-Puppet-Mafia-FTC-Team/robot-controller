@@ -8,11 +8,13 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 public class AutonomouseHardware extends Autonomous2{
     boolean didInit = false;
     public HardwareMap hardwareMap = new HardwareMap();
-    public DcMotor motorRight = hardwareMap.dcMotor.get("motor_1");
-    public DcMotor motorLeft = hardwareMap.dcMotor.get("motor_2");
-    public OpticalDistanceSensor lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
+    public DcMotor motorRight;
+    public DcMotor motorLeft;
+    public OpticalDistanceSensor lightSensor;
     void initStep() {
-
+        motorRight = hardwareMap.dcMotor.get("motor_1");
+        motorLeft = hardwareMap.dcMotor.get("motor_2");
+        lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }
     void runStep() {
 
