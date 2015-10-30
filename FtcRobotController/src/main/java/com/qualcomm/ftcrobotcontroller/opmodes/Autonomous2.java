@@ -15,10 +15,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  * Drives the robot straight until it detects tape using ODS
  */
 public class Autonomous2 extends OpMode {
-
-    FindTape findTape = new FindTape();
-    AutonomouseHardware hardware = new AutonomouseHardware();
-    FollowTape followTape = new FollowTape();
+    FindTape findTape;
+    AutonomouseHardware hardware;
+    FollowTape followTape;
 
     boolean continueToNextStep = false;
 
@@ -28,7 +27,7 @@ public class Autonomous2 extends OpMode {
      * Constructor
      */
     public Autonomous2() {
-
+        telemetry.addData("test", "test");
     }
 
     /**
@@ -38,6 +37,9 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void init() {
+        findTape = new FindTape();
+        hardware = new AutonomouseHardware();
+        followTape = new FollowTape();
         step = "FindTape";
         telemetry.addData("test", "init!");
 
@@ -57,6 +59,7 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
+        telemetry.addData("step", step);
         if (step == "FindTape") {
             findTape.initStep();
             findTape.runStep();
@@ -73,6 +76,6 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void stop() {
-        telemetry.addData("Text", "stop");
+        telemetry.addData("Stopped", "stop");
     }
 }
