@@ -57,10 +57,10 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
-        if(step == "FindTape") {
-            findTape.init();
-            findTape.run();
-            if(findTape.shouldContinue == true) {
+        if (step == "FindTape") {
+            findTape.initStep();
+            findTape.runStep();
+            if (findTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
             }
         }

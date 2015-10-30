@@ -1,23 +1,22 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-/**
- * Created by Micaiah on 10/29/15.
- */
 public class FindTape extends AutonomouseHardware {
     boolean didInit = false;
     double lightAmount = 0;
     public boolean shouldContinue = false;
 
-    void init() {
+    void initStep() {
         if(didInit == true) {
             return;
         }
+        telemetry.addData("test", "test");
         didInit = true;
 
     }
 
 
-    void run () {
+    void runStep () {
         // The f turns it into a float number.
         float right = .5f;
         float left = .5f;
