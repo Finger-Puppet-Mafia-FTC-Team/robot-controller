@@ -11,7 +11,7 @@ public class FindTape {
     public boolean shouldContinue = false;
     public String step = "initialForward";
     int stepLoop = 0;
-    public Date stepStartTime;
+    public long stepStartTime;
     //public OpMode opModeInstance;
 
     void initStep(OpMode OpModeInstance) {
@@ -19,7 +19,7 @@ public class FindTape {
             return;
         }
         OpModeInstance.telemetry.addData("Find Tape Init", "True");
-        stepStartTime = new Date();
+        //stepStartTime = new Date();
         didInit = true;
 
     }
@@ -31,7 +31,7 @@ public class FindTape {
         } else if (step == "followColoredTape") {
             step = "backAngle";
         }
-        stepStartTime = new Date();
+        stepStartTime = new Date().getTime();
     }
 
 
@@ -45,12 +45,12 @@ public class FindTape {
         if (step == "initialForward") {
             /* Moves away from wall until it finds the center tape.
              */
-            right = .1f;
-            left = .1f;
+            right = .2f;
+            left = .2f;
             if (lightAmount > .1) {
                 // probably colored tape
-                right = 0;
-                left = 0;
+                right = -0.1f;
+                left = -0.1f;
                 nextStep();
                 return;
             }
@@ -65,17 +65,22 @@ public class FindTape {
                 right = 0.1f;
                 left = 0.1f;
             }
-            if (new Date().getTime() - stepStartTime.getTime() < 80000) {
-                OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime.getTime());
-                left = -1f;
-                //nextStep();
+            if (new Date().getTime() - stepStartTime > 12000) {
+                OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime);
+                //left = -1f;
+                nextStep();
                 return;
             }
         }
 
         if (step == "backAngle") {
-            // right = -0.2f;
-            // left = - 0.1f;
+            if(new Date().getTime() - stepStartTime < 500) {
+                right = -0.3f;
+                left = 0.1f;
+            } else {
+                right = -0.2f;
+                left = -0.2f;
+            }
         }
 
         if (lightAmount > 0.4 || foundTape == true) {

@@ -57,6 +57,12 @@ public class Autonomous2 extends OpMode {
         hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }
 
+    void nextStep () {
+        if(step == "FindTape") {
+            step = "FollowTape";
+        }
+    }
+
     /**
      * This method will be called repeatedly in a loop
      *
@@ -68,11 +74,16 @@ public class Autonomous2 extends OpMode {
         if (step == "FindTape") {
             findTape.initStep(this);
             findTape.runStep(this, hardware);
-            telemetry.addData("Date", new Date().getTime() - findTape.stepStartTime.getTime());
+            telemetry.addData("Date", new Date().getTime() - findTape.stepStartTime);
             telemetry.addData("Find Tape Step", findTape.step);
             if (findTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
+                nextStep();
             }
+        }
+        if(step == "FollowTape") {
+            //followTape.initStep(this);
+            //followTape.runStep(this, hardware);
         }
     }
 
