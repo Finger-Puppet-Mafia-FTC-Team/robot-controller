@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.Date;
 /**
  * TeleOp Mode
  * <p/>
@@ -67,6 +68,8 @@ public class Autonomous2 extends OpMode {
         if (step == "FindTape") {
             findTape.initStep(this);
             findTape.runStep(this, hardware);
+            telemetry.addData("Date", new Date().getTime() - findTape.stepStartTime.getTime());
+            telemetry.addData("Find Tape Step", findTape.step);
             if (findTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
             }
