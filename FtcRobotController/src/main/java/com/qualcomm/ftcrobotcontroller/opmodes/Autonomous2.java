@@ -19,7 +19,7 @@ import java.util.Date;
 public class Autonomous2 extends OpMode {
     FindTape findTape;
     AutonomouseHardware hardware;
-    FollowTape followTape;
+    alignWithBeacon alignWithBeacon;
 
     boolean continueToNextStep = false;
 
@@ -41,7 +41,7 @@ public class Autonomous2 extends OpMode {
     public void init() {
         findTape = new FindTape();
         hardware = new AutonomouseHardware();
-        followTape = new FollowTape();
+        alignWithBeacon = new alignWithBeacon();
         step = "FindTape";
         telemetry.addData("test", "init!");
 
@@ -59,7 +59,7 @@ public class Autonomous2 extends OpMode {
 
     void nextStep () {
         if(step == "FindTape") {
-            step = "FollowTape";
+            step = "alignWithBeacon";
         }
     }
 
@@ -81,9 +81,9 @@ public class Autonomous2 extends OpMode {
                 nextStep();
             }
         }
-        if(step == "FollowTape") {
-            //followTape.initStep(this);
-            //followTape.runStep(this, hardware);
+        if(step == "alignWithBeacon") {
+            alignWithBeacon.initStep(this, hardware);
+            alignWithBeacon.runStep(this, hardware);
         }
     }
 

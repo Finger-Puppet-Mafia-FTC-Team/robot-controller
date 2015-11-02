@@ -45,12 +45,12 @@ public class FindTape {
         if (step == "initialForward") {
             /* Moves away from wall until it finds the center tape.
              */
-            right = .2f;
-            left = .2f;
+            right = .5f;
+            left = .5f;
             if (lightAmount > .1) {
                 // probably colored tape
-                right = -0.1f;
-                left = -0.1f;
+                right = -0.5f;
+                left = -0.5f;
                 nextStep();
                 return;
             }
