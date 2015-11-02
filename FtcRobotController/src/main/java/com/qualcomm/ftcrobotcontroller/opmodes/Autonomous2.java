@@ -1,6 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * TeleOp Mode
@@ -48,8 +49,11 @@ public class Autonomous2 extends OpMode {
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-        hardware.init();
-
+        //hardware.initStep(this);
+        hardware.motorRight = hardwareMap.dcMotor.get("motor_1");
+        hardware.motorLeft = hardwareMap.dcMotor.get("motor_2");
+        hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }
 
     /**
@@ -61,8 +65,8 @@ public class Autonomous2 extends OpMode {
     public void loop() {
         telemetry.addData("step", step);
         if (step == "FindTape") {
-            findTape.initStep();
-            findTape.runStep();
+            findTape.initStep(this);
+            findTape.runStep(this, hardware);
             if (findTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
             }

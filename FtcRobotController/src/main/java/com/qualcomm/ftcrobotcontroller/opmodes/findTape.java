@@ -1,31 +1,35 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-public class FindTape extends AutonomouseHardware {
+public class FindTape {
     boolean didInit = false;
     double lightAmount = 0;
     boolean foundTape = false;
     public boolean shouldContinue = false;
+    String step = "initialForward";
+    int stepLoop = 0;
+    // int stepStartTime =
+    //public OpMode opModeInstance;
 
-    void initStep() {
-        if(didInit == true) {
+    void initStep(OpMode OpModeInstance) {
+        if (didInit == true) {
             return;
         }
-        telemetry.addData("test", "test");
+        OpModeInstance.telemetry.addData("Find Tape Init", "True");
         didInit = true;
 
     }
 
 
-    void runStep () {
+    void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         // The f turns it into a float number.
-        float right = .5f;
-        float left = .5f;
-        motorRight.setPower(right);
-        motorLeft.setPower(left);
-        lightAmount = lightSensor.getLightDetected();
+        float right = 0.1f;
+        float left = 0.1f;
 
-        if (lightAmount > 0.2 || foundTape == true) {
+        lightAmount = hardware.lightSensor.getLightDetected();
+
+        if (lightAmount > 0.4 || foundTape == true) {
             // tape brightness in the robotics room is 0.2
             // TODO: figure out why it is so low
             // don't move after we have found the tape
@@ -33,15 +37,12 @@ public class FindTape extends AutonomouseHardware {
             right = 0;
             foundTape = true;
             shouldContinue = true;
-           // telemetry.addData("light material", "tape");
+            // telemetry.addData("light material", "tape");
         }
 
-        //telemetry.addData("light connection", lightSensor.getConnectionInfo());
-        telemetry.addData("light brightness", lightSensor.getLightDetected());
-        //telemetry.addData("light", lightSensor.getLightDetectedRaw());
-        //telemetry.addData("light status", lightSensor.status());
+        OpModeInstance.telemetry.addData("light brightness", hardware.lightSensor.getLightDetected());
 
-        motorRight.setPower(right);
-        motorLeft.setPower(left);
+        hardware.motorRight.setPower(right);
+        hardware.motorLeft.setPower(left);
     }
 }
