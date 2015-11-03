@@ -62,10 +62,10 @@ public class FindTape {
                 right = 0.1f;
                 left = -0.3f;
             } else {
-                right = 0.1f;
-                left = 0.1f;
+                right = 0.2f;
+                left = 0.2f;
             }
-            if (new Date().getTime() - stepStartTime > 12000) {
+            if (new Date().getTime() - stepStartTime > 8000) {
                 OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime);
                 //left = -1f;
                 nextStep();
@@ -75,11 +75,11 @@ public class FindTape {
 
         if (step == "backAngle") {
             if(new Date().getTime() - stepStartTime < 500) {
-                right = -0.3f;
+                right = -0.2f;
                 left = 0.1f;
             } else {
                 right = -0.2f;
-                left = -0.2f;
+                left = -0.25f;
             }
         }
 
