@@ -3,8 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.Date;
-
-public class FindTape {
+class FindTape {
     boolean didInit = false;
     double lightAmount = 0;
     boolean foundTape = false;

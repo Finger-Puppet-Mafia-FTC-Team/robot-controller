@@ -5,7 +5,7 @@ import  com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
-public class AutonomouseHardware {
+ class AutonomouseHardware {
     boolean didInit = false;
     public HardwareMap hardwareMap = new HardwareMap();
     public DcMotor motorRight;
