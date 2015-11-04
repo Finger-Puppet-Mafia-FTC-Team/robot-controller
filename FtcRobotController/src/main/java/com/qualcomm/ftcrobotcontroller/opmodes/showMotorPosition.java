@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.util.Range;
  * <p>
  * Enables control of the robot via the gamepad
  */
-public class Test extends OpMode {
+public class showMotorPosition extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -50,7 +50,7 @@ public class Test extends OpMode {
     /**
      * Constructor
      */
-    public Test() {
+    public showMotorPosition() {
 
     }
 
@@ -63,12 +63,17 @@ public class Test extends OpMode {
     public void init() {
 
         motorRight = hardwareMap.dcMotor.get("motor_2");
+        motorRight.setDirection(DcMotor.Direction.FORWARD);
+        motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         motorLeft = hardwareMap.dcMotor.get("motor_1");
         motorLeft.setDirection(DcMotor.Direction.FORWARD);
         motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         int position = motorLeft.getCurrentPosition();
 
         motorLeft.setTargetPosition(position + 2800);
+        motorRight.setTargetPosition(position + 100);
     }
 
     /*
@@ -79,10 +84,11 @@ public class Test extends OpMode {
     @Override
     public void loop() {
         int position = motorLeft.getCurrentPosition();
+        telemetry.addData("motor left position", position);
+        position = motorRight.getCurrentPosition();
         telemetry.addData("motor right position", position);
-        telemetry.addData("target position", motorLeft.getTargetPosition());
 
-        motorLeft.setPower(0.5);
+        //motorLeft.setPower(0.5);
     }
 
     /*

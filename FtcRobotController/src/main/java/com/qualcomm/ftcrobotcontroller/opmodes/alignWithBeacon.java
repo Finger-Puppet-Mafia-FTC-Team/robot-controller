@@ -14,10 +14,11 @@ public class alignWithBeacon {
         if (didInit) {
             return;
         }
+        // FixMe: motor left doesn't accept runToPosition
         hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
         hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         int position = hardware.motorRight.getCurrentPosition();
-        hardware.motorRight.setTargetPosition(position + (int)Math.round(2800*1));
+        hardware.motorRight.setTargetPosition(position + (int)Math.round(100*1));
         hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         position = hardware.motorLeft.getCurrentPosition();
         hardware.motorLeft.setTargetPosition(position - (int)Math.round((2800 * 0)));

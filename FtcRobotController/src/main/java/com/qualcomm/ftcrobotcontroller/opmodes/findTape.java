@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.Date;
+
 class FindTape {
     boolean didInit = false;
     double lightAmount = 0;
@@ -27,7 +28,7 @@ class FindTape {
         //TODO: use array
         if (step == "initialForward") {
             step = "followColoredTape";
-        } else if (step == "followColoredTape") {
+        } else if (step.equals("followColoredTape")) {
             step = "backAngle";
         }
         stepStartTime = new Date().getTime();
@@ -46,25 +47,26 @@ class FindTape {
              */
             right = .5f;
             left = .5f;
-            if (lightAmount > .1) {
+            if (lightAmount > .095) {
                 // probably colored tape
                 right = -0.5f;
                 left = -0.5f;
                 nextStep();
-                return;
             }
         }
 
         if (step == "followColoredTape") {
-            if (lightAmount > .1) {
+            if (lightAmount > .095) {
                 // This only works if on blue team
-                right = 0.1f;
-                left = -0.3f;
+                // It needs to turn sharply or it will turn in circles.
+                right = 0.9f;
+                 left = -0.9f;
             } else {
-                right = 0.2f;
-                left = 0.2f;
+                right = .4f;
+                left = 0.6f;
             }
-            if (new Date().getTime() - stepStartTime > 8000) {
+            if (new Date().getTime() - stepStartTime > 7000) {
+                // wait 6 seconds and then move to next step
                 OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime);
                 //left = -1f;
                 nextStep();
@@ -72,13 +74,14 @@ class FindTape {
             }
         }
 
-        if (step == "backAngle") {
-            if(new Date().getTime() - stepStartTime < 500) {
-                right = -0.2f;
-                left = 0.1f;
+        if (step.equals("backAngle")) {
+            // turn for first half second
+            if (new Date().getTime() - stepStartTime < 750) {
+                right = -.9f;
+                left = 0.45f;
             } else {
-                right = -0.2f;
-                left = -0.25f;
+                right = -0.4f;
+                left = -0.5f;
             }
         }
 
@@ -94,7 +97,6 @@ class FindTape {
         }
 
         OpModeInstance.telemetry.addData("light brightness", hardware.lightSensor.getLightDetected());
-
         hardware.motorRight.setPower(right);
         hardware.motorLeft.setPower(left);
     }
