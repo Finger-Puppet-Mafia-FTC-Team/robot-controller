@@ -8,25 +8,16 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * TeleOp Mode
- * <p>
+ *
  * Enables control of the robot via the gamepad
  */
 public class NewTeleopKeeg extends OpMode {
 
-  final static double LEG_MIN_RANGE  = 0.20;
-  final static double LEG_MAX_RANGE  = 0.90;
-
-  // position of the arm servo.
-  double legPosition;
-
-  // amount to change the arm servo position.
-  double legDelta = 0.1;
 
 
-  DcMotor motorRight;
-  DcMotor motorLeft;
+  DcMotor motorDriveRight;
+  DcMotor motorDriveLeft;
   DcMotor ArmMotor;
-  Servo leg;
   /**
    * Constructor
    */
@@ -41,30 +32,11 @@ public class NewTeleopKeeg extends OpMode {
    */
   @Override
   public void init() {
+    // two drive motors
+    motorDriveRight = hardwareMap.dcMotor.get("motor_2");
+    motorDriveLeft = hardwareMap.dcMotor.get("motor_1");
 
-
-		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
-		 * that the names of the devices must match the names used when you
-		 * configured your robot and created the configuration file.
-		 */
-
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
-		 */
-    motorRight = hardwareMap.dcMotor.get("motor_2");
-    motorLeft = hardwareMap.dcMotor.get("motor_1");
-    motorLeft.setDirection(DcMotor.Direction.REVERSE);
-    ArmMotor = hardwareMap.dcMotor.get("motor_3");
-    leg = hardwareMap.servo.get("servo_1");
-    legPosition = 0.2;
+    motorDriveLeft.setDirection(DcMotor.Direction.REVERSE);
 
   }
 
@@ -80,7 +52,7 @@ public class NewTeleopKeeg extends OpMode {
 		 * Gamepad 1
 		 *
 		 * Gamepad 1 controls the motors via the left stick, and it controls the
-		 * wrist/claw via the a,b, x, y buttons
+		 * plow with x/a to go up/down and x/b to go left/right
 		 */
 
     // throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
@@ -97,39 +69,24 @@ public class NewTeleopKeeg extends OpMode {
     if(arm > .6) {
       arm = .6f;
     }
-    // clip the right/left values so that the values never exceed +/- 1
 
+    // clip the right/left values so that the values never exceed +/- 1
     right = Range.clip(right, -1, 1);
     left = Range.clip(left, -1, 1);
-    armup = Range.clip(armup, -1/2, 1/2);
 
     // scale the joystick value to make it easier to control
     // the robot more precisely at slower speeds.
-
     right = (float)scaleInput(right);
     left =  (float)scaleInput(left);
-    armup = (float)scaleInput(armup);
+
+    if(gamepad1.left_bumper) {
+      right = right * (float)0.4;
+      left = left * (float)0.4;
+    }
 
     // write the values to the motors
-    motorRight.setPower(right);
-    motorLeft.setPower(left);
-    ArmMotor.setPower(armup);
-
-// update the position of the arm.
-    if (gamepad1.a) {
-      // if the A button is pushed on gamepad1, increment the position of
-      // the arm servo.
-
-      legPosition += legDelta;
-    }
-
-    if (gamepad1.y) {
-      // if the Y button is pushed on gamepad1, decrease the position of
-      // the arm servo.
-
-     legPosition -= legDelta;
-    }
-
+    motorDriveRight.setPower(right);
+    motorDriveLeft.setPower(left);
 
 		/*
 		 * Send telemetry data back to driver station. Note that if we are using
@@ -137,10 +94,10 @@ public class NewTeleopKeeg extends OpMode {
 		 * will return a null value. The legacy NXT-compatible motor controllers
 		 * are currently write only.
 		 */
-    telemetry.addData("Text", "*** Robot Data***");
-    telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
-    telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
-    telemetry.addData("arm", "arm:  " + String.format("%.2f", legPosition));
+    telemetry.addData("Text", "*** Robot Data ***");
+    telemetry.addData("left motor ",  left);
+    telemetry.addData("right motor", right);
+    //telemetry.addData("arm", "arm:  " + String.format("%.2f", legPosition));
   }
 
   /*
