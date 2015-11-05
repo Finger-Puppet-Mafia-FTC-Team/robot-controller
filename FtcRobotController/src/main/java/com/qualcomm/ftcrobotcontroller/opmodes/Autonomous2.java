@@ -17,9 +17,16 @@ import java.util.Date;
  * Drives the robot straight until it detects tape using ODS
  */
 public class Autonomous2 extends OpMode {
-    FindTape findTape;
     AutonomouseHardware hardware;
+
+    // steps
+    FindCenterTape findCenterTape;
+    turnTowardBeacon turnTowardBeacon;
     alignWithBeacon alignWithBeacon;
+    findWhiteTape findWhiteTape;
+    driveTowardBeacon driveTowardBeacon;
+
+    boolean isBlue = true;
 
     boolean continueToNextStep = false;
 
@@ -39,10 +46,16 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void init() {
-        findTape = new FindTape();
         hardware = new AutonomouseHardware();
+
+        // steps
+        findCenterTape = new FindCenterTape();
+        turnTowardBeacon = new turnTowardBeacon();
         alignWithBeacon = new alignWithBeacon();
-        step = "FindTape";
+        findWhiteTape = new findWhiteTape();
+        driveTowardBeacon = new driveTowardBeacon();
+
+        step = "FindCenterTape";
         telemetry.addData("test", "init!");
 
 		/*
@@ -59,8 +72,10 @@ public class Autonomous2 extends OpMode {
     }
 
     void nextStep () {
-        if(step == "FindTape") {
-            step = "alignWithBeacon";
+        if(step == "FindCenterTape") {
+            step = "turnTowardBeacon";
+        } else if (step.equals("turnTowardBeacon")) {
+            step = "driveTowardBeacon";
         }
     }
 
@@ -72,16 +87,42 @@ public class Autonomous2 extends OpMode {
     @Override
     public void loop() {
         telemetry.addData("step", step);
-        if (step == "FindTape") {
-            findTape.initStep(this);
-            findTape.runStep(this, hardware);
-            telemetry.addData("Date", new Date().getTime() - findTape.stepStartTime);
-            telemetry.addData("Find Tape Step", findTape.step);
-            if (findTape.shouldContinue == true) {
+        if (step == "FindCenterTape") {
+            findCenterTape.initStep(this);
+            findCenterTape.runStep(this, hardware);
+            telemetry.addData("Date", new Date().getTime() - findCenterTape.stepStartTime);
+            telemetry.addData("Find Tape Step", findCenterTape.step);
+            if (findCenterTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
                 nextStep();
             }
         }
+        if(step.equals("turnTowardBeacon")) {
+            turnTowardBeacon.initStep(this, hardware);
+            turnTowardBeacon.runStep(this, hardware);
+            if(turnTowardBeacon.shouldContinue == true) {
+                telemetry.addData("continue", true);
+                nextStep();
+            }
+        }
+
+        if(step.equals("driveTowardBeacon")) {
+            driveTowardBeacon.initStep(this, hardware);
+            driveTowardBeacon.runStep(this, hardware);
+            if(driveTowardBeacon.shouldContinue == true) {
+                nextStep();
+            }
+        }
+
+        if(step.equals("findWhiteTape")) {
+            findWhiteTape.initStep(this, hardware);
+            findWhiteTape.runStep(this, hardware);
+            if(findWhiteTape.shouldContinue == true) {
+                telemetry.addData("continue", true);
+                nextStep();
+            }
+        }
+
         if(step == "alignWithBeacon") {
             alignWithBeacon.initStep(this, hardware);
             alignWithBeacon.runStep(this, hardware);
