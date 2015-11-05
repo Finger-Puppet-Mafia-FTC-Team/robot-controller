@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
     public DcMotor motorRight;
     public DcMotor motorLeft;
     public OpticalDistanceSensor lightSensor;
+    public DcMotor plowMotor;
 
     void initStep(OpMode opModeInstance) {
         if(didInit) {

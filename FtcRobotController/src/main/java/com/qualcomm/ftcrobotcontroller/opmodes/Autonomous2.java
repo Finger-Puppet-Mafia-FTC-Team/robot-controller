@@ -52,6 +52,7 @@ public class Autonomous2 extends OpMode {
 		 */
         //hardware.initStep(this);
         hardware.motorRight = hardwareMap.dcMotor.get("motor_1");
+        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
         hardware.motorLeft = hardwareMap.dcMotor.get("motor_2");
         hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
         hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
