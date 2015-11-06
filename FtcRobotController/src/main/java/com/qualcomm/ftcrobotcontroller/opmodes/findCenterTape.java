@@ -5,6 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.util.Date;
 
 class FindCenterTape {
+    // ---------------------------------------------
+    // change this to the brightness of the red tape
+    double redTape = 0.5;
+    // ----------------------------------------
+
     boolean didInit = false;
     double lightAmount = 0;
     boolean foundTape = false;
@@ -47,7 +52,7 @@ class FindCenterTape {
              */
             right = .5f;
             left = .5f;
-            if (lightAmount > .5) {
+            if (lightAmount > redTape) {
                 // probably colored tape
                 right = -0.5f;
                 left = -0.5f;

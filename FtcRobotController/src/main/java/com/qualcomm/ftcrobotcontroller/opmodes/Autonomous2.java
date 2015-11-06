@@ -28,7 +28,7 @@ public class Autonomous2 extends OpMode {
 
     long startTime = 0;
 
-    double redTape = .5;
+    public double redTape = .5;
     double whiteTape = 0.6;
 
 
