@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-public class alignWithBeacon {
+public class turnTowardBeacon {
     boolean didInit = false;
     public boolean shouldContinue = false;
     public String step;
@@ -20,19 +20,19 @@ public class alignWithBeacon {
         hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         int position = hardware.motorRight.getCurrentPosition();
         origionalPosition = position;
-        hardware.motorRight.setTargetPosition(position + 200);
+        hardware.motorRight.setTargetPosition(position + 1370);
         hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         position = hardware.motorLeft.getCurrentPosition();
-        hardware.motorLeft.setTargetPosition(position + 150);
+        hardware.motorLeft.setTargetPosition(position - 1393);
         didInit = true;
     }
 
     void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
-        if(hardware.motorRight.getCurrentPosition() == origionalPosition + 20000000) {
+        if(hardware.motorRight.getCurrentPosition() == origionalPosition + 1370) {
             shouldContinue = true;
             return;
         }
-        //hardware.motorRight.setPower(1);
-        //hardware.motorLeft.setPower(1);
+        hardware.motorRight.setPower(0.4);
+        hardware.motorLeft.setPower(0.4);
     }
 }

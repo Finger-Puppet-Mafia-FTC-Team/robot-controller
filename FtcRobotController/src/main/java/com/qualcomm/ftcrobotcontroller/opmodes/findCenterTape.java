@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.Date;
 
-class FindTape {
+class FindCenterTape {
     boolean didInit = false;
     double lightAmount = 0;
     boolean foundTape = false;
@@ -27,7 +27,7 @@ class FindTape {
     void nextStep() {
         //TODO: use array
         if (step == "initialForward") {
-            step = "followColoredTape";
+            step = "turnTowardBeacon";
         } else if (step.equals("followColoredTape")) {
             step = "backAngle";
         }
@@ -47,11 +47,11 @@ class FindTape {
              */
             right = .5f;
             left = .5f;
-            if (lightAmount > .095) {
+            if (lightAmount > .5) {
                 // probably colored tape
                 right = -0.5f;
                 left = -0.5f;
-                nextStep();
+                shouldContinue = true;
             }
         }
 
@@ -60,13 +60,13 @@ class FindTape {
                 // This only works if on blue team
                 // It needs to turn sharply or it will turn in circles.
                 right = 0.9f;
-                 left = -0.9f;
+                left = -0.9f;
             } else {
                 right = .4f;
                 left = 0.6f;
             }
             if (new Date().getTime() - stepStartTime > 7000) {
-                // wait 6 seconds and then move to next step
+                // wait 7 seconds and then move to next step
                 OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime);
                 //left = -1f;
                 nextStep();
@@ -74,6 +74,10 @@ class FindTape {
             }
         }
 
+        if (step.equals("turnTowardBeacon")) {
+            left = 0;
+            right = 0;
+        }
         if (step.equals("backAngle")) {
             // turn for first half second
             if (new Date().getTime() - stepStartTime < 750) {
@@ -92,7 +96,7 @@ class FindTape {
             left = 0;
             right = 0;
             foundTape = true;
-            shouldContinue = true;
+            //shouldContinue = true;
             // telemetry.addData("light material", "tape");
         }
 
