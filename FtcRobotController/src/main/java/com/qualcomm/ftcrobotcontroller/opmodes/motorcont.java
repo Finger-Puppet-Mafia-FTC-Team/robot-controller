@@ -12,20 +12,16 @@ import com.qualcomm.robotcore.util.Range;
  * <p>
  * Enables control of the robot via the gamepad
  */
-public class motorcontrollertest extends OpMode {
+public class motorcont extends OpMode {
 
   final static double SPATULA_MIN_RANGE  = 0.20;
   final static double SPATULA_MAX_RANGE  = 0.90;
   final static double PLOW_MIN_RANGE  = 0.48;
   final static double PLOW_MAX_RANGE  = 0.75;
-  final static double ELBOWLEFT_MIN_RANGE  = 0.0;
-  final static double ELBOWLEFT_MAX_RANGE  =  0.9;
-  final static double ELBOWRIGHT_MIN_RANGE  = 0.0;
-  final static double ELBOWRIGHT_MAX_RANGE  =  0.9;
-  final static double LEFTSLAP_MIN_RANGE  = 0.0;
-  final static double LEFTSLAP_MAX_RANGE  =  0.9;
-  final static double RIGHTSLAP_MIN_RANGE  = 0.0;
-  final static double RIGHTSLAP_MAX_RANGE  =  0.9;
+  //final static double ELBOWLEFT_MIN_RANGE  = 0.0;
+  //final static double ELBOWLEFT_MAX_RANGE  =  1;
+  //final static double ELBOWRIGHT_MIN_RANGE  = 0.0;
+  //final static double ELBOWRIGHT_MAX_RANGE  =  1;
 
   // position of the arm servo.
   double spatulaPosition;
@@ -39,22 +35,13 @@ public class motorcontrollertest extends OpMode {
   // amount to change the claw servo position by
   double plowDelta = 0.1;
 
-  double elbowRightPosition;
+  //double elbowRightPosition;
 
-  double elbowRightDelta = 0.01;
+  //double elbowRightDelta;
 
-  double elbowLeftPosition;
+  //double elbowLeftPosition;
 
-   double elbowLeftDelta = 0.01;
-
-  double rightSlapPosition;
-
-  double rightSlapDelta = 0.1;
-
-  double leftSlapPosition;
-
-  double leftSlapDelta = 0.1;
-
+ // double elbowLeftDelta;
 
   DcMotorController.DeviceMode devMode;
   DcMotor motorRight;
@@ -67,12 +54,11 @@ public class motorcontrollertest extends OpMode {
   Servo spatula;
   Servo elbowRight;
   Servo elbowLeft;
-  Servo rightSlap;
-  Servo leftSlap;
+
   /**
    * Constructor
    */
-  public motorcontrollertest() {
+  public motorcont() {
 
   }
 
@@ -114,16 +100,13 @@ public class motorcontrollertest extends OpMode {
     elbowRight = hardwareMap.servo.get("servo_3");
     elbowLeft = hardwareMap.servo.get("servo_4");
     elbowLeft.setDirection(Servo.Direction.REVERSE);
-    leftSlap = hardwareMap.servo.get("servo_5");
-    rightSlap = hardwareMap.servo.get("servo_6");
 
 
     // assign the starting position of the wrist and claw
     spatulaPosition = 0.2;
     plowPosition = 0.55;
-    leftSlapPosition = 0;
-    rightSlapPosition = 0;
-
+    //elbowRightPosition = 0;
+    //elbowLeftPosition = 0f;
   }
 
   /*
@@ -152,7 +135,6 @@ public class motorcontrollertest extends OpMode {
     float left = throttle + direction;
     float armup = gamepad2.right_stick_y;
     float plowC = gamepad1.right_stick_y;
-
     {
 
     }
@@ -160,10 +142,8 @@ public class motorcontrollertest extends OpMode {
 
     right = Range.clip(right, -1, 1);
     left = Range.clip(left, -1, 1);
-    armup = Range.clip(armup, -1f, 1f);
+    armup = Range.clip(armup, -.65f, .55f);
     plowC = Range.clip(plowC, -.40f, .40f);
-
-
     // scale the joystick value to make it easier to control
     // the robot more precisely at slower speeds.
 
@@ -171,7 +151,6 @@ public class motorcontrollertest extends OpMode {
     left =  (float)scaleInput(left);
     armup = (float)scaleInput(armup);
     plowC = (float)scaleInput(plowC);
-
 
     plowC = (plowC)/2;
     armup = (armup)/2;
@@ -189,70 +168,76 @@ public class motorcontrollertest extends OpMode {
     Winch1.setPower(gamepad2.left_stick_y);
     Winch2.setPower(gamepad2.left_stick_y);
     motorPlow.setPower(plowC);
-
 // update the position of the arm.
     // update the position of the arm.
-
-    if (gamepad2.dpad_up) {
+    if (gamepad1.a) {
       // if the A button is pushed on gamepad1, increment the position of
       // the arm servo.
-      elbowLeftPosition += elbowLeftDelta;
-      elbowRightPosition += elbowRightDelta;
+      //elbowLeftPosition += elbowLeftDelta;
     }
 
-    if (gamepad2.dpad_down) {
+    if (gamepad1.y) {
       // if the Y button is pushed on gamepad1, decrease the position of
       // the arm servo.
-       elbowLeftPosition -= elbowLeftDelta;
-      elbowRightPosition -= elbowRightDelta;
+     // elbowLeftPosition -= elbowLeftDelta;
+    }
+    if (gamepad1.a) {
+      // if the A button is pushed on gamepad1, increment the position of
+      // the arm servo.
+      //elbowRightPosition += elbowRightDelta;
     }
 
-    if (gamepad2.y) {
+    if (gamepad1.y) {
+      // if the Y button is pushed on gamepad1, decrease the position of
+      // the arm servo.
+      //elbowRightPosition -= elbowRightDelta;
+    }
+    if (gamepad2.a) {
       // if the A button is pushed on gamepad1, increment the position of
       // the arm servo.
       spatulaPosition += spatulaDelta;
     }
 
-    if (gamepad2.dpad_left) {
-      // if the Y button is pushed on gamepad1, decrease the position of
-      // the arm servo.
-      spatulaPosition -= spatulaDelta;
-    }
-    if (gamepad2.b) {
-      // if the A button is pushed on gamepad1, increment the position of
-      // the arm servo.
-      leftSlapPosition -= leftSlapDelta;
-    }
-
     if (gamepad2.y) {
       // if the Y button is pushed on gamepad1, decrease the position of
       // the arm servo.
-      leftSlapPosition += leftSlapDelta;
+       spatulaPosition -= spatulaDelta;
     }
+
     // update the position of the claw
     if (gamepad1.left_bumper) {
       plowPosition += plowDelta;
     }
 
-    if (gamepad1.right_bumper) {
+    if (gamepad1.left_trigger > 0.25) {
       plowPosition -= plowDelta;
     }
 
+    if (gamepad1.b) {
+      plowPosition -= plowDelta;
+    }
+
+    // update the position of the claw
+    if (gamepad2.x) {
+      plowPosition += plowDelta;
+    }
+
+    if (gamepad2.b) {
+      plowPosition -= plowDelta;
+    }
 
     // clip the position values so that they never exceed their allowed range.
     spatulaPosition = Range.clip(spatulaPosition, SPATULA_MIN_RANGE, SPATULA_MAX_RANGE);
     plowPosition = Range.clip(plowPosition, PLOW_MIN_RANGE, PLOW_MAX_RANGE);
-    elbowLeftPosition = Range.clip(elbowLeftPosition, ELBOWLEFT_MIN_RANGE, ELBOWLEFT_MAX_RANGE);
-    elbowRightPosition = Range.clip(elbowRightPosition, ELBOWRIGHT_MIN_RANGE, ELBOWRIGHT_MAX_RANGE);
-    leftSlapPosition = Range.clip(leftSlapPosition, LEFTSLAP_MIN_RANGE, LEFTSLAP_MAX_RANGE);
-
+   //elbowLeftPosition = Range.clip(elbowLeftPosition, ELBOWLEFT_MIN_RANGE, ELBOWLEFT_MAX_RANGE);
+    //elbowRightPosition = Range.clip(elbowRightPosition, ELBOWRIGHT_MIN_RANGE, ELBOWRIGHT_MAX_RANGE);
 
 
     // write position values to the wrist and claw servo
     spatula.setPosition(spatulaPosition);
     plow.setPosition(plowPosition);
-    elbowLeft.setPosition(elbowLeftPosition);
-    elbowRight.setPosition(elbowRightPosition);
+    elbowLeft.setPosition(gamepad1.right_stick_x);
+    elbowRight.setPosition(gamepad1.right_stick_x);
 
 
 
@@ -267,7 +252,6 @@ public class motorcontrollertest extends OpMode {
   telemetry.addData("claw", "claw:  " + String.format("%.2f", plowPosition));
   telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
   telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
-    telemetry.addData("elbow", "elbow:  " + String.format("%.2f", elbowLeftPosition));
   }
 
   /*
