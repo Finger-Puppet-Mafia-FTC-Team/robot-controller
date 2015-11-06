@@ -46,6 +46,7 @@ public class showMotorPosition extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;
+    DcMotor motorArm;
 
     /**
      * Constructor
@@ -62,6 +63,10 @@ public class showMotorPosition extends OpMode {
     @Override
     public void init() {
 
+        motorArm = hardwareMap.dcMotor.get("motor_3");
+        motorArm.setDirection(DcMotor.Direction.FORWARD);
+        motorArm.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         motorRight = hardwareMap.dcMotor.get("motor_2");
         motorRight.setDirection(DcMotor.Direction.FORWARD);
         motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
@@ -74,6 +79,7 @@ public class showMotorPosition extends OpMode {
 
         motorLeft.setTargetPosition(position + 2800);
         motorRight.setTargetPosition(position + 100);
+        motorArm.setTargetPosition(position + 300);
     }
 
     /*
@@ -87,7 +93,8 @@ public class showMotorPosition extends OpMode {
         telemetry.addData("motor left position", position);
         position = motorRight.getCurrentPosition();
         telemetry.addData("motor right position", position);
-
+        position = motorArm.getCurrentPosition();
+        telemetry.addData("motor arm position", position);
         //motorLeft.setPower(0.5);
     }
 
