@@ -26,6 +26,8 @@ public class Autonomous2 extends OpMode {
     findWhiteTape findWhiteTape;
     alignWithBeacon alignWithBeacon;
 
+    long startTime = 0;
+
     double redTape = .5;
     double whiteTape = 0.6;
 
@@ -92,6 +94,16 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
+        if(startTime == 0) {
+            startTime = new Date().getTime();
+        }
+
+        // wait 8 seconds
+        if(new Date().getTime() - startTime < 8000) {
+            telemetry.addData("start time difference", new Date().getTime() - startTime);
+            return;
+        }
+
         telemetry.addData("step", step);
         if (step == "FindCenterTape") {
             findCenterTape.initStep(this);
