@@ -22,9 +22,13 @@ public class Autonomous2 extends OpMode {
     // steps
     FindCenterTape findCenterTape;
     turnTowardBeacon turnTowardBeacon;
-    alignWithBeacon alignWithBeacon;
-    findWhiteTape findWhiteTape;
     driveTowardBeacon driveTowardBeacon;
+    findWhiteTape findWhiteTape;
+    alignWithBeacon alignWithBeacon;
+
+    double redTape = .5;
+    double whiteTape = 0.6;
+
 
     boolean isBlue = true;
 
@@ -76,6 +80,8 @@ public class Autonomous2 extends OpMode {
             step = "turnTowardBeacon";
         } else if (step.equals("turnTowardBeacon")) {
             step = "driveTowardBeacon";
+        } else if (step.equals("driveTowardBeacon")) {
+            step = "alignWithBeacon";
         }
     }
 
@@ -126,6 +132,11 @@ public class Autonomous2 extends OpMode {
         if(step == "alignWithBeacon") {
             alignWithBeacon.initStep(this, hardware);
             alignWithBeacon.runStep(this, hardware);
+            telemetry.addData("time", new Date().getTime() - alignWithBeacon.stepStartTime);
+            if(findWhiteTape.shouldContinue == true) {
+                telemetry.addData("continue", true);
+                nextStep();
+            }
         }
     }
 
@@ -136,6 +147,6 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void stop() {
-        telemetry.addData("Stopped", "stop");
+        telemetry.addData("step", step);
     }
 }

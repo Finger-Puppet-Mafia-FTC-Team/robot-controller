@@ -10,23 +10,29 @@ public class alignWithBeacon {
     public String step;
     public long stepStartTime;
 
+    int origionalPosition;
+
     void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
         if (didInit) {
             return;
         }
-        // FixMe: motor left doesn't accept runToPosition
         hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
         hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         int position = hardware.motorRight.getCurrentPosition();
-        hardware.motorRight.setTargetPosition(position + (int)Math.round(100*1));
+        origionalPosition = position;
+        hardware.motorRight.setTargetPosition(position + 200);
         hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         position = hardware.motorLeft.getCurrentPosition();
-        hardware.motorLeft.setTargetPosition(position - (int)Math.round((2800 * 0)));
+        hardware.motorLeft.setTargetPosition(position + 150);
         didInit = true;
     }
 
     void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
-        hardware.motorRight.setPower(0.1f);
-        hardware.motorLeft.setPower(0.1f);
+        if(hardware.motorRight.getCurrentPosition() == origionalPosition + 20000000) {
+            shouldContinue = true;
+            return;
+        }
+        //hardware.motorRight.setPower(1);
+        //hardware.motorLeft.setPower(1);
     }
 }

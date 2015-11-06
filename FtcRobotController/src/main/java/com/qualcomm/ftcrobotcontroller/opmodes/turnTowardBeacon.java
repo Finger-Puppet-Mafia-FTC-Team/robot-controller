@@ -20,19 +20,19 @@ public class turnTowardBeacon {
         hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         int position = hardware.motorRight.getCurrentPosition();
         origionalPosition = position;
-        hardware.motorRight.setTargetPosition(position + 1232);
+        hardware.motorRight.setTargetPosition(position + 1370);
         hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         position = hardware.motorLeft.getCurrentPosition();
-        hardware.motorLeft.setTargetPosition(position - 1293);
+        hardware.motorLeft.setTargetPosition(position - 1393);
         didInit = true;
     }
 
     void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
-        if(hardware.motorRight.getCurrentPosition() == origionalPosition + 1232) {
+        if(hardware.motorRight.getCurrentPosition() == origionalPosition + 1370) {
             shouldContinue = true;
             return;
         }
-        hardware.motorRight.setPower(0.4f);
-        hardware.motorLeft.setPower(0.4f);
+        hardware.motorRight.setPower(0.4);
+        hardware.motorLeft.setPower(0.4);
     }
 }

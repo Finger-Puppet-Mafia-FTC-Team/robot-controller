@@ -15,22 +15,28 @@ public class findWhiteTape {
         if (didInit) {
             return;
         }
-        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
-        hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        //hardware.motorLeft.
+//        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
+//        hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        targetPosition = hardware.motorRight.getCurrentPosition() + 10;
+        hardware.motorRight.setTargetPosition(targetPosition);
+
+//        hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
+//        hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        targetPosition = hardware.motorLeft.getCurrentPosition() + 10;
+        hardware.motorLeft.setTargetPosition(targetPosition);
+
         didInit = true;
     }
 
     void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         // check if found tape
-        if(hardware.lightSensor.getLightDetected() > .55) {
-            shouldContinue = true;
-            return;
-        }
        // int
         //hardware.motorRight.setTargetPosition();
-        hardware.motorRight.setPower(0.4f);
-        hardware.motorLeft.setPower(0.4f);
+        if(hardware.motorLeft.getTargetPosition() >= hardware.motorLeft.getCurrentPosition()) {
+            return;
+        }
+        hardware.motorRight.setPower(0.5);
+        hardware.motorLeft.setPower(0.5);
     }
 }

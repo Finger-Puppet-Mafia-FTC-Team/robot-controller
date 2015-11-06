@@ -47,7 +47,7 @@ class FindCenterTape {
              */
             right = .5f;
             left = .5f;
-            if (lightAmount > .095) {
+            if (lightAmount > .5) {
                 // probably colored tape
                 right = -0.5f;
                 left = -0.5f;
@@ -66,7 +66,7 @@ class FindCenterTape {
                 left = 0.6f;
             }
             if (new Date().getTime() - stepStartTime > 7000) {
-                // wait 6 seconds and then move to next step
+                // wait 7 seconds and then move to next step
                 OpModeInstance.telemetry.addData("time", new Date().getTime() - stepStartTime);
                 //left = -1f;
                 nextStep();
@@ -96,7 +96,7 @@ class FindCenterTape {
             left = 0;
             right = 0;
             foundTape = true;
-            shouldContinue = true;
+            //shouldContinue = true;
             // telemetry.addData("light material", "tape");
         }
 
