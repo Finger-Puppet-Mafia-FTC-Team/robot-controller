@@ -12,6 +12,12 @@ class FindCenterTape {
     public String step = "initialForward";
     int stepLoop = 0;
     public long stepStartTime;
+
+    // ----------------------------
+    // change this to the brightness of the red tape
+    double redTape = 0.5;
+    // -----------------------
+
     //public OpMode opModeInstance;
 
     void initStep(OpMode OpModeInstance) {
@@ -47,7 +53,7 @@ class FindCenterTape {
              */
             right = .5f;
             left = .5f;
-            if (lightAmount > .5) {
+            if (lightAmount > redTape) {
                 // probably colored tape
                 right = -0.5f;
                 left = -0.5f;
