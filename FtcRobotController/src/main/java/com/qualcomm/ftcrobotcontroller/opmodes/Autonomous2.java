@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.Date;
+
 /**
  * TeleOp Mode
  * <p/>
@@ -15,11 +16,20 @@ import java.util.Date;
  * - light_1
  * <p/>
  * Drives the robot straight until it detects tape using ODS
+ * <p/>
+ * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
     AutonomouseHardware hardware;
 
-    // steps
+    /* === Steps ===
+     * Each step is in it's own class. We create a variable to reference the class instance here
+     *
+     * A step should have:
+     * - a public boolean named shouldContinue
+     * - a void method named initStep
+     * 
+     */
     FindCenterTape findCenterTape;
     turnTowardBeacon turnTowardBeacon;
     driveTowardBeacon driveTowardBeacon;
@@ -41,9 +51,7 @@ public class Autonomous2 extends OpMode {
     /**
      * Constructor
      */
-    public Autonomous2() {
-        telemetry.addData("test", "test");
-    }
+    public Autonomous2() {}
 
     /**
      * Code to run when the op mode is first enabled goes here
@@ -77,8 +85,8 @@ public class Autonomous2 extends OpMode {
         hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }
 
-    void nextStep () {
-        if(step == "FindCenterTape") {
+    void nextStep() {
+        if (step == "FindCenterTape") {
             step = "turnTowardBeacon";
         } else if (step.equals("turnTowardBeacon")) {
             step = "driveTowardBeacon";
@@ -94,12 +102,12 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
-        if(startTime == 0) {
+        if (startTime == 0) {
             startTime = new Date().getTime();
         }
 
         // wait 8 seconds
-        if(new Date().getTime() - startTime < 8000) {
+        if (new Date().getTime() - startTime < 8000) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
             return;
         }
@@ -115,37 +123,37 @@ public class Autonomous2 extends OpMode {
                 nextStep();
             }
         }
-        if(step.equals("turnTowardBeacon")) {
+        if (step.equals("turnTowardBeacon")) {
             turnTowardBeacon.initStep(this, hardware);
             turnTowardBeacon.runStep(this, hardware);
-            if(turnTowardBeacon.shouldContinue == true) {
+            if (turnTowardBeacon.shouldContinue == true) {
                 telemetry.addData("continue", true);
                 nextStep();
             }
         }
 
-        if(step.equals("driveTowardBeacon")) {
+        if (step.equals("driveTowardBeacon")) {
             driveTowardBeacon.initStep(this, hardware);
             driveTowardBeacon.runStep(this, hardware);
-            if(driveTowardBeacon.shouldContinue == true) {
+            if (driveTowardBeacon.shouldContinue == true) {
                 nextStep();
             }
         }
 
-        if(step.equals("findWhiteTape")) {
+        if (step.equals("findWhiteTape")) {
             findWhiteTape.initStep(this, hardware);
             findWhiteTape.runStep(this, hardware);
-            if(findWhiteTape.shouldContinue == true) {
+            if (findWhiteTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
                 nextStep();
             }
         }
 
-        if(step == "alignWithBeacon") {
+        if (step == "alignWithBeacon") {
             alignWithBeacon.initStep(this, hardware);
             alignWithBeacon.runStep(this, hardware);
             telemetry.addData("time", new Date().getTime() - alignWithBeacon.stepStartTime);
-            if(findWhiteTape.shouldContinue == true) {
+            if (findWhiteTape.shouldContinue == true) {
                 telemetry.addData("continue", true);
                 nextStep();
             }

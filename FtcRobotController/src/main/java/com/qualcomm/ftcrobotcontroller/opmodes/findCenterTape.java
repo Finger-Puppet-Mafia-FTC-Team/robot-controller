@@ -35,7 +35,7 @@ class FindCenterTape {
     }
 
 
-    void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    void runStep(Autonomous2 OpModeInstance, AutonomouseHardware hardware) {
         // The f turns it into a float number.
         float right = 0f;
         float left = 0f;
