@@ -14,7 +14,7 @@ class FindCenterTape {
     public long stepStartTime;
     //public OpMode opModeInstance;
 
-    void initStep(OpMode OpModeInstance) {
+    void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         if (didInit == true) {
             return;
         }

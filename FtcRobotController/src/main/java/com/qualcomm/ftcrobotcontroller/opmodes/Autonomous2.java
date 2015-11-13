@@ -1,9 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.sql.Array;
 
 /**
  * TeleOp Mode
@@ -28,7 +32,7 @@ public class Autonomous2 extends OpMode {
      * A step should have:
      * - a public boolean named shouldContinue
      * - a void method named initStep
-     * 
+     *
      */
     FindCenterTape findCenterTape;
     turnTowardBeacon turnTowardBeacon;
@@ -36,17 +40,25 @@ public class Autonomous2 extends OpMode {
     findWhiteTape findWhiteTape;
     alignWithBeacon alignWithBeacon;
 
+    // put steps into a map
+    HashMap stepsMap = new HashMap();
+
     long startTime = 0;
 
+    // used by steps
     double redTape = .5;
     double whiteTape = 0.6;
 
 
     boolean isBlue = true;
 
-    boolean continueToNextStep = false;
-
     String step = "";
+
+    int stepIndex = 0;
+
+    // order to run steps
+    String[] steps = {"findCenterTape", "turnTowardBeacon", "driveTowardBeacon", "alignWithBeacon"};
+
 
     /**
      * Constructor
@@ -60,6 +72,8 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void init() {
+
+
         hardware = new AutonomouseHardware();
 
         // steps
@@ -69,7 +83,17 @@ public class Autonomous2 extends OpMode {
         findWhiteTape = new findWhiteTape();
         driveTowardBeacon = new driveTowardBeacon();
 
-        step = "FindCenterTape";
+        // put steps into map
+        //TODO: we can init these and put them in the map at the same time
+        //TODO: have all of these steps extend a base class
+        //TODO: use this to init and run the correct step instead of code for each step
+        stepsMap.put("findCenterTape", findCenterTape);
+        stepsMap.put("turnTowardBeacon", turnTowardBeacon);
+        stepsMap.put("alignWithBeacon", alignWithBeacon);
+        stepsMap.put("findWhiteTape", findWhiteTape);
+        stepsMap.put("driveTowardBeacon", driveTowardBeacon);
+
+        step = "findCenterTape";
         telemetry.addData("test", "init!");
 
 		/*
@@ -79,20 +103,26 @@ public class Autonomous2 extends OpMode {
 		 */
         //hardware.initStep(this);
         hardware.motorRight = hardwareMap.dcMotor.get("motor_1");
-        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
+        hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
         hardware.motorLeft = hardwareMap.dcMotor.get("motor_2");
-        hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
         hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }
 
     void nextStep() {
-        if (step == "FindCenterTape") {
-            step = "turnTowardBeacon";
-        } else if (step.equals("turnTowardBeacon")) {
-            step = "driveTowardBeacon";
-        } else if (step.equals("driveTowardBeacon")) {
-            step = "alignWithBeacon";
+
+        Log.i("test", String.valueOf(java.util.Arrays.asList(steps).indexOf(step)));
+        // get current index
+        int index = java.util.Arrays.asList(steps).indexOf(step);
+        // we want the next step
+        index += 1;
+        // make sure there is a next step
+        if(steps.length -1 < index) {
+            Log.i("test", "no more");
+            return;
         }
+        Log.i("test", steps[index]);
+        step = steps[index];
     }
 
     /**
@@ -109,12 +139,12 @@ public class Autonomous2 extends OpMode {
         // wait 8 seconds
         if (new Date().getTime() - startTime < 8000) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
-            return;
+            //return;
         }
 
         telemetry.addData("step", step);
-        if (step == "FindCenterTape") {
-            findCenterTape.initStep(this);
+        if (step == "findCenterTape") {
+            findCenterTape.initStep(this, hardware);
             findCenterTape.runStep(this, hardware);
             telemetry.addData("Date", new Date().getTime() - findCenterTape.stepStartTime);
             telemetry.addData("Find Tape Step", findCenterTape.step);
