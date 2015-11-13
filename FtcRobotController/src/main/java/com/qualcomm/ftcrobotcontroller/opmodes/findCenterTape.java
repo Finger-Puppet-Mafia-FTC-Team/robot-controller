@@ -16,6 +16,13 @@ class FindCenterTape {
     double redTape = 0.5;
     // -----------------------
 
+    //public OpMode opModeInstance;
+
+    // ----------------------------
+    // change this to the brightness of the red tape
+    double redTape = 0.5;
+    // -----------------------
+
     void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         if (didInit == true) {
             return;
