@@ -1,7 +1,8 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.hardware.Camera;
 import android.util.Log;
-
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.CameraFeed;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -59,6 +60,8 @@ public class Autonomous2 extends OpMode {
     // order to run steps
     String[] steps = {"findCenterTape", "turnTowardBeacon", "driveTowardBeacon", "alignWithBeacon"};
 
+    // feed
+    CameraF
 
     /**
      * Constructor
