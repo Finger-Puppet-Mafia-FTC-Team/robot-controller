@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,10 +32,10 @@ public class Autonomous2 extends OpMode {
      * Each step is in it's own class. We create a variable to reference the class instance here
      *
      * A step should have:
-     * - a public boolean named shouldContinue. Set this to true when step is finished.
      * - a public long stepStartTime set in init to Date().getTime().
      * - a void method named initStep(OpMode, AutonomouseHardware)
      * - a void method named runStep(OpMode, AutonomouseHardware)
+     * - a boolean method named shouldContinue that returns true if done
      */
 
     com.qualcomm.ftcrobotcontroller.opmodes.autonomous.step StepClass;
@@ -64,6 +66,12 @@ public class Autonomous2 extends OpMode {
 
     // order to run steps
     String[] steps = {"findCenterTape", "turnTowardBeacon", "driveTowardBeacon", "alignWithBeacon"};
+    step[] stepClasses = {
+            new FindCenterTape(),
+            new turnTowardBeacon(),
+            new driveTowardBeacon(),
+            new alignWithBeacon()
+    };
 
     // feed
     //CameraF
@@ -72,6 +80,10 @@ public class Autonomous2 extends OpMode {
      * Constructor
      */
     public Autonomous2() {
+    }
+
+    public boolean getIsBlue () {
+        return isBlue;
     }
 
     /**
@@ -91,6 +103,8 @@ public class Autonomous2 extends OpMode {
         alignWithBeacon = new alignWithBeacon();
         findWhiteTape = new findWhiteTape();
         driveTowardBeacon = new driveTowardBeacon();
+
+        stepIndex = 0;
 
         // put steps into map
         //TODO: we can init these and put them in the map at the same time
@@ -121,14 +135,17 @@ public class Autonomous2 extends OpMode {
     void nextStep() {
 
         // get current index
-        int index = java.util.Arrays.asList(steps).indexOf(step);
+        int index = stepIndex;
         // we want the next step
         index += 1;
         // make sure there is a next step
-        //FixMe: There might be a bug here
-        if (steps.length - 1 < index) {
+        //FixMe: There might be a bug here. Not sure if it should be -1.
+        if (stepClasses.length - 1 < index) {
+            Log.i("test", "no more steps");
             return;
         }
+        Log.i("test", String.valueOf(index));
+        stepIndex = index;
         step = steps[index];
     }
 
@@ -146,24 +163,25 @@ public class Autonomous2 extends OpMode {
         // wait 8 seconds
         if (new Date().getTime() - startTime < 8000) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
+            //TODO: have dev variable, and if true don't return
             // =============
             // re-enable "return" for competition
             // ============ >>
 
-            //return;
-
-            //<<< ==============
+            return;
         }
 
         telemetry.addData("step", step);
 
         // run step
-        java.lang.Object a = stepsMap.get(step);
+        step a = stepClasses[stepIndex];
         ((step) a).initStep(this, hardware);
         ((step) a).runStep(this, hardware);
         // log step time
+        telemetry.addData("step index", stepIndex);
         telemetry.addData("step time", new Date().getTime() - ((step) a).stepStartTime);
-        if (((step) a).shouldContinue) {
+        Log.i("test", String.valueOf(stepClasses[stepIndex].shouldContinue()));
+        if (((step) a).shouldContinue()) {
             nextStep();
         }
 

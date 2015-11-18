@@ -5,8 +5,12 @@ import com.qualcomm.ftcrobotcontroller.opmodes.*;
 
 public class step {
     boolean didInit = false;
-    public boolean shouldContinue = false;
+    public boolean done = false;
     public long stepStartTime;
+
+    public boolean shouldContinue() {
+        return done;
+    }
 
     public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
 

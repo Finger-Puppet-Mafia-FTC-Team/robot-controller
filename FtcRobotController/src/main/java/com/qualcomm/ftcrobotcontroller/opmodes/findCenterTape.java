@@ -10,8 +10,7 @@ import java.util.Date;
 class FindCenterTape extends step {
     boolean didInit = false;
     double lightAmount = 0;
-    public boolean shouldContinue = false;
-    public String step = "initialForward";
+    public boolean done = false;
     public long stepStartTime;
 
     // ----------------------------
@@ -19,41 +18,44 @@ class FindCenterTape extends step {
     double redTape = 0.5;
 
     // -----------------------
+
+    @Override
+    public boolean shouldContinue() {
+        return done;
+    }
+
     @Override
     public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
-        Log.i("test", "init");
         if (didInit == true) {
             return;
         }
-        OpModeInstance.telemetry.addData("Find Tape Init", "True");
-        //stepStartTime = new Date();
+        // set time step started
+        stepStartTime = new Date().getTime();
         didInit = true;
 
     }
 
     @Override
     public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
-        // The f turns it into a float number.
-        Log.i("test", "run");
-        float right = 0f;
-        float left = 0f;
+        float right = 0;
+        float left = 0;
 
         lightAmount = hardware.lightSensor.getLightDetected();
 
         /*
          * Moves away from wall until it finds the center tape.
          */
-        right = .5f;
-        left = .5f;
+        // The f turns it into a float number.
+
+        right = .2f;
+        left = .2f;
         if (lightAmount > redTape) {
             // probably red tape
             right = -0.5f;
             left = -0.5f;
-            shouldContinue = true;
-        }
 
-        // seems like telemetry doesn't work in step classes
-        OpModeInstance.telemetry.addData("light brightness", hardware.lightSensor.getLightDetected());
+            done = true;
+        }
 
         hardware.motorRight.setPower(right);
         hardware.motorLeft.setPower(left);
