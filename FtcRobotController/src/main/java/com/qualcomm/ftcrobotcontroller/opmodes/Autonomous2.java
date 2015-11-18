@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.Date;
-import java.util.HashMap;
 
 
 /**
@@ -19,43 +18,32 @@ import java.util.HashMap;
  * - motor_2
  * Sensors:
  * - light_1
- * <p/>
- * Drives the robot straight until it detects tape using ODS
- * <p/>
+ *
+ * Autonomous program Version 2
+ *
  * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
-    //FixMe: spelling mistake in AutonomouseHardware
-    AutonomouseHardware hardware;
+    //FixMe: spelling mistake in AutonomousHardware
+    AutonomousHardware hardware;
 
     /* === Steps ===
      * Each step is in it's own class. We create a variable to reference the class instance here
      *
      * A step should have:
      * - a public long stepStartTime set in init to Date().getTime().
-     * - a void method named initStep(OpMode, AutonomouseHardware)
-     * - a void method named runStep(OpMode, AutonomouseHardware)
+     * - a void method named initStep(OpMode, AutonomousHardware)
+     * - a void method named runStep(OpMode, AutonomousHardware)
      * - a boolean method named shouldContinue that returns true if done
      */
-
-    com.qualcomm.ftcrobotcontroller.opmodes.autonomous.step StepClass;
-
-    FindCenterTape findCenterTape;
-    turnTowardBeacon turnTowardBeacon;
-    driveTowardBeacon driveTowardBeacon;
-    findWhiteTape findWhiteTape;
-    alignWithBeacon alignWithBeacon;
-
-    com.qualcomm.ftcrobotcontroller.opmodes.autonomous.step AutoStep;
-
-    // put steps into a map
-    HashMap stepsMap = new HashMap();
 
     long startTime = 0;
 
     // used by steps
     double redTape = .5;
     double whiteTape = 0.6;
+
+    boolean dev = false;
 
 
     boolean isBlue = true;
@@ -86,6 +74,10 @@ public class Autonomous2 extends OpMode {
         return isBlue;
     }
 
+    public boolean isDev () {
+        return dev;
+    }
+
     /**
      * Code to run when the op mode is first enabled goes here
      *
@@ -95,26 +87,9 @@ public class Autonomous2 extends OpMode {
     public void init() {
 
 
-        hardware = new AutonomouseHardware();
-
-        // steps
-        findCenterTape = new FindCenterTape();
-        turnTowardBeacon = new turnTowardBeacon();
-        alignWithBeacon = new alignWithBeacon();
-        findWhiteTape = new findWhiteTape();
-        driveTowardBeacon = new driveTowardBeacon();
+        hardware = new AutonomousHardware();
 
         stepIndex = 0;
-
-        // put steps into map
-        //TODO: we can init these and put them in the map at the same time
-        //TODO: have all of these steps extend a base class
-        //TODO: use this to init and run the correct step instead of code for each step
-        stepsMap.put("findCenterTape", findCenterTape);
-        stepsMap.put("turnTowardBeacon", turnTowardBeacon);
-        stepsMap.put("alignWithBeacon", alignWithBeacon);
-        stepsMap.put("findWhiteTape", findWhiteTape);
-        stepsMap.put("driveTowardBeacon", driveTowardBeacon);
 
         step = "findCenterTape";
         telemetry.addData("test", "init!");
@@ -144,9 +119,7 @@ public class Autonomous2 extends OpMode {
             Log.i("test", "no more steps");
             return;
         }
-        Log.i("test", String.valueOf(index));
         stepIndex = index;
-        step = steps[index];
     }
 
     /**
@@ -161,12 +134,10 @@ public class Autonomous2 extends OpMode {
         }
 
         // wait 8 seconds
-        if (new Date().getTime() - startTime < 8000) {
+        telemetry.addData("dev", this.isDev());
+        if (new Date().getTime() - startTime < 8000 && this.isDev() == false) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
             //TODO: have dev variable, and if true don't return
-            // =============
-            // re-enable "return" for competition
-            // ============ >>
 
             return;
         }
