@@ -1,10 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
 import java.util.Date;
 
-class FindCenterTape {
+class FindCenterTape extends step {
     boolean didInit = false;
     double lightAmount = 0;
     public boolean shouldContinue = false;
@@ -14,9 +17,11 @@ class FindCenterTape {
     // ----------------------------
     // change this to the brightness of the red tape
     double redTape = 0.5;
-    // -----------------------
 
-    void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    // -----------------------
+    @Override
+    public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+        Log.i("test", "init");
         if (didInit == true) {
             return;
         }
@@ -26,9 +31,10 @@ class FindCenterTape {
 
     }
 
-
-    void runStep(Autonomous2 OpModeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         // The f turns it into a float number.
+        Log.i("test", "run");
         float right = 0f;
         float left = 0f;
 

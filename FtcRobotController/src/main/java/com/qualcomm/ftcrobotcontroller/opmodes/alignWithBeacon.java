@@ -3,8 +3,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
-public class alignWithBeacon {
+public class alignWithBeacon extends step{
     boolean didInit = false;
     public boolean shouldContinue = false;
     public String step;
@@ -12,7 +13,8 @@ public class alignWithBeacon {
 
     int origionalPosition;
 
-    void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
         if (didInit) {
             return;
         }
@@ -26,8 +28,8 @@ public class alignWithBeacon {
         hardware.motorLeft.setTargetPosition(position + 150);
         didInit = true;
     }
-
-    void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         if(hardware.motorRight.getCurrentPosition() == origionalPosition + 20000000) {
             shouldContinue = true;
             return;

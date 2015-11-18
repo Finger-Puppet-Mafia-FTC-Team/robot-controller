@@ -3,15 +3,17 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
-public class findWhiteTape {
+public class findWhiteTape extends step{
     boolean didInit = false;
     public boolean shouldContinue = false;
     public long stepStartTime;
     boolean goingLeft;
     int targetPosition;
 
-    void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         if (didInit) {
             return;
         }
@@ -29,7 +31,8 @@ public class findWhiteTape {
         didInit = true;
     }
 
-    void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         // check if found tape
        // int
         //hardware.motorRight.setTargetPosition();

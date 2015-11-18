@@ -3,8 +3,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
-public class turnTowardBeacon {
+public class turnTowardBeacon extends step{
     boolean didInit = false;
     public boolean shouldContinue = false;
     public String step;
@@ -36,7 +37,8 @@ public class turnTowardBeacon {
         didInit = true;
     }
 
-    void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    @Override
+    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
         if(hardware.motorRight.getCurrentPosition() == origionalPosition + rightTurn) {
             shouldContinue = true;
             return;
