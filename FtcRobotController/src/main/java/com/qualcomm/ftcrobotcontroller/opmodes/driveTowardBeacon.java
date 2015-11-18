@@ -1,8 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
 public class driveTowardBeacon extends step{
@@ -14,7 +12,7 @@ public class driveTowardBeacon extends step{
     int origional;
 
     @Override
-    public void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
+    public void initStep(OpMode OpMOdeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }
@@ -33,7 +31,7 @@ public class driveTowardBeacon extends step{
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
         // check if found tape
         // int
         //hardware.motorRight.setTargetPosition();

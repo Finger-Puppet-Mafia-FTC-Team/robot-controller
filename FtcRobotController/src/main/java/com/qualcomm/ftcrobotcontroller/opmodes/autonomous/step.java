@@ -12,10 +12,10 @@ public class step {
         return done;
     }
 
-    public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void initStep(OpMode OpModeInstance, AutonomousHardware hardware) {
 
     }
-    public void runStep (OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void runStep (OpMode OpModeInstance, AutonomousHardware hardware) {
 
     }
 }

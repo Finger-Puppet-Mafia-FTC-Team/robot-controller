@@ -15,7 +15,7 @@ public class turnTowardBeacon extends step{
     int leftTurn;
     int rightTurn;
 
-    void initStep(Autonomous2 OpModeInstance, AutonomouseHardware hardware) {
+    void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }
@@ -38,7 +38,7 @@ public class turnTowardBeacon extends step{
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
         if(hardware.motorRight.getCurrentPosition() == origionalPosition + rightTurn) {
             shouldContinue = true;
             return;

@@ -31,7 +31,7 @@ public class keegauto extends OpMode{
             motorRight.setPower(0.5);
             motorLeft.setPower(0.5);
     }
-    void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
+    void initStep(OpMode OpMOdeInstance, AutonomousHardware hardware) {
 
 
     }

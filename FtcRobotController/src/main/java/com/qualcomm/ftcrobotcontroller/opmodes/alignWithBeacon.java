@@ -14,7 +14,7 @@ public class alignWithBeacon extends step{
     int origionalPosition;
 
     @Override
-    public void initStep(OpMode OpMOdeInstance, AutonomouseHardware hardware) {
+    public void initStep(OpMode OpMOdeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }
@@ -29,7 +29,7 @@ public class alignWithBeacon extends step{
         didInit = true;
     }
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
         if(hardware.motorRight.getCurrentPosition() == origionalPosition + 20000000) {
             shouldContinue = true;
             return;

@@ -5,7 +5,7 @@ import  com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
- public class AutonomouseHardware {
+ public class AutonomousHardware {
     boolean didInit = false;
     public HardwareMap hardwareMap = new HardwareMap();
     public DcMotor motorRight;
@@ -13,8 +13,10 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
     public OpticalDistanceSensor lightSensor;
     public DcMotor plowMotor;
 
-     // distance from one rotation of the drive motor in centimeters.
-     public double rotation = 20.41;
+     // distance for competition robot
+     public double rotation = 179.3568;
+     // distance for test robot
+     //public double rotation = 287.624;
     void initStep(OpMode opModeInstance) {
         if(didInit) {
             return;

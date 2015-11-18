@@ -1,7 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
@@ -25,7 +23,7 @@ class FindCenterTape extends step {
     }
 
     @Override
-    public void initStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void initStep(OpMode OpModeInstance, AutonomousHardware hardware) {
         if (didInit == true) {
             return;
         }
@@ -36,7 +34,7 @@ class FindCenterTape extends step {
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomouseHardware hardware) {
+    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
         float right = 0;
         float left = 0;
 
