@@ -1,14 +1,12 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.hardware.Camera;
-import android.util.Log;
-import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.CameraFeed;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.sql.Array;
+
 
 /**
  * TeleOp Mode
@@ -25,21 +23,28 @@ import java.sql.Array;
  * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
+    //FixMe: spelling mistake in AutonomouseHardware
     AutonomouseHardware hardware;
 
     /* === Steps ===
      * Each step is in it's own class. We create a variable to reference the class instance here
      *
      * A step should have:
-     * - a public boolean named shouldContinue
-     * - a void method named initStep
-     *
+     * - a public boolean named shouldContinue. Set this to true when step is finished.
+     * - a public long stepStartTime set in init to Date().getTime().
+     * - a void method named initStep(OpMode, AutonomouseHardware)
+     * - a void method named runStep(OpMode, AutonomouseHardware)
      */
+
+    com.qualcomm.ftcrobotcontroller.opmodes.autonomous.step StepClass;
+
     FindCenterTape findCenterTape;
     turnTowardBeacon turnTowardBeacon;
     driveTowardBeacon driveTowardBeacon;
     findWhiteTape findWhiteTape;
     alignWithBeacon alignWithBeacon;
+
+    com.qualcomm.ftcrobotcontroller.opmodes.autonomous.step AutoStep;
 
     // put steps into a map
     HashMap stepsMap = new HashMap();
@@ -61,12 +66,13 @@ public class Autonomous2 extends OpMode {
     String[] steps = {"findCenterTape", "turnTowardBeacon", "driveTowardBeacon", "alignWithBeacon"};
 
     // feed
-    CameraF
+    //CameraF
 
     /**
      * Constructor
      */
-    public Autonomous2() {}
+    public Autonomous2() {
+    }
 
     /**
      * Code to run when the op mode is first enabled goes here
@@ -114,17 +120,15 @@ public class Autonomous2 extends OpMode {
 
     void nextStep() {
 
-        Log.i("test", String.valueOf(java.util.Arrays.asList(steps).indexOf(step)));
         // get current index
         int index = java.util.Arrays.asList(steps).indexOf(step);
         // we want the next step
         index += 1;
         // make sure there is a next step
-        if(steps.length -1 < index) {
-            Log.i("test", "no more");
+        //FixMe: There might be a bug here
+        if (steps.length - 1 < index) {
             return;
         }
-        Log.i("test", steps[index]);
         step = steps[index];
     }
 
@@ -142,55 +146,27 @@ public class Autonomous2 extends OpMode {
         // wait 8 seconds
         if (new Date().getTime() - startTime < 8000) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
+            // =============
+            // re-enable "return" for competition
+            // ============ >>
+
             //return;
+
+            //<<< ==============
         }
 
         telemetry.addData("step", step);
-        if (step == "findCenterTape") {
-            findCenterTape.initStep(this, hardware);
-            findCenterTape.runStep(this, hardware);
-            telemetry.addData("Date", new Date().getTime() - findCenterTape.stepStartTime);
-            telemetry.addData("Find Tape Step", findCenterTape.step);
-            if (findCenterTape.shouldContinue == true) {
-                telemetry.addData("continue", true);
-                nextStep();
-            }
-        }
-        if (step.equals("turnTowardBeacon")) {
-            turnTowardBeacon.initStep(this, hardware);
-            turnTowardBeacon.runStep(this, hardware);
-            if (turnTowardBeacon.shouldContinue == true) {
-                telemetry.addData("continue", true);
-                nextStep();
-            }
+
+        // run step
+        java.lang.Object a = stepsMap.get(step);
+        ((step) a).initStep(this, hardware);
+        ((step) a).runStep(this, hardware);
+        // log step time
+        telemetry.addData("step time", new Date().getTime() - ((step) a).stepStartTime);
+        if (((step) a).shouldContinue) {
+            nextStep();
         }
 
-        if (step.equals("driveTowardBeacon")) {
-            driveTowardBeacon.initStep(this, hardware);
-            driveTowardBeacon.runStep(this, hardware);
-            if (driveTowardBeacon.shouldContinue == true) {
-                nextStep();
-            }
-        }
-
-        if (step.equals("findWhiteTape")) {
-            findWhiteTape.initStep(this, hardware);
-            findWhiteTape.runStep(this, hardware);
-            if (findWhiteTape.shouldContinue == true) {
-                telemetry.addData("continue", true);
-                nextStep();
-            }
-        }
-
-        if (step == "alignWithBeacon") {
-            alignWithBeacon.initStep(this, hardware);
-            alignWithBeacon.runStep(this, hardware);
-            telemetry.addData("time", new Date().getTime() - alignWithBeacon.stepStartTime);
-            if (findWhiteTape.shouldContinue == true) {
-                telemetry.addData("continue", true);
-                nextStep();
-            }
-        }
     }
 
     /*
