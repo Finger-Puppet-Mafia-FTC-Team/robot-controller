@@ -24,7 +24,6 @@ import java.util.Date;
  * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
-    //FixMe: spelling mistake in AutonomousHardware
     AutonomousHardware hardware;
 
     /* === Steps ===
@@ -52,8 +51,8 @@ public class Autonomous2 extends OpMode {
 
     int stepIndex = 0;
 
-    // order to run steps
-    String[] steps = {"findCenterTape", "turnTowardBeacon", "driveTowardBeacon", "alignWithBeacon"};
+    // array of step instances in order to be run.
+    // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
             new FindCenterTape(),
             new turnTowardBeacon(),
@@ -67,8 +66,7 @@ public class Autonomous2 extends OpMode {
     /**
      * Constructor
      */
-    public Autonomous2() {
-    }
+    public Autonomous2() {}
 
     public boolean getIsBlue () {
         return isBlue;
@@ -85,14 +83,10 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void init() {
-
-
         hardware = new AutonomousHardware();
 
+        // index of step
         stepIndex = 0;
-
-        step = "findCenterTape";
-        telemetry.addData("test", "init!");
 
 		/*
          * Use the hardwareMap to get the dc motors and servos by name. Note
@@ -137,8 +131,7 @@ public class Autonomous2 extends OpMode {
         telemetry.addData("dev", this.isDev());
         if (new Date().getTime() - startTime < 8000 && this.isDev() == false) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
-            //TODO: have dev variable, and if true don't return
-
+            // not ready yet so we will return
             return;
         }
 
