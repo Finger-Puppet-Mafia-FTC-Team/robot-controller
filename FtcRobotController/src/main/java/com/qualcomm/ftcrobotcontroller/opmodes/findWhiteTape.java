@@ -11,7 +11,7 @@ public class findWhiteTape extends step{
     int targetPosition;
 
     @Override
-    public void initStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }

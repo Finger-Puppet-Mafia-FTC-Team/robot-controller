@@ -14,7 +14,7 @@ public class alignWithBeacon extends step{
     int origionalPosition;
 
     @Override
-    public void initStep(OpMode OpMOdeInstance, AutonomousHardware hardware) {
+    public void initStep(Autonomous2 OpMOdeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }

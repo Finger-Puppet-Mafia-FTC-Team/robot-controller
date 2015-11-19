@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -7,7 +9,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 
 public class turnTowardBeacon extends step{
     boolean didInit = false;
-    public boolean shouldContinue = false;
+    public boolean done = false;
     public String step;
     public long stepStartTime;
 
@@ -15,7 +17,13 @@ public class turnTowardBeacon extends step{
     int leftTurn;
     int rightTurn;
 
-    void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
+    @Override
+    public boolean shouldContinue () {
+        return done;
+    }
+
+    @Override
+    public void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }
@@ -29,7 +37,9 @@ public class turnTowardBeacon extends step{
         hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
         hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         int position = hardware.motorRight.getCurrentPosition();
+        Log.i("test", String.valueOf(position));
         origionalPosition = position;
+        hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
         hardware.motorRight.setTargetPosition(position + rightTurn);
         hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         position = hardware.motorLeft.getCurrentPosition();
@@ -39,8 +49,9 @@ public class turnTowardBeacon extends step{
 
     @Override
     public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
-        if(hardware.motorRight.getCurrentPosition() == origionalPosition + rightTurn) {
-            shouldContinue = true;
+        Log.i("test", String.valueOf(hardware.motorRight.getCurrentPosition()) + String.valueOf(origionalPosition + rightTurn));
+        if(hardware.motorRight.getCurrentPosition() >= origionalPosition + rightTurn) {
+            done = true;
             return;
         }
         hardware.motorRight.setPower(0.4);

@@ -23,7 +23,7 @@ class FindCenterTape extends step {
     }
 
     @Override
-    public void initStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if (didInit == true) {
             return;
         }

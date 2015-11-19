@@ -12,7 +12,7 @@ public class driveTowardBeacon extends step{
     int origional;
 
     @Override
-    public void initStep(OpMode OpMOdeInstance, AutonomousHardware hardware) {
+    public void initStep(Autonomous2 OpMOdeInstance, AutonomousHardware hardware) {
         if (didInit) {
             return;
         }

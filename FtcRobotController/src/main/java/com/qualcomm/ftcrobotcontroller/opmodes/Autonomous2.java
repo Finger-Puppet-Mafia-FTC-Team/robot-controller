@@ -33,7 +33,7 @@ public class Autonomous2 extends OpMode {
      * - a public long stepStartTime set in init to Date().getTime().
      * - a void method named initStep(OpMode, AutonomousHardware)
      * - a void method named runStep(OpMode, AutonomousHardware)
-     * - a boolean method named shouldContinue that returns true if done
+     * - a boolean method named done that returns true if done
      */
 
     long startTime = 0;
@@ -54,8 +54,8 @@ public class Autonomous2 extends OpMode {
     // array of step instances in order to be run.
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
-            new FindCenterTape(),
             new turnTowardBeacon(),
+            new FindCenterTape(),
             new driveTowardBeacon(),
             new alignWithBeacon()
     };
@@ -113,6 +113,7 @@ public class Autonomous2 extends OpMode {
             Log.i("test", "no more steps");
             return;
         }
+        Log.i("test", stepClasses[index].getClass().getName());
         stepIndex = index;
     }
 
@@ -135,17 +136,16 @@ public class Autonomous2 extends OpMode {
             return;
         }
 
-        telemetry.addData("step", step);
+        telemetry.addData("step", stepClasses[stepIndex].getClass().getName());
 
         // run step
         step a = stepClasses[stepIndex];
-        ((step) a).initStep(this, hardware);
-        ((step) a).runStep(this, hardware);
+         a.initStep(this, hardware);
+         a.runStep(this, hardware);
         // log step time
         telemetry.addData("step index", stepIndex);
-        telemetry.addData("step time", new Date().getTime() - ((step) a).stepStartTime);
-        Log.i("test", String.valueOf(stepClasses[stepIndex].shouldContinue()));
-        if (((step) a).shouldContinue()) {
+        telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
+        if (a.shouldContinue()) {
             nextStep();
         }
 
