@@ -54,8 +54,8 @@ public class Autonomous2 extends OpMode {
     // array of step instances in order to be run.
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
-            new turnTowardBeacon(),
             new FindCenterTape(),
+            new turnTowardBeacon(),
             new driveTowardBeacon(),
             new alignWithBeacon()
     };
