@@ -5,4 +5,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  */
 public class autonomousRed extends Autonomous2 {
     boolean isBlue = false;
+    @Override
+    public boolean getIsBlue() {
+        return isBlue;
+    }
 }
