@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.ftcrobotcontroller.opmodes.*;
 
+//TODO: make abstract
 public class step {
     boolean didInit = false;
     public boolean done = false;
