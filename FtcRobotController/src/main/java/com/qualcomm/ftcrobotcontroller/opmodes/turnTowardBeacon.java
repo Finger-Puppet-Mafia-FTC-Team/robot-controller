@@ -10,7 +10,6 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 public class turnTowardBeacon extends step{
     boolean didInit = false;
     public boolean done = false;
-    public String step;
     public long stepStartTime;
 
     int origionalPosition;
@@ -27,32 +26,44 @@ public class turnTowardBeacon extends step{
         if (didInit) {
             return;
         }
+
+        // turn other way if on red team
         leftTurn = 1393;
         rightTurn = 1370;
-        if(OpModeInstance.isBlue) {
+        Log.i("test", String.valueOf(leftTurn));
+        if(OpModeInstance.getIsBlue() == false) {
             int transfer = leftTurn;
-            leftTurn = rightTurn;
-            rightTurn = transfer;
+            // we want the wheels to turn the opposite direction
+            leftTurn = -1 * rightTurn;
+            rightTurn = -1 * transfer;
         }
-        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
-        hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        int position = hardware.motorRight.getCurrentPosition();
-        Log.i("test", String.valueOf(position));
-        origionalPosition = position;
-        hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
-        hardware.motorRight.setTargetPosition(position + rightTurn);
-        hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        position = hardware.motorLeft.getCurrentPosition();
+        Log.i("test", String.valueOf(leftTurn));
+        hardware.resetMotorDirection();
+        hardware.usePosition(hardware.motorLeft);
+        hardware.usePosition(hardware.motorRight);
+
+        origionalPosition = hardware.motorRight.getCurrentPosition();
+        hardware.motorRight.setTargetPosition(origionalPosition + rightTurn);
+
+        int position = hardware.motorLeft.getCurrentPosition();
         hardware.motorLeft.setTargetPosition(position - leftTurn);
+
         didInit = true;
     }
 
     @Override
     public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
-        Log.i("test", String.valueOf(hardware.motorRight.getCurrentPosition()) + String.valueOf(origionalPosition + rightTurn));
-        if(hardware.motorRight.getCurrentPosition() >= origionalPosition + rightTurn) {
-            done = true;
-            return;
+        //Log.i("test", String.valueOf(hardware.motorRight.getCurrentPosition()) +' ' + String.valueOf(origionalPosition + rightTurn));
+        if(rightTurn > 0) {
+            if (hardware.motorRight.getCurrentPosition() >= origionalPosition + rightTurn) {
+                done = true;
+                return;
+            }
+        } else {
+            if (hardware.motorRight.getCurrentPosition() <= origionalPosition + rightTurn) {
+                done = true;
+                return;
+            }
         }
         hardware.motorRight.setPower(0.4);
         hardware.motorLeft.setPower(0.4);

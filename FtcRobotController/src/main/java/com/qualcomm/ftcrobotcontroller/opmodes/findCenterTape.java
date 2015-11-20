@@ -29,6 +29,12 @@ class FindCenterTape extends step {
         }
         // set time step started
         stepStartTime = new Date().getTime();
+
+        hardware.resetMotorDirection();
+        hardware.noUsePosition(hardware.motorLeft);
+        hardware.noUsePosition(hardware.motorRight);
+
+
         didInit = true;
 
     }

@@ -1,9 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 
-public class driveTowardBeacon extends step{
+public class driveTowardBeacon extends step {
     boolean didInit = false;
     public boolean shouldContinue = false;
     public long stepStartTime;
@@ -16,14 +20,13 @@ public class driveTowardBeacon extends step{
         if (didInit) {
             return;
         }
-        //hardware.motorLeft.
-//        hardware.motorRight.setDirection(DcMotor.Direction.FORWARD);
-//        hardware.motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        hardware.usePosition(hardware.motorRight);
+        hardware.usePosition(hardware.motorLeft);
+        hardware.resetMotorDirection();
+
         targetPosition = hardware.motorRight.getCurrentPosition() + 6500;
         hardware.motorRight.setTargetPosition(targetPosition);
 
-//        hardware.motorLeft.setDirection(DcMotor.Direction.REVERSE);
-//        hardware.motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         origional = hardware.motorLeft.getCurrentPosition();
         hardware.motorLeft.setTargetPosition(origional + 6500);
 
@@ -31,11 +34,13 @@ public class driveTowardBeacon extends step{
     }
 
     @Override
+    public boolean shouldContinue() {
+        return done;
+    }
+
+    @Override
     public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
-        // check if found tape
-        // int
-        //hardware.motorRight.setTargetPosition();
-        if(hardware.motorLeft.getCurrentPosition() >= origional + 6400) {
+        if (hardware.motorLeft.getCurrentPosition() >= origional + 6500 - 1) {
             shouldContinue = true;
             return;
         }
