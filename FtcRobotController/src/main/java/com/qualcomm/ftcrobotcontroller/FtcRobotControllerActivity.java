@@ -114,6 +114,7 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    private com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
 
     protected class RobotRestarter implements Restarter {
 
@@ -419,8 +420,6 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
         });
     }
 
-    public Camera camera;
-
 //    private Camera openFrontFacingCamera() {
 //        int cameraId = 1;
 //        Camera cam = null;
@@ -441,7 +440,7 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
 //        return cam;
 //    }
 
-    public void initPreview(final Camera camera, final com.qualcomm.ftcrobotcontroller.opmodes.CameraOp context, final Camera.PreviewCallback previewCallback) {
+    public void initPreview(final android.hardware.Camera camera, final com.qualcomm.ftcrobotcontroller.opmodes.CameraOp context, final android.hardware.Camera.PreviewCallback previewCallback) {
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -489,6 +488,7 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
         Mat mRgbaT = mRgba.t();
         Core.flip(mRgba.t(), mRgbaT, 1);
         Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+        autonomousCamera.picture = mRgbaT;
         return mRgbaT;
     }
 

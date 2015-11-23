@@ -4,6 +4,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,13 +14,15 @@ import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.util.Log;
 
+import org.opencv.core.Core;
+
 /**
  * TeleOp Mode
  * <p>
  *Enables control of the robot via the gamepad
  */
 public class CameraOp extends OpMode {
-    private Camera camera;
+    private android.hardware.Camera camera;
    // public CameraPreview preview;
     public Bitmap image;
     private int width;
@@ -27,6 +30,7 @@ public class CameraOp extends OpMode {
     private YuvImage yuvImage = null;
     private int looped = 0;
     private String data;
+    private com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
 
     private int red(int pixel) {
         return (pixel >> 16) & 0xff;
@@ -40,16 +44,21 @@ public class CameraOp extends OpMode {
         return pixel & 0xff;
     }
 
-    private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
-        public void onPreviewFrame(byte[] data, Camera camera)
-        {
-            Camera.Parameters parameters = camera.getParameters();
-            width = parameters.getPreviewSize().width;
-            height = parameters.getPreviewSize().height;
-            yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-            looped += 1;
-        }
-    };
+    private double[]  getRow () {
+
+       return autonomousCamera.picture.get(1, 1);
+    }
+
+//    private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+//        public void onPreviewFrame(byte[] data, Camera camera)
+//        {
+//            Camera.Parameters parameters = camera.getParameters();
+//            width = parameters.getPreviewSize().width;
+//            height = parameters.getPreviewSize().height;
+//            yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);
+//            looped += 1;
+//        }
+//    };
 
     private void convertImage() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -63,13 +72,13 @@ public class CameraOp extends OpMode {
      */
     @Override
     public void init() {
-        camera = ((FtcRobotControllerActivity)hardwareMap.appContext).camera;
-        camera.setPreviewCallback(previewCallback);
-
-        Camera.Parameters parameters = camera.getParameters();
-        data = parameters.flatten();
-
-        ((FtcRobotControllerActivity) hardwareMap.appContext).initPreview(camera, this, previewCallback);
+//        //camera = ((FtcRobotControllerActivity)hardwareMap.appContext).camera;
+//        camera.setPreviewCallback(previewCallback);
+//
+//        Camera.Parameters parameters = camera.getParameters();
+//        data = parameters.flatten();
+//
+//        ((FtcRobotControllerActivity) hardwareMap.appContext).initPreview(camera, this, previewCallback);
     }
 
     /*
@@ -89,6 +98,16 @@ public class CameraOp extends OpMode {
 
     @Override
     public void loop() {
+        if(looped % 1000 == 0) {
+            //Log.i("test", "update data");
+            // first get rgb values
+            double[] a = getRow();
+            for(double log : a)
+            {
+                //Log.v("Tag", String.valueOf(log));
+            }
+             b = Core.sumElems(autonomousCamera.picture);
+        }
         if (yuvImage != null) {
             int redValue = 0;
             int blueValue = 0;
@@ -118,6 +137,6 @@ public class CameraOp extends OpMode {
             telemetry.addData("RGB:", redValue + "," + greenValue + "," + blueValue);
         }
         telemetry.addData("Looped","Looped " + Integer.toString(looped) + " times");
-        Log.d("DEBUG:",data);
+        //Log.d("DEBUG:",);
     }
 }
