@@ -1,8 +1,10 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 //import com.qualcomm.ftcrobotcontroller.CameraPreview;
+
 import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
 
@@ -18,12 +20,12 @@ import org.opencv.core.Core;
 
 /**
  * TeleOp Mode
- * <p>
- *Enables control of the robot via the gamepad
+ * <p/>
+ * Enables control of the robot via the gamepad
  */
 public class CameraOp extends OpMode {
     private android.hardware.Camera camera;
-   // public CameraPreview preview;
+    // public CameraPreview preview;
     public Bitmap image;
     private int width;
     private int height;
@@ -31,6 +33,10 @@ public class CameraOp extends OpMode {
     private int looped = 0;
     private String data;
     private com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
+    double blue = 0;
+    double red = 0;
+    double green = 0;
+    double other = 0;
 
     private int red(int pixel) {
         return (pixel >> 16) & 0xff;
@@ -44,9 +50,9 @@ public class CameraOp extends OpMode {
         return pixel & 0xff;
     }
 
-    private double[]  getRow () {
+    private double[] getRow() {
 
-       return autonomousCamera.picture.get(1, 1);
+        return autonomousCamera.picture.get(1, 1);
     }
 
 //    private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
@@ -66,6 +72,7 @@ public class CameraOp extends OpMode {
         byte[] imageBytes = out.toByteArray();
         image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
+
     /*
      * Code to run when the op mode is first enabled goes here
      * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
@@ -86,7 +93,7 @@ public class CameraOp extends OpMode {
      * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#loop()
      */
     public int highestColor(int red, int green, int blue) {
-        int[] color = {red,green,blue};
+        int[] color = {red, green, blue};
         int value = 0;
         for (int i = 1; i < 3; i++) {
             if (color[value] < color[i]) {
@@ -98,45 +105,27 @@ public class CameraOp extends OpMode {
 
     @Override
     public void loop() {
-        if(looped % 1000 == 0) {
+        if (looped % 500 == 0) {
             //Log.i("test", "update data");
             // first get rgb values
             double[] a = getRow();
-            for(double log : a)
-            {
+            for (double log : a) {
                 //Log.v("Tag", String.valueOf(log));
             }
-             b = Core.sumElems(autonomousCamera.picture);
+            org.opencv.core.Scalar b = Core.sumElems(autonomousCamera.picture);
+            red = b.val[0];
+            green = b.val[1];
+            blue = b.val[2];
+            other = b.val[3];
+            Log.i("test", "test");
         }
-        if (yuvImage != null) {
-            int redValue = 0;
-            int blueValue = 0;
-            int greenValue = 0;
-            convertImage();
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    int pixel = image.getPixel(x, y);
-                    redValue += red(pixel);
-                    blueValue += blue(pixel);
-                    greenValue += green(pixel);
-                }
-            }
-            int color = highestColor(redValue, greenValue, blueValue);
-            String colorString = "";
-            switch (color) {
-                case 0:
-                    colorString = "RED";
-                    break;
-                case 1:
-                    colorString = "GREEN";
-                    break;
-                case 2:
-                    colorString = "BLUE";
-            }
-            telemetry.addData("Color:", "Color detected is: " + colorString);
-            telemetry.addData("RGB:", redValue + "," + greenValue + "," + blueValue);
-        }
-        telemetry.addData("Looped","Looped " + Integer.toString(looped) + " times");
+
+        looped += 1;
+        telemetry.addData("Looped", "Looped " + Integer.toString(looped) + " times");
+        telemetry.addData("Red Total", red);
+        telemetry.addData("Green Total:", green);
+        telemetry.addData("Blue Total:", blue);
+        telemetry.addData("Something Else Total", other);
         //Log.d("DEBUG:",);
     }
 }
