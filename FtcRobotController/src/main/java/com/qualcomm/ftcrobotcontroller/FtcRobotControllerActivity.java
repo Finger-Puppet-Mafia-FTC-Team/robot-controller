@@ -1,3 +1,34 @@
+/* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted (subject to the limitations in the disclaimer below) provided that
+the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list
+of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+Neither the name of Qualcomm Technologies Inc nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+
+NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+
 package com.qualcomm.ftcrobotcontroller;
 
 import android.app.ActionBar;
@@ -10,7 +41,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,18 +50,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.Date;
-
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.hardware.Camera;
-
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcEventLoop;
@@ -49,36 +72,23 @@ import com.qualcomm.robotcore.util.ImmersiveMode;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.calib3d.Calib3d;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.DMatch;
-import org.opencv.core.KeyPoint;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
-import org.opencv.imgproc.Imgproc;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 
+public class FtcRobotControllerActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-public class FtcRobotControllerActivity extends Activity implements CvCameraViewListener2  {
+    private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
 
     private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
     private static final boolean USE_DEVICE_EMULATION = false;
@@ -90,7 +100,6 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
 
     protected UpdateUI.Callback callback;
     protected Context context;
-    public Context context2;
     private Utility utility;
     protected ImageButton buttonMenu;
 
@@ -109,12 +118,6 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
     protected FtcRobotControllerService controllerService;
 
     protected FtcEventLoop eventLoop;
-    public Handler handler = new Handler();
-    public TextView debugText;
-
-    private CameraBridgeViewBase mOpenCvCameraView;
-
-    private com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
 
     protected class RobotRestarter implements Restarter {
 
@@ -123,6 +126,50 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
         }
 
     }
+
+    // OpenCV
+    private CameraBridgeViewBase mOpenCvCameraView;
+
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("test", "OpenCV loaded successfully");
+                    mOpenCvCameraView.enableView();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Mat mRgba = inputFrame.rgba();
+        Mat mRgbaT = mRgba.t();
+        // flip it since the phone is in portrait and the image is for landscape.
+        Core.flip(mRgba.t(), mRgbaT, 1);
+        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+
+        // crop picture
+        //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
+        //Mat cropped = new Mat(mRgbaT, roi);
+
+        autonomousCamera.picture = mRgbaT;
+        //return cropped;
+        return mRgbaT;
+    }
+
+    public void onCameraViewStarted(int width, int height) {
+    }
+
+    public void onCameraViewStopped() {
+    }
+
 
     protected ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -148,9 +195,16 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_ftc_controller);
+
+        Log.i("test", "called onCreate");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //setContentView(R.layout.HelloOpenCvLayout);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_ftc_controller);
 
         utility = new Utility(this);
         context = this;
@@ -189,25 +243,6 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
         if (USE_DEVICE_EMULATION) {
             ModernRoboticsHardwareFactory.enableDeviceEmulation();
         }
-       // camera = openFrontFacingCamera();
-        debugText = (TextView) findViewById(R.id.textErrorMessage);
-        final Thread testThread = new Thread(new Runnable() {
-            public void run() {
-                Date date = new Date();
-                debugText.setText(date.getSeconds() + "added in thread");
-                handler.postDelayed(this, 1000);
-            }
-        });
-        handler.postDelayed(testThread, 1000);
-
-        //opencv
-        Log.i("test", "called onCreate");
-        super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_ftc_controller);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
     @Override
@@ -243,7 +278,16 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
     @Override
     public void onPause() {
         super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
     }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
 
     @Override
     protected void onStop() {
@@ -419,78 +463,4 @@ public class FtcRobotControllerActivity extends Activity implements CvCameraView
             }
         });
     }
-
-//    private Camera openFrontFacingCamera() {
-//        int cameraId = 1;
-//        Camera cam = null;
-//        int numberOfCameras = Camera.getNumberOfCameras();
-//        for (int i = 0; i < numberOfCameras; i++) {
-//            Camera.CameraInfo info = new Camera.CameraInfo();
-//            Camera.getCameraInfo(i, info);
-//            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//                cameraId = i;
-//                break;
-//            }
-//        }
-//        try {
-//            cam = Camera.open(cameraId);
-//        } catch (Exception e) {
-//
-//        }
-//        return cam;
-//    }
-
-    public void initPreview(final android.hardware.Camera camera, final com.qualcomm.ftcrobotcontroller.opmodes.CameraOp context, final android.hardware.Camera.PreviewCallback previewCallback) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                context.preview = new CameraPreview(FtcRobotControllerActivity.this, camera, previewCallback);
-//                FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
-//                previewLayout.addView(context.preview);
-//            }
-//        });
-
-    }
-
-    //open cv
-    protected BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: {
-                    Log.i("test", "OpenCV loaded successfully");
-
-                    mOpenCvCameraView.enableView();
-                }
-                break;
-                default: {
-                    super.onManagerConnected(status);
-                }
-                break;
-            }
-        }
-    };
-
-    public void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
-
-    public void onCameraViewStarted(int width, int height) {
-    }
-
-    public void onCameraViewStopped() {
-    }
-
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        Mat mRgba = inputFrame.rgba();
-        Mat mRgbaT = mRgba.t();
-        Core.flip(mRgba.t(), mRgbaT, 1);
-        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
-        autonomousCamera.picture = mRgbaT;
-        return mRgbaT;
-    }
-
-
 }
