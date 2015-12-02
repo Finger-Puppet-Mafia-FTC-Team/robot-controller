@@ -39,4 +39,6 @@ public class Camera {
     }
 
     public Mat picture;
+    public Mat fixedPicture;
+    public boolean isFixed = false;
 }

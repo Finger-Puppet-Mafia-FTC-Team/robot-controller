@@ -160,6 +160,9 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //Mat cropped = new Mat(mRgbaT, roi);
 
         autonomousCamera.picture = mRgbaT;
+        if(autonomousCamera.isFixed) {
+            return autonomousCamera.fixedPicture;
+        }
         //return cropped;
         return mRgbaT;
     }
