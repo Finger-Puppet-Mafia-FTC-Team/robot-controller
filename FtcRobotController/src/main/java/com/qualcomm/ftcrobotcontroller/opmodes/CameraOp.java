@@ -108,23 +108,26 @@ public class CameraOp extends OpMode {
         if (looped % 500 == 0) {
             //Log.i("test", "update data");
             // first get rgb values
-            double[] a = getRow();
-            for (double log : a) {
-                //Log.v("Tag", String.valueOf(log));
-            }
-            org.opencv.core.Scalar b = Core.sumElems(autonomousCamera.picture);
-            red = b.val[0];
-            green = b.val[1];
-            blue = b.val[2];
-            other = b.val[3];
+            double[] colors = autonomousCamera.getColors();
+
+            red = colors[0];
+            green = colors[1];
+            blue = colors[2];
+            other = colors[3];
             Log.i("test", "test");
         }
 
         looped += 1;
+        double pixels = autonomousCamera.picture.total();
+        telemetry.addData("Pixels", autonomousCamera.picture.total());
         telemetry.addData("Looped", "Looped " + Integer.toString(looped) + " times");
+        telemetry.addData("Average Red", red / pixels);
+        telemetry.addData("Average Green", green / pixels);
+        telemetry.addData("Average Blue", blue / pixels);
         telemetry.addData("Red Total", red);
         telemetry.addData("Green Total:", green);
         telemetry.addData("Blue Total:", blue);
+
         telemetry.addData("Something Else Total", other);
         //Log.d("DEBUG:",);
     }
