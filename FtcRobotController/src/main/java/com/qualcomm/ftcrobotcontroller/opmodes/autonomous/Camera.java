@@ -32,10 +32,14 @@ public class Camera {
         return colors;
     }
 
-    public Mat cropPicture(Mat picture, int startX, int startY, int width, int height) {
+    public Mat cropPicture(Mat pictureSrc, int startX, int startY, int width, int height) {
         Rect rectCrop = new Rect(startX, startY, width, height);
-        picture = new Mat(picture, rectCrop);
-        return picture;
+        Mat croppedPicture = new Mat(pictureSrc, rectCrop);
+        return croppedPicture;
+    }
+
+    public void setIsFixed(boolean toFix) {
+        isFixed = toFix;
     }
 
     public Mat picture;

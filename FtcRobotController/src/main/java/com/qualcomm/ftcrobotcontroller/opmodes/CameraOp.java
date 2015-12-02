@@ -108,6 +108,11 @@ public class CameraOp extends OpMode {
         if (looped % 500 == 0) {
             //Log.i("test", "update data");
             // first get rgb values
+            autonomousCamera.setIsFixed(false);
+            if(looped % 1000 == 0) {
+                autonomousCamera.fixedPicture = autonomousCamera.cropPicture(autonomousCamera.picture, 1, 1, 10, 10);
+               // autonomousCamera.isFixed = true;
+            }
             double[] colors = autonomousCamera.getColors();
 
             red = colors[0];
