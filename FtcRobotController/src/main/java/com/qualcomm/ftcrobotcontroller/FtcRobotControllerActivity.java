@@ -39,6 +39,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -52,6 +53,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,6 +78,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -89,6 +92,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 public class FtcRobotControllerActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
+    private boolean showedDevImage = false;
 
     private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
     private static final boolean USE_DEVICE_EMULATION = false;
@@ -129,30 +133,35 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
     // OpenCV
     private CameraBridgeViewBase mOpenCvCameraView;
+    private ImageView mOpenCvCameraView2;
 
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
+                case LoaderCallbackInterface.SUCCESS: {
                     Log.i("test", "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
-                } break;
-                default:
-                {
+                }
+                break;
+                default: {
                     super.onManagerConnected(status);
-                } break;
+                }
+                break;
             }
         }
     };
+
+    void setPicture(Bitmap img){
+        mOpenCvCameraView2.setImageBitmap(img);
+    }
 
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat mRgba = inputFrame.rgba();
         Mat mRgbaT = mRgba.t();
         // flip it since the phone is in portrait and the image is for landscape.
-        Core.flip(mRgba.t(), mRgbaT, 1);
+        Core.flip(mRgba.t(), mRgbaT, -1);
         Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 
         // crop picture
@@ -160,9 +169,35 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //Mat cropped = new Mat(mRgbaT, roi);
 
         autonomousCamera.picture = mRgbaT;
-        if(autonomousCamera.isFixed) {
-            return autonomousCamera.fixedPicture;
+        if (autonomousCamera.isFixed) {
+            final Bitmap img = Bitmap.createBitmap(autonomousCamera.fixedPicture.cols(), autonomousCamera.fixedPicture.rows(),Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(autonomousCamera.fixedPicture, img);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mOpenCvCameraView2.setImageBitmap(img);
+                    //mOpenCvCameraView2.setImageResource(R.dr);
+                    mOpenCvCameraView2.invalidate();
+                }
+            });
+            //setPicture(img);
+            //return autonomousCamera.fixedPicture;
         }
+//        if(showedDevImage == false) {
+//            final Bitmap img2 = Bitmap.createBitmap(mRgbaT.cols(), mRgbaT.rows(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mRgbaT, img2);
+//            Log.i("Test", mRgbaT.cols() + " rows: " + mRgbaT.rows());
+//
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mOpenCvCameraView2.setImageBitmap(img2);
+//                    //mOpenCvCameraView2.invalidate();
+//                }
+//            });
+//            showedDevImage = true;
+//        }
+
         //return cropped;
         return mRgbaT;
     }
@@ -205,7 +240,9 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //setContentView(R.layout.HelloOpenCvLayout);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCameraIndex(1);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
         super.onCreate(savedInstanceState);
 
 

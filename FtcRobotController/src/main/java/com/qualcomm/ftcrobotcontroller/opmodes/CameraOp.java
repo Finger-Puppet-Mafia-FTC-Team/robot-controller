@@ -108,19 +108,23 @@ public class CameraOp extends OpMode {
         if (looped % 500 == 0) {
             //Log.i("test", "update data");
             // first get rgb values
-            autonomousCamera.setIsFixed(false);
+            autonomousCamera.setIsFixed(true);
             if(looped % 1000 == 0) {
-                autonomousCamera.fixedPicture = autonomousCamera.cropPicture(autonomousCamera.picture, 1, 1, 10, 10);
-               // autonomousCamera.isFixed = true;
+                autonomousCamera.fixedPicture = autonomousCamera.cropPicture(autonomousCamera.picture, 0, 200, autonomousCamera.picture.cols() , autonomousCamera.picture.rows() - 200);
+                autonomousCamera.isFixed = true;
             }
             double[] colors = autonomousCamera.getColors();
-
+            //TODO: we need to make this more accurate
+            /*
+             we might need to get the pixel of each pixel, ignore grey, detect tape and ignore it, and find a mountain.
+             */
             red = colors[0];
             green = colors[1];
             blue = colors[2];
             other = colors[3];
             Log.i("test", "test");
         }
+
 
         looped += 1;
         double pixels = autonomousCamera.picture.total();

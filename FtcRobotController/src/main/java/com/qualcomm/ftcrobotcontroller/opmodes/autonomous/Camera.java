@@ -33,6 +33,8 @@ public class Camera {
     }
 
     public Mat cropPicture(Mat pictureSrc, int startX, int startY, int width, int height) {
+        //tODO: catch error
+        //tODO: make sure it is smaller than the size of the picture to prevent erros
         Rect rectCrop = new Rect(startX, startY, width, height);
         Mat croppedPicture = new Mat(pictureSrc, rectCrop);
         return croppedPicture;
