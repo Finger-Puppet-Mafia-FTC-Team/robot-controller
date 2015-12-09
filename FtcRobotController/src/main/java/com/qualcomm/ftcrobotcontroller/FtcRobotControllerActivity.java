@@ -169,33 +169,19 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //Mat cropped = new Mat(mRgbaT, roi);
 
         autonomousCamera.picture = mRgbaT;
-        if (autonomousCamera.isFixed) {
-            final Bitmap img = Bitmap.createBitmap(autonomousCamera.fixedPicture.cols(), autonomousCamera.fixedPicture.rows(),Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(autonomousCamera.fixedPicture, img);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mOpenCvCameraView2.setImageBitmap(img);
-                    //mOpenCvCameraView2.setImageResource(R.dr);
-                    mOpenCvCameraView2.invalidate();
-                }
-            });
-            //setPicture(img);
-            //return autonomousCamera.fixedPicture;
-        }
-//        if(showedDevImage == false) {
-//            final Bitmap img2 = Bitmap.createBitmap(mRgbaT.cols(), mRgbaT.rows(), Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(mRgbaT, img2);
-//            Log.i("Test", mRgbaT.cols() + " rows: " + mRgbaT.rows());
-//
+//        if (autonomousCamera.isFixed && autonomousCamera.isFixedShown == false && autonomousCamera.getFixedPicture() != null) {
+//            Mat _picture = autonomousCamera.getFixedPicture();
+//            final Bitmap img = Bitmap.createBitmap(_picture.cols(),_picture.rows(),Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(_picture, img);
 //            runOnUiThread(new Runnable() {
 //                @Override
 //                public void run() {
-//                    mOpenCvCameraView2.setImageBitmap(img2);
-//                    //mOpenCvCameraView2.invalidate();
+//                    mOpenCvCameraView2.setImageBitmap(img);
+//                    mOpenCvCameraView2.invalidate();
 //                }
 //            });
-//            showedDevImage = true;
+//            autonomousCamera.isFixedShown = true;
+//            autonomousCamera.clearFixedPicture();
 //        }
 
         //return cropped;

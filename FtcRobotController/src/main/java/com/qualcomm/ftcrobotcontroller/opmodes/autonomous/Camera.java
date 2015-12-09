@@ -6,6 +6,11 @@ import org.opencv.core.Rect;
 
 public class Camera {
     private static Camera instance = null;
+    public Mat picture;
+    public Mat fixedPicture;
+    public boolean isFixed = false;
+    public boolean isFixedShown = false;
+
     protected Camera() {
         // Exists only to defeat instantiation.
     }
@@ -14,6 +19,21 @@ public class Camera {
             instance = new Camera();
         }
         return instance;
+    }
+
+    public Mat getFixedPicture() {
+        return fixedPicture;
+    }
+
+    public void setFixedPicture(Mat _picture) {
+        fixedPicture = _picture;
+        isFixedShown = false;
+    }
+
+    public void clearFixedPicture() {
+        fixedPicture = null;
+        isFixed = false;
+        isFixedShown = false;
     }
 
     public double[] getColors() {
@@ -44,7 +64,5 @@ public class Camera {
         isFixed = toFix;
     }
 
-    public Mat picture;
-    public Mat fixedPicture;
-    public boolean isFixed = false;
+
 }
