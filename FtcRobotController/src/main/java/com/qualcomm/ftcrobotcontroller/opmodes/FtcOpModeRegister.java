@@ -58,7 +58,6 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
    // manager.register("NullOp", NullOp.class);
-    manager.register("TeleOp", NewTeleopKeeg.class);
     manager.register("motorcontrollertest", motorcontrollertest.class);
     manager.register("keegauto", keegauto.class);
     manager.register("Camera", CameraOp.class);
@@ -70,6 +69,8 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("debug - Autonomous Red", AutoRedDebug.class);
     manager.register("debug - Light Brightness", Autonomous1.class);
     manager.register("debug - Show Motor Position", showMotorPosition.class);
+    manager.register("debug - Hardware", DebugHardware.class);
+
     /*
      * Uncomment any of the following lines if you want to register an op mode.
      */
