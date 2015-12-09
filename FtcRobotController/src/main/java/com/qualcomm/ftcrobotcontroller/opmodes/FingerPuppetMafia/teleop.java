@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class teleop extends OpMode {
     Servo sideArmLeft;
+
     public teleop() {
 
     }
@@ -23,8 +24,6 @@ public class teleop extends OpMode {
         float sideArmLeftPos = 0;
 
 
-
-
         sideArmLeft.setPosition(sideArmLeftPos);
     }
 
@@ -36,11 +35,14 @@ public class teleop extends OpMode {
     // helpers
 
     /**
-     * Returns true if the state has changed
+     * Returns true if the user has been holding down a button for longer than one loop cycle.
+     * Useful if using a button to toggle an action. This prevents the action getting toggled
+     * multiple times if the user holds down a button too long.
+     *
      * @param key
-     * @return
+     * @return If the user is holding is still holding down the key
      */
-    public boolean toggled(String key) {
+    public boolean isHoldingDown(String key) {
         return true;
     }
 }
