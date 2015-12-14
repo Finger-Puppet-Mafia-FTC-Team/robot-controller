@@ -16,7 +16,9 @@ public class teleop extends OpMode {
     String pressedKeys[] = new String[20];
     ArrayList<String> messages = new ArrayList<String>();
     Servo sideArmLeft;
+    Servo sideArmRight;
     Servo wallLeft;
+    Servo wallRight;
     Servo track;
     Servo tapeAngleServo;
     Servo catcherDoor;
@@ -25,7 +27,9 @@ public class teleop extends OpMode {
 
     // State
     boolean leftWallIn = true;
+    boolean rightWallIn = true;
     boolean sideArmLeftIn = true;
+    boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
     double tapeAngle = 0.5;
     int trackState = 0;
@@ -36,29 +40,20 @@ public class teleop extends OpMode {
     @Override
     public void init() {
         //TODO: This will need to be changed once the eclectronics are all on
-        try {
-            sideArmLeft = hardwareMap.servo.get("sideArmLeft");
-        } catch (Exception e) {
-            telemetry.addData("1", "Could not find servo 'sideArmLeft'");
-        }
-        try {
-            wallLeft = hardwareMap.servo.get("wallLeft");
-        } catch (Exception e) {
-            telemetry.addData("2", "Could not find servo 'wallLeft'");
-        }
+        sideArmLeft = hardwareMap.servo.get("sideArmLeft");
+        sideArmRight = hardwareMap.servo.get("sideArmRight");
 
-        try {
-            track = hardwareMap.servo.get("belt");
-        } catch (Exception e) {
-            telemetry.addData("3", "Could not find servo 'belt'");
-        }
+        wallLeft = hardwareMap.servo.get("wallLeft");
+        wallRight = hardwareMap.servo.get("wallRight");
+
+        track = hardwareMap.servo.get("track");
 
         tapeAngleServo = hardwareMap.servo.get("tapeAngle");
         catcherDoor = hardwareMap.servo.get("catcherDoor");
 
 
         //Motors
-       // tapeMotor = hardwareMap.dcMotor.get("tape");
+        // tapeMotor = hardwareMap.dcMotor.get("tape");
 
         // reset state
         leftWallIn = true;
@@ -67,8 +62,12 @@ public class teleop extends OpMode {
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.9);
-        wallLeft.setPosition(.94);
+        sideArmLeft.setPosition(0.8);
+        sideArmRight.setPosition(0.7);
+
+        wallLeft.setPosition(.86);
+        wallRight.setPosition(0);
+
         track.setPosition(.5);
         tapeAngleServo.setPosition(.9);
         catcherDoor.setPosition(.51);
@@ -80,9 +79,9 @@ public class teleop extends OpMode {
         //Catcher
 
         //Catcher door
-        if(pressed("2y", gamepad2.y)) {
+        if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
-            if(catcherDoorUp == true) {
+            if (catcherDoorUp == true) {
                 catcherDoor.setPosition(0.51);
             } else {
                 catcherDoor.setPosition(0);
@@ -95,11 +94,21 @@ public class teleop extends OpMode {
                 sideArmLeft.setPosition(0.1);
                 messages.add("Left Arm In");
             } else {
-                sideArmLeft.setPosition(0.9);
+                sideArmLeft.setPosition(0.8);
                 messages.add("Left Arm Out");
             }
             sideArmLeftIn = !sideArmLeftIn;
 
+        }
+
+        //Right arm
+        if (pressed("2b", gamepad2.b)) {
+            if (sideArmRightIn) {
+                sideArmRight.setPosition(0.1);
+            } else {
+                sideArmRight.setPosition(0.9);
+            }
+            sideArmRightIn = !sideArmRightIn;
         }
 
         //Left Wall
@@ -108,7 +117,7 @@ public class teleop extends OpMode {
                 wallLeft.setPosition(0.4);
                 messages.add("Left Wall In");
             } else {
-                wallLeft.setPosition(0.94);
+                wallLeft.setPosition(0.86);
                 messages.add("Left Wall Out");
             }
             leftWallIn = !leftWallIn;
@@ -147,17 +156,17 @@ public class teleop extends OpMode {
         }
 
         //Tape
-        if(gamepad2.right_stick_y > .2) {
+        if (gamepad2.right_stick_y > .2) {
             tapeAngle += .01;
-            if(tapeAngle > 1) {
+            if (tapeAngle > 1) {
                 tapeAngle = 1;
             }
             tapeAngleServo.setPosition(tapeAngle);
         }
 
-        if(gamepad1.right_stick_y < -.2) {
+        if (gamepad1.right_stick_y < -.2) {
             tapeAngle -= .01;
-            if(tapeAngle < 0) {
+            if (tapeAngle < 0) {
                 tapeAngle = 0;
             }
             tapeAngleServo.setPosition(tapeAngle);
@@ -170,6 +179,7 @@ public class teleop extends OpMode {
         telemetry.addData("leftWall In:", leftWallIn);
         telemetry.addData("leftArm In:", sideArmLeftIn);
         telemetry.addData("trackState", String.valueOf(trackState));
+        telemetry.addData("Tape Angle", tapeAngle);
         telemetry.addData("test", wallLeft.getPosition());
 
 
