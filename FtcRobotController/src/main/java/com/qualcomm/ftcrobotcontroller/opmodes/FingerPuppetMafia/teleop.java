@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public class teleop extends OpMode {
     Servo catcherDoor;
 
     DcMotor tapeMotor;
+    DcMotor collectorMotor;
+    DcMotor driveLeft;
+    DcMotor driveRight;
 
     // State
     boolean leftWallIn = true;
@@ -33,6 +37,7 @@ public class teleop extends OpMode {
     boolean catcherDoorUp = true;
     double tapeAngle = 0.5;
     int trackState = 0;
+    int collectorState = 0;
 
     public teleop() {
     }
@@ -53,7 +58,10 @@ public class teleop extends OpMode {
 
 
         //Motors
-        // tapeMotor = hardwareMap.dcMotor.get("tape");
+        tapeMotor = hardwareMap.dcMotor.get("tape");
+        collectorMotor = hardwareMap.dcMotor.get("collector");
+        driveLeft = hardwareMap.dcMotor.get("driveLeft");
+        driveRight = hardwareMap.dcMotor.get("driveRight");
 
         // reset state
         leftWallIn = true;
@@ -65,7 +73,7 @@ public class teleop extends OpMode {
         sideArmLeft.setPosition(0.8);
         sideArmRight.setPosition(0.7);
 
-        wallLeft.setPosition(.86);
+        wallLeft.setPosition(.8);
         wallRight.setPosition(0);
 
         track.setPosition(.5);
@@ -75,52 +83,50 @@ public class teleop extends OpMode {
 
     @Override
     public void loop() {
+        float throttleLeft = gamepad1.left_stick_y;
+        float throttleRight = gamepad1.right_stick_y;
 
-        //Catcher
+        //------ Catcher --------
+
+        //Collector
+        if (pressed("2a", gamepad2.a)) {
+            switch (collectorState) {
+                case 0:
+                    collectorState = 1;
+                    break;
+                case 1:
+                    collectorState = 2;
+                    break;
+                case 2:
+                    collectorState = 0;
+                    break;
+            }
+        }
+
+        if (collectorState == 0) {
+            collectorMotor.setPower(0);
+        } else if (collectorState == 1) {
+            collectorMotor.setPower(.5);
+        } else if (collectorState == 2) {
+            collectorMotor.setPower(-.5);
+        }
+
+
+//        if (gamepad2.dpad_left) {
+//            collectorMotor.setPower(.5);
+//            messages.add("Collector");
+//        } else {
+//            collectorMotor.setPower(0);
+//        }
 
         //Catcher door
         if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
             if (catcherDoorUp == true) {
-                catcherDoor.setPosition(0.51);
+                catcherDoor.setPosition(0.48);
             } else {
                 catcherDoor.setPosition(0);
             }
-        }
-
-        //Left arm
-        if (pressed("2x", gamepad2.x)) {
-            if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.1);
-                messages.add("Left Arm In");
-            } else {
-                sideArmLeft.setPosition(0.8);
-                messages.add("Left Arm Out");
-            }
-            sideArmLeftIn = !sideArmLeftIn;
-
-        }
-
-        //Right arm
-        if (pressed("2b", gamepad2.b)) {
-            if (sideArmRightIn) {
-                sideArmRight.setPosition(0.1);
-            } else {
-                sideArmRight.setPosition(0.9);
-            }
-            sideArmRightIn = !sideArmRightIn;
-        }
-
-        //Left Wall
-        if (pressed("1left_stick_x-20", gamepad1.left_stick_x < -.2) == true) {
-            if (leftWallIn) {
-                wallLeft.setPosition(0.4);
-                messages.add("Left Wall In");
-            } else {
-                wallLeft.setPosition(0.86);
-                messages.add("Left Wall Out");
-            }
-            leftWallIn = !leftWallIn;
         }
 
         //Belt
@@ -155,8 +161,54 @@ public class teleop extends OpMode {
             }
         }
 
+
+        //Left arm
+        if (pressed("2x", gamepad2.x)) {
+            if (sideArmLeftIn) {
+                sideArmLeft.setPosition(0.1);
+                messages.add("Left Arm In");
+            } else {
+                sideArmLeft.setPosition(0.8);
+                messages.add("Left Arm Out");
+            }
+            sideArmLeftIn = !sideArmLeftIn;
+
+        }
+
+        //Right arm
+        if (pressed("2b", gamepad2.b)) {
+            if (sideArmRightIn) {
+                sideArmRight.setPosition(0.1);
+            } else {
+                sideArmRight.setPosition(0.9);
+            }
+            sideArmRightIn = !sideArmRightIn;
+        }
+
+        //Left Wall
+        if (pressed("1dpadleft", gamepad1.dpad_left) == true) {
+            if (leftWallIn) {
+                wallLeft.setPosition(0.4);
+                messages.add("Left Wall In");
+            } else {
+                wallLeft.setPosition(0.8);
+                messages.add("Left Wall Out");
+            }
+            leftWallIn = !leftWallIn;
+        }
+
+        if (pressed("1dpadright", gamepad1.dpad_right) == true) {
+            if (rightWallIn) {
+                wallRight.setPosition(0.4);
+            } else {
+                wallRight.setPosition(0);
+            }
+            rightWallIn = !rightWallIn;
+        }
+
+
         //Tape
-        if (gamepad2.right_stick_y > .2) {
+        if (gamepad2.right_stick_y < -.2) {
             tapeAngle += .01;
             if (tapeAngle > 1) {
                 tapeAngle = 1;
@@ -164,7 +216,7 @@ public class teleop extends OpMode {
             tapeAngleServo.setPosition(tapeAngle);
         }
 
-        if (gamepad1.right_stick_y < -.2) {
+        if (gamepad2.right_stick_y > .2) {
             tapeAngle -= .01;
             if (tapeAngle < 0) {
                 tapeAngle = 0;
@@ -172,17 +224,42 @@ public class teleop extends OpMode {
             tapeAngleServo.setPosition(tapeAngle);
         }
 
+        if (gamepad2.left_stick_y < -.2) {
+            tapeMotor.setPower(-.5);
+        } else if (gamepad2.left_stick_y > .2) {
+            tapeMotor.setPower(.5);
+        } else {
+            tapeMotor.setPower(0);
+        }
+
+        //Drive motors
+        throttleLeft = Range.clip(throttleLeft, -1, 1);
+        throttleRight = Range.clip(throttleRight, -1, 1);
+
+        throttleLeft = (float) scaleInput(throttleLeft);
+        throttleRight = (float) scaleInput(throttleRight);
+
+        driveLeft.setPower(throttleLeft);
+        driveRight.setPower(throttleRight);
+//        if(gamepad1.right_stick_y > 0.1) {
+//            driveRight.setPower(0.6);
+//        } else if (gamepad1.right_stick_y < -0.1) {
+//            driveRight.setPower(-0.6);
+//        } else {
+//            driveRight.setPower(0);
+//        }
+
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
+
         messages.clear();
         telemetry.addData("leftWall In:", leftWallIn);
+        telemetry.addData("rightWall In:", rightWallIn);
         telemetry.addData("leftArm In:", sideArmLeftIn);
+        telemetry.addData("rightArm In:", sideArmRightIn);
         telemetry.addData("trackState", String.valueOf(trackState));
         telemetry.addData("Tape Angle", tapeAngle);
-        telemetry.addData("test", wallLeft.getPosition());
-
-
     }
 
     @Override
@@ -223,5 +300,39 @@ public class teleop extends OpMode {
         }
         return true;
 
+    }
+
+    /*
+     * This method scales the joystick input so for low joystick values, the
+	 * scaled value is less than linear.  This is to make it easier to drive
+	 * the robot more precisely at slower speeds.
+	 */
+    double scaleInput(double dVal) {
+        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
+                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+
+        // get the corresponding index for the scaleInput array.
+        int index = (int) (dVal * 16.0);
+
+        // index should be positive.
+        if (index < 0) {
+            index = -index;
+        }
+
+        // index cannot exceed size of array minus 1.
+        if (index > 16) {
+            index = 16;
+        }
+
+        // get value from the array.
+        double dScale = 0.0;
+        if (dVal < 0) {
+            dScale = -scaleArray[index];
+        } else {
+            dScale = scaleArray[index];
+        }
+
+        // return scaled value.
+        return dScale;
     }
 }
