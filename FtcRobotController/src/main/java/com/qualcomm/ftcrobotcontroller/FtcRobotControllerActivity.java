@@ -152,7 +152,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     };
 
-    void setPicture(Bitmap img){
+    void setPicture(Bitmap img) {
         mOpenCvCameraView2.setImageBitmap(img);
     }
 
@@ -266,9 +266,10 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         hittingMenuButtonBrightensScreen();
 
         if (USE_DEVICE_EMULATION) {
-            ModernRoboticsHardwareFactory.enableDeviceEmulation();
+            HardwareFactory.enableDeviceEmulation();
         }
     }
+
 
     @Override
     protected void onStart() {
@@ -293,122 +294,11 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         });
 
     }
-  }
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    setContentView(R.layout.activity_ftc_controller);
-
-    utility = new Utility(this);
-    context = this;
-    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-    buttonMenu.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        openOptionsMenu();
-      }
-    });
-
-    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-    textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
-    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-    textOpMode = (TextView) findViewById(R.id.textOpMode);
-    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-    immersion = new ImmersiveMode(getWindow().getDecorView());
-    dimmer = new Dimmer(this);
-    dimmer.longBright();
-    Restarter restarter = new RobotRestarter();
-
-    updateUI = new UpdateUI(this, dimmer);
-    updateUI.setRestarter(restarter);
-    updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-        textGamepad, textOpMode, textErrorMessage, textDeviceName);
-    callback = updateUI.new Callback();
-
-    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-    preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    hittingMenuButtonBrightensScreen();
-
-    if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-
-    // save 4MB of logcat to the SD card
-    RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-    Intent intent = new Intent(this, FtcRobotControllerService.class);
-    bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
-    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-    callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-    entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        dimmer.handleDimTimer();
-        return false;
-      }
-    });
-
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-
-    if (controllerService != null) unbindService(connection);
-
-    RobotLog.cancelWriteLogcatToDisk(this);
-  }
-
-  @Override
-  public void onWindowFocusChanged(boolean hasFocus){
-    super.onWindowFocusChanged(hasFocus);
-    // When the window loses focus (e.g., the action overflow is shown),
-    // cancel any pending hide action. When the window gains focus,
-    // hide the system UI.
-    if (hasFocus) {
-      if (ImmersiveMode.apiOver19()){
-        // Immersive flag only works on API 19 and above.
-        immersion.hideSystemUI();
-      }
-    } else {
-      immersion.cancelSystemUIHide();
-    }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
+    protected void onResume() {
+        super.onResume();
     }
-
-    public void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
-
 
     @Override
     protected void onStop() {
@@ -434,6 +324,20 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             immersion.cancelSystemUIHide();
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
 
 
     @Override
@@ -489,7 +393,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
                 showToast(toast);
             }
         }
-<<<<<<< HEAD
         if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
             if (result == RESULT_OK) {
                 Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
@@ -500,10 +403,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             }
 
         }
-=======
-      }
->>>>>>> origin/competition
     }
+
 
     public void onServiceBind(FtcRobotControllerService service) {
         DbgLog.msg("Bound to Ftc Controller Service");
@@ -526,17 +427,12 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
         HardwareFactory factory;
 
-<<<<<<< HEAD
+
         // Modern Robotics Factory for use with Modern Robotics hardware
-        ModernRoboticsHardwareFactory modernRoboticsFactory = new ModernRoboticsHardwareFactory(context);
+        HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
         modernRoboticsFactory.setXmlInputStream(fis);
         factory = modernRoboticsFactory;
-=======
-    // Modern Robotics Factory for use with Modern Robotics hardware
-    HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
-    modernRoboticsFactory.setXmlInputStream(fis);
-    factory = modernRoboticsFactory;
->>>>>>> origin/competition
+
 
         eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
 
