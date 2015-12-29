@@ -31,6 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.graphics.Camera;
+
+import com.qualcomm.ftcrobotcontroller.opmodes.FingerPuppetMafia.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 
@@ -39,13 +42,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
  */
 public class FtcOpModeRegister implements OpModeRegister {
 
-  /**
-   * The Op Mode Manager will call this method when it wants a list of all
-   * available op modes. Add your op mode to the list to enable it.
-   *
-   * @param manager op mode manager
-   */
-  public void register(OpModeManager manager) {
+    /**
+     * The Op Mode Manager will call this method when it wants a list of all
+     * available op modes. Add your op mode to the list to enable it.
+     *
+     * @param manager op mode manager
+     */
+    public void register(OpModeManager manager) {
 
     /*
      * register your op modes here.
@@ -55,46 +58,53 @@ public class FtcOpModeRegister implements OpModeRegister {
      * If two or more op modes are registered with the same name, the app will display an error.
      */
 
-    manager.register("NullOp", NullOp.class);
-
-    manager.register("K9TeleOp", K9TeleOp.class);
-    manager.register ("PushBotAuto", PushBotAuto.class);
-    manager.register ("PushBotManual", PushBotManual.class);
+        // manager.register("NullOp", NullOp.class);
+        // manager.register("motorcontrollertest", motorcontrollertest.class);
+        manager.register("TeleOp Competition Dec. 12", teleop.class);
+        manager.register("Camera", CameraOp.class);
+        //manager.register ("PushBotAuto", PushBotAuto.class);
+        //manager.register ("PushBotManual", PushBotManual.class);
+        manager.register("Autonomous - Blue", Autonomous2.class);
+        manager.register("Autonomous - Red", autonomousRed.class);
+        manager.register("debug - Autonomous Blue", AutonomouseDebug.class);
+        manager.register("debug - Autonomous Red", AutoRedDebug.class);
+        manager.register("debug - Light Brightness", Autonomous1.class);
+        manager.register("debug - Show Motor Position", showMotorPosition.class);
+        manager.register("debug - Hardware", DebugHardware.class);
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.
      */
 
-    //manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
-    //manager.register("MRRGBExample", MRRGBExample.class);
-    //manager.register("ColorSensorDriver", ColorSensorDriver.class);
-    //manager.register("HTRGBExample", HTRGBExample.class);
+        //manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
+        //manager.register("MRRGBExample", MRRGBExample.class);
+        //manager.register("ColorSensorDriver", ColorSensorDriver.class);
+        //manager.register("HTRGBExample", HTRGBExample.class);
 
-    //manager.register("IrSeekerOp", IrSeekerOp.class);
-    //manager.register("CompassCalibration", CompassCalibration.class);
-    //manager.register("I2cAddressChangeExample", LinearI2cAddressChange.class);
+        //manager.register("IrSeekerOp", IrSeekerOp.class);
+        //manager.register("CompassCalibration", CompassCalibration.class);
+        //manager.register("I2cAddressChangeExample", LinearI2cAddressChange.class);
 
 
-    //manager.register("NxtTeleOp", NxtTeleOp.class);
-    
-    //manager.register("LinearK9TeleOp", LinearK9TeleOp.class);
-    //manager.register("LinearIrExample", LinearIrExample.class);
+        //manager.register("NxtTeleOp", NxtTeleOp.class);
 
-    
-    //manager.register ("PushBotManual1", PushBotManual1.class);
-    //manager.register ("PushBotAutoSensors", PushBotAutoSensors.class);
-    //manager.register ("PushBotIrEvent", PushBotIrEvent.class);
-    
-    //manager.register ("PushBotManualSensors", PushBotManualSensors.class);
-    //manager.register ("PushBotOdsDetectEvent", PushBotOdsDetectEvent.class);
-    //manager.register ("PushBotOdsFollowEvent", PushBotOdsFollowEvent.class);
-    //manager.register ("PushBotTouchEvent", PushBotTouchEvent.class);    
-    
-    //manager.register("PushBotDriveTouch", PushBotDriveTouch.class);
-    //manager.register("PushBotIrSeek", PushBotIrSeek.class);
-    //manager.register("PushBotSquare", PushBotSquare.class);
+        //manager.register("LinearK9TeleOp", LinearK9TeleOp.class);
+        //manager.register("LinearIrExample", LinearIrExample.class);
 
-    
-    
-  }
+
+        //manager.register ("PushBotManual1", PushBotManual1.class);
+        //manager.register ("PushBotAutoSensors", PushBotAutoSensors.class);
+        //manager.register ("PushBotIrEvent", PushBotIrEvent.class);
+
+        //manager.register ("PushBotManualSensors", PushBotManualSensors.class);
+        //manager.register ("PushBotOdsDetectEvent", PushBotOdsDetectEvent.class);
+        //manager.register ("PushBotOdsFollowEvent", PushBotOdsFollowEvent.class);
+        //manager.register ("PushBotTouchEvent", PushBotTouchEvent.class);
+
+        //manager.register("PushBotDriveTouch", PushBotDriveTouch.class);
+        //manager.register("PushBotIrSeek", PushBotIrSeek.class);
+        //manager.register("PushBotSquare", PushBotSquare.class);
+
+
+    }
 }
