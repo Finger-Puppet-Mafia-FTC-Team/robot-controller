@@ -293,13 +293,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         });
 
     }
-<<<<<<< HEAD
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
-=======
   }
 
   @Override
@@ -401,7 +394,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
       }
     } else {
       immersion.cancelSystemUIHide();
->>>>>>> origin/competition
     }
 
     @Override

@@ -40,20 +40,11 @@ allprojects {
 
 dependencies {
     compile files('libs/android-support-v4.jar')
-<<<<<<< HEAD
-    compile (name:'RobotCore-release', ext:'aar')
-    compile (name:'Hardware-release', ext:'aar')
-    compile (name:'FtcCommon-release', ext:'aar')
-    compile (name:'ModernRobotics-release', ext:'aar')
-    compile (name:'Analytics-release', ext:'aar')
-    compile (name:'WirelessP2p-release', ext:'aar')
-    compile(name: 'app-debug', ext: 'aar')
-=======
     compile(name: 'RobotCore-release', ext: 'aar')
     compile(name: 'Hardware-release', ext: 'aar')
     compile(name: 'FtcCommon-release', ext: 'aar')
     compile(name: 'ModernRobotics-release', ext: 'aar')
     compile(name: 'Analytics-release', ext: 'aar')
     compile(name: 'WirelessP2p-release', ext: 'aar')
->>>>>>> origin/competition
+    compile(name: 'app-debug', ext: 'aar')
 }
