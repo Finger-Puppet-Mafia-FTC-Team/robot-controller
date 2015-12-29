@@ -1,318 +1,232 @@
-
-package com.qualcomm.ftcrobotcontroller.opmodes;
-
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-/**
- * TeleOp Mode
- * <p>
- * Enables control of the robot via the gamepad
- */
-public class motorcontrollertest extends OpMode {
-
-  final static double SPATULA_MIN_RANGE  = 0.20;
-  final static double SPATULA_MAX_RANGE  = 0.90;
-  final static double PLOW_MIN_RANGE  = 0.48;
-  final static double PLOW_MAX_RANGE  = 0.75;
-  final static double ELBOWLEFT_MIN_RANGE  = 0.0;
-  final static double ELBOWLEFT_MAX_RANGE  =  0.9;
-  final static double ELBOWRIGHT_MIN_RANGE  = 0.0;
-  final static double ELBOWRIGHT_MAX_RANGE  =  0.9;
-  final static double LEFTSLAP_MIN_RANGE  = 0.0;
-  final static double LEFTSLAP_MAX_RANGE  =  0.9;
-  final static double RIGHTSLAP_MIN_RANGE  = 0.0;
-  final static double RIGHTSLAP_MAX_RANGE  =  0.9;
-
-  // position of the arm servo.
-  double spatulaPosition;
-
-  // amount to change the arm servo position.
-  double spatulaDelta = 0.1;
-
-  // position of the claw servo
-  double plowPosition;
-
-  // amount to change the claw servo position by
-  double plowDelta = 0.1;
-
-  double elbowRightPosition;
-
-  double elbowRightDelta = 0.01;
-
-  double elbowLeftPosition;
-
-   double elbowLeftDelta = 0.01;
-
-  double rightSlapPosition;
-
-  double rightSlapDelta = 0.1;
-
-  double leftSlapPosition;
-
-  double leftSlapDelta = 0.1;
-
-
-  DcMotorController.DeviceMode devMode;
-  DcMotor motorRight;
-  DcMotor motorLeft;
-  DcMotor ArmMotor;
-  DcMotor Winch1;
-  DcMotor Winch2;
-  DcMotor motorPlow;
-  Servo plow;
-  Servo spatula;
-  Servo elbowRight;
-  Servo elbowLeft;
-  Servo rightSlap;
-  Servo leftSlap;
-  /**
-   * Constructor
-   */
-  public motorcontrollertest() {
-
-  }
-
-  /*
-   * Code to run when the op mode is first enabled goes here
-   *
-   * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-   */
-  @Override
-  public void init() {
-
-
-		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
-		 * that the names of the devices must match the names used when you
-		 * configured your robot and created the configuration file.
-		 */
-
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
-		 */
-    motorRight = hardwareMap.dcMotor.get("motor_2");
-    motorLeft = hardwareMap.dcMotor.get("motor_1");
-    motorLeft.setDirection(DcMotor.Direction.REVERSE);
-    ArmMotor = hardwareMap.dcMotor.get("motor_3");
-    motorPlow = hardwareMap.dcMotor.get("motor_6");
-    Winch1 = hardwareMap.dcMotor.get("motor_4");
-    Winch2 = hardwareMap.dcMotor.get("motor_5");
-    Winch2.setDirection(DcMotor.Direction.REVERSE);
-    spatula= hardwareMap.servo.get("servo_1");
-    plow = hardwareMap.servo.get("servo_2");
-    elbowRight = hardwareMap.servo.get("servo_3");
-    elbowLeft = hardwareMap.servo.get("servo_4");
-    elbowLeft.setDirection(Servo.Direction.REVERSE);
-    leftSlap = hardwareMap.servo.get("servo_5");
-    rightSlap = hardwareMap.servo.get("servo_6");
-
-
-    // assign the starting position of the wrist and claw
-    spatulaPosition = 0.2;
-    plowPosition = 0.55;
-    leftSlapPosition = 0;
-    rightSlapPosition = 0;
-
-  }
-
-  /*
-   * This method will be called repeatedly in a loop
-   *
-   * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
-   */
-  @Override
-  public void loop() {
-
-		/*
-		 * Gamepad 1
-		 *
-		 * Gamepad 1 controls the motors via the left stick, and it controls the
-		 * wrist/claw via the a,b, x, y buttons
-		 */
-
-    // throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
-    // 1 is full down
-    // direction: left_stick_x ranges from -1 to 1, where -1 is full left
-    // and 1 is full right
-    float throttle = -gamepad1.left_stick_y;
-    float direction = gamepad1.left_stick_x;
-
-    float right = throttle - direction;
-    float left = throttle + direction;
-    float armup = gamepad2.right_stick_y;
-    float plowC = gamepad1.right_stick_y;
-
-    {
-
-    }
-    // clip the right/left values so that the values never exceed +/- 1
-
-    right = Range.clip(right, -1, 1);
-    left = Range.clip(left, -1, 1);
-    armup = Range.clip(armup, -1f, 1f);
-    plowC = Range.clip(plowC, -.40f, .40f);
-
-
-    // scale the joystick value to make it easier to control
-    // the robot more precisely at slower speeds.
-
-    right = (float)scaleInput(right);
-    left =  (float)scaleInput(left);
-    armup = (float)scaleInput(armup);
-    plowC = (float)scaleInput(plowC);
-
-
-    plowC = (plowC)/2;
-    armup = (armup)/2;
-
-    if (gamepad2.right_bumper) {
-
-      right = (right)/3;
-      left = (left)/3;
-    }
-
-    // write the values to the motors
-    motorRight.setPower(right);
-    motorLeft.setPower(left);
-    ArmMotor.setPower(armup);
-    Winch1.setPower(gamepad2.left_stick_y);
-    Winch2.setPower(gamepad2.left_stick_y);
-    motorPlow.setPower(plowC);
-
-// update the position of the arm.
-    // update the position of the arm.
-
-    if (gamepad2.dpad_up) {
-      // if the A button is pushed on gamepad1, increment the position of
-      // the arm servo.
-      elbowLeftPosition += elbowLeftDelta;
-      elbowRightPosition += elbowRightDelta;
-    }
-
-    if (gamepad2.dpad_down) {
-      // if the Y button is pushed on gamepad1, decrease the position of
-      // the arm servo.
-       elbowLeftPosition -= elbowLeftDelta;
-      elbowRightPosition -= elbowRightDelta;
-    }
-
-    if (gamepad2.y) {
-      // if the A button is pushed on gamepad1, increment the position of
-      // the arm servo.
-      spatulaPosition += spatulaDelta;
-    }
-
-    if (gamepad2.dpad_left) {
-      // if the Y button is pushed on gamepad1, decrease the position of
-      // the arm servo.
-      spatulaPosition -= spatulaDelta;
-    }
-    if (gamepad2.b) {
-      // if the A button is pushed on gamepad1, increment the position of
-      // the arm servo.
-      leftSlapPosition -= leftSlapDelta;
-    }
-
-    if (gamepad2.y) {
-      // if the Y button is pushed on gamepad1, decrease the position of
-      // the arm servo.
-      leftSlapPosition += leftSlapDelta;
-    }
-    // update the position of the claw
-    if (gamepad1.left_bumper) {
-      plowPosition += plowDelta;
-    }
-
-    if (gamepad1.right_bumper) {
-      plowPosition -= plowDelta;
-    }
-
-
-    // clip the position values so that they never exceed their allowed range.
-    spatulaPosition = Range.clip(spatulaPosition, SPATULA_MIN_RANGE, SPATULA_MAX_RANGE);
-    plowPosition = Range.clip(plowPosition, PLOW_MIN_RANGE, PLOW_MAX_RANGE);
-    elbowLeftPosition = Range.clip(elbowLeftPosition, ELBOWLEFT_MIN_RANGE, ELBOWLEFT_MAX_RANGE);
-    elbowRightPosition = Range.clip(elbowRightPosition, ELBOWRIGHT_MIN_RANGE, ELBOWRIGHT_MAX_RANGE);
-    leftSlapPosition = Range.clip(leftSlapPosition, LEFTSLAP_MIN_RANGE, LEFTSLAP_MAX_RANGE);
-
-
-
-    // write position values to the wrist and claw servo
-    spatula.setPosition(spatulaPosition);
-    plow.setPosition(plowPosition);
-    elbowLeft.setPosition(elbowLeftPosition);
-    elbowRight.setPosition(elbowRightPosition);
-
-
-
-		/*
-		 * Send telemetry data back to driver station. Note that if we are using
-		 * a legacy NXT-compatible motor controller, then the getPower() method
-		 * will return a null value. The legacy NXT-compatible motor controllers
-		 * are currently write only.
-		 */
-  telemetry.addData("Text", "*** Robot Data***");
-  telemetry.addData("arm", "arm:  " + String.format("%.2f", spatulaPosition));
-  telemetry.addData("claw", "claw:  " + String.format("%.2f", plowPosition));
-  telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
-  telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
-    telemetry.addData("elbow", "elbow:  " + String.format("%.2f", elbowLeftPosition));
-  }
-
-  /*
-   * Code to run when the op mode is first disabled goes here
-   *
-   * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
-   */
-  @Override
-  public void stop() {
-
-  }
-
-
-  /*
-   * This method scales the joystick input so for low joystick values, the
-   * scaled value is less than linear.  This is to make it easier to drive
-   * the robot more precisely at slower speeds.
-   */
-  double scaleInput(double dVal)  {
-    double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-            0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
-
-    // get the corresponding index for the scaleInput array.
-    int index = (int) (dVal * 16.0);
-
-    // index should be positive.
-    if (index < 0) {
-      index = -index;
-    }
-
-    // index cannot exceed size of array minus 1.
-    if (index > 16) {
-      index = 16;
-    }
-
-    // get value from the array.
-    double dScale = 0.0;
-    if (dVal < 0) {
-      dScale = -scaleArray[index];
-    } else {
-      dScale = scaleArray[index];
-    }
-
-    // return scaled value.
-    return dScale;
-  }
-
-}
+//
+//package com.qualcomm.ftcrobotcontroller.opmodes.FingerPuppetMafia;
+//
+//import android.util.Log;
+//
+//import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+//import com.qualcomm.robotcore.hardware.DcMotor;
+//import com.qualcomm.robotcore.hardware.Servo;
+//
+//import java.util.Arrays;
+//import java.util.ArrayList;
+//
+///**
+// * TeleOp for the competition on Dec. 12
+// */
+//public class teleop extends OpMode {
+//  String pressedKeys[] = new String[20];
+//  ArrayList<String> messages = new ArrayList<String>();
+//  Servo sideArmLeft;
+//  Servo wallLeft;
+//  Servo track;
+//  Servo tapeAngleServo;
+//  Servo catcherDoor;
+//
+//  DcMotor tapeMotor;
+//  DcMotor motorRight;
+//  DcMotor motorLeft;
+//  DcMotor motorBall;
+//
+//  motorRight = hardwareMap.dcMotor.get("motor_2");
+//  motorLeft = hardwareMap.dcMotor.get("motor_1");
+//  motorLeft.setDirection(DcMotor.Direction.REVERSE);
+//  = hardwareMap.dcMotor.get("motor_3");
+//  motorBall = hardwareMap.dcmotor.get("motor_4");
+//  // State
+//  boolean leftWallIn = true;
+//  boolean sideArmLeftIn = true;
+//  boolean catcherDoorUp = true;
+//  double tapeAngle = 0.5;
+//  int trackState = 0;
+//
+//  public teleop() {
+//  }
+//
+//  @Override
+//  public void init() {
+//    //TODO: This will need to be changed once the eclectronics are all on
+//    try {
+//      sideArmLeft = hardwareMap.servo.get("sideArmLeft");
+//    } catch (Exception e) {
+//      telemetry.addData("1", "Could not find servo 'sideArmLeft'");
+//    }
+//    try {
+//      wallLeft = hardwareMap.servo.get("wallLeft");
+//    } catch (Exception e) {
+//      telemetry.addData("2", "Could not find servo 'wallLeft'");
+//    }
+//
+//    try {
+//      track = hardwareMap.servo.get("belt");
+//    } catch (Exception e) {
+//      telemetry.addData("3", "Could not find servo 'belt'");
+//    }
+//
+//    tapeAngleServo = hardwareMap.servo.get("tapeAngle");
+//    catcherDoor = hardwareMap.servo.get("catcherDoor");
+//
+//
+//    motorRight.setPower(gamepad1.left_stick_y);
+//    motorLeft.setPower(gamepad1.right_stick_y);
+//    tapeMotor.setPower(gamepad2.left_stick_y);
+//
+//    if (gamepad2.a) {
+//      motorBall.setPower(1);
+//    }
+//
+//
+//    // reset state
+//    leftWallIn = true;
+//  }
+//
+//  @Override
+//  public void init_loop() {
+//    // initial positions for servos
+//    sideArmLeft.setPosition(0.9);
+//    wallLeft.setPosition(.94);
+//    track.setPosition(.5);
+//    tapeAngleServo.setPosition(.9);
+//    catcherDoor.setPosition(.51);
+//  }
+//
+//  @Override
+//  public void loop() {
+//
+//    //Catcher
+//
+//    //Catcher door
+//    if(pressed("2y", gamepad2.y)) {
+//      catcherDoorUp = !catcherDoorUp;
+//      if(catcherDoorUp == true) {
+//        catcherDoor.setPosition(0.51);
+//      } else {
+//        catcherDoor.setPosition(0);
+//      }
+//    }
+//
+//    //Left arm
+//    if (pressed("2x", gamepad2.x)) {
+//      if (sideArmLeftIn) {
+//        sideArmLeft.setPosition(0.1);
+//        messages.add("Left Arm In");
+//      } else {
+//        sideArmLeft.setPosition(0.9);
+//        messages.add("Left Arm Out");
+//      }
+//      sideArmLeftIn = !sideArmLeftIn;
+//
+//    }
+//
+//    //Left Wall
+//    if (pressed("1left_stick_x-20", gamepad1.left_stick_x < -.2) == true) {
+//      if (leftWallIn) {
+//        wallLeft.setPosition(0.4);
+//        messages.add("Left Wall In");
+//      } else {
+//        wallLeft.setPosition(0.94);
+//        messages.add("Left Wall Out");
+//      }
+//      leftWallIn = !leftWallIn;
+//    }
+//
+//    //Belt
+//    if (pressed("1x", gamepad1.x)) {
+//      // move to next state
+//      switch (trackState) {
+//        case 0:
+//          trackState = 1;
+//          break;
+//        case 1:
+//          trackState = 2;
+//          break;
+//        case 2:
+//          trackState = 0;
+//          break;
+//        default:
+//          Log.i("Test", "default");
+//      }
+//      Log.i("Test", String.valueOf(trackState));
+//
+//      if (trackState == 0) {
+//        track.setPosition(0.5);
+//        messages.add("Track not moving");
+//      } else if (trackState == 1) {
+//        track.setPosition(1);
+//        messages.add("Track going left");
+//      } else if (trackState == 2) {
+//        track.setPosition(0);
+//        messages.add("Track going right");
+//      } else {
+//        messages.add("Track state not found");
+//      }
+//    }
+//
+//    //Tape
+//    if(gamepad2.right_stick_y > .2) {
+//      tapeAngle += .01;
+//      if(tapeAngle > 1) {
+//        tapeAngle = 1;
+//      }
+//      tapeAngleServo.setPosition(tapeAngle);
+//    }
+//
+//    if(gamepad1.right_stick_y < -.2) {
+//      tapeAngle -= .01;
+//      if(tapeAngle < 0) {
+//        tapeAngle = 0;
+//      }
+//      tapeAngleServo.setPosition(tapeAngle);
+//    }
+//
+//    for (int i = 0; i < messages.size(); i++) {
+//      telemetry.addData(String.valueOf(i), messages.get(i));
+//    }
+//    messages.clear();
+//    telemetry.addData("leftWall In:", leftWallIn);
+//    telemetry.addData("leftArm In:", sideArmLeftIn);
+//    telemetry.addData("trackState", String.valueOf(trackState));
+//    telemetry.addData("test", wallLeft.getPosition());
+//
+//
+//  }
+//
+//  @Override
+//  public void stop() {
+//
+//  }
+//
+//  // helpers
+//
+//  /**
+//   * Returns true if the user has been holding down a button for longer than one loop cycle.
+//   * Useful if using a button to toggle an action. This prevents the action getting toggled
+//   * multiple times if the user holds down a button too long.
+//   *
+//   * @param key
+//   * @return If the user is holding is still holding down the key
+//   */
+//
+//  public boolean pressed(String key, boolean pressed) {
+//    int index = Arrays.asList(pressedKeys).indexOf(key);
+//    if (pressed == false) {
+//      if (index > -1) {
+//        // button is no longer pressed
+//        pressedKeys[index] = null;
+//      }
+//      return false;
+//    }
+//
+//    if (Arrays.asList(pressedKeys).contains(key)) {
+//      // it has been pressed. Don't trigger again
+//      return false;
+//    }
+//    // find index of a null and put it there
+//    int nullIndex = Arrays.asList(pressedKeys).indexOf(null);
+//    Log.i("Test", String.valueOf(pressedKeys));
+//    if (nullIndex > -1) {
+//      pressedKeys[nullIndex] = key;
+//    }
+//    return true;
+//
+//  }
+//}
