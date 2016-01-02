@@ -38,6 +38,8 @@ public class teleop extends OpMode {
     double tapeAngle = 0.9;
     int trackState = 0;
     int collectorState = 0;
+    float actualSpeedLeft = 0;
+    float actualSpeedRight = 0;
 
     public teleop() {
     }
@@ -82,8 +84,8 @@ public class teleop extends OpMode {
 
     @Override
     public void loop() {
-        float throttleLeft = gamepad1.left_stick_y;
-        float throttleRight = gamepad1.right_stick_y;
+        float targetSpeedLeft = gamepad1.left_stick_y;
+        float targetSpeedRight = gamepad1.right_stick_y;
 
         //------ Catcher --------
 
@@ -235,26 +237,37 @@ public class teleop extends OpMode {
         }
 
         //Drive motors
-        throttleLeft = Range.clip(throttleLeft, -1, 1);
-        throttleRight = Range.clip(throttleRight, -1, 1);
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -1, 1);
+        targetSpeedRight = Range.clip(targetSpeedRight, -1, 1);
 
-        throttleLeft = (float) scaleInput(throttleLeft);
-        throttleRight = (float) scaleInput(throttleRight);
+        targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
+        targetSpeedRight = (float) scaleInput(targetSpeedRight);
 
-        driveLeft.setPower(throttleLeft);
-        driveRight.setPower(throttleRight);
+
+
+        // transition to new speed over time
+        actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
+        actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
+
+        driveLeft.setPower(actualSpeedLeft);
+        driveRight.setPower(actualSpeedRight);
 
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
 
         messages.clear();
+
         telemetry.addData("leftWall In:", leftWallIn);
         telemetry.addData("rightWall In:", rightWallIn);
         telemetry.addData("leftArm In:", sideArmLeftIn);
         telemetry.addData("rightArm In:", sideArmRightIn);
         telemetry.addData("trackState", String.valueOf(trackState));
         telemetry.addData("Tape Angle", tapeAngle);
+        telemetry.addData("speed right", actualSpeedRight);
+        telemetry.addData("speed left", actualSpeedLeft);
+        telemetry.addData("target speed right", targetSpeedRight);
+
     }
 
     @Override
@@ -294,6 +307,48 @@ public class teleop extends OpMode {
         }
         return true;
 
+    }
+
+    /**
+     * Transitions speed from current to target.
+     * It gradually changes the power every time the loop runs.
+     * @param currentSpeed - the current power applied to motor
+     * @param finalSpeed - the target power
+     * @param faster - if the change should be faster. If true, the final speed will
+     *               be reached quicker
+     * @return power to give motor
+     */
+    private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
+        float result = 0;
+        float change = .01f;
+        //Optional parameter. This might not actually work
+        if (faster.length > 0 && faster[0]) {
+            // speed up change
+            change = change * 5;
+        }
+
+        if (currentSpeed == finalSpeed) {
+            // we have reached the final speed
+            result = finalSpeed;
+        } else if (currentSpeed < finalSpeed) {
+            // we are slower than the final speed
+            if (currentSpeed + finalSpeed > change) {
+                // the difference is smaller than the change
+                result = finalSpeed;
+            } else {
+                result = currentSpeed + change;
+            }
+        } else if (currentSpeed > finalSpeed) {
+            // we are faster than the final speed
+            if (currentSpeed - finalSpeed < change) {
+                //difference is bigger than change
+                result = finalSpeed;
+            } else {
+                result = currentSpeed - change;
+            }
+        }
+
+        return result;
     }
 
     /*
