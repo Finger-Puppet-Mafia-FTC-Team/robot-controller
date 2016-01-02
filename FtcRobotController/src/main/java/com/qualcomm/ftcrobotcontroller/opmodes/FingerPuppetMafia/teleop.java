@@ -44,7 +44,6 @@ public class teleop extends OpMode {
 
     @Override
     public void init() {
-        //TODO: This will need to be changed once the eclectronics are all on
         sideArmLeft = hardwareMap.servo.get("sideArmLeft");
         sideArmRight = hardwareMap.servo.get("sideArmRight");
 
@@ -73,12 +72,12 @@ public class teleop extends OpMode {
         sideArmLeft.setPosition(0.8);
         sideArmRight.setPosition(0.7);
 
-        wallLeft.setPosition(.8);
+        wallLeft.setPosition(0.8);
         wallRight.setPosition(0);
 
-        track.setPosition(.5);
-        tapeAngleServo.setPosition(.9);
-        catcherDoor.setPosition(.51);
+        track.setPosition(0.5);
+        tapeAngleServo.setPosition(0.9);
+        catcherDoor.setPosition(0.51);
     }
 
     @Override
@@ -106,9 +105,9 @@ public class teleop extends OpMode {
         if (collectorState == 0) {
             collectorMotor.setPower(0);
         } else if (collectorState == 1) {
-            collectorMotor.setPower(.5);
+            collectorMotor.setPower(0.5);
         } else if (collectorState == 2) {
-            collectorMotor.setPower(-.5);
+            collectorMotor.setPower(-0.5);
         }
 
 
@@ -133,12 +132,15 @@ public class teleop extends OpMode {
         if (pressed("1x", gamepad1.x)) {
             // move to next state
             switch (trackState) {
+                // off
                 case 0:
                     trackState = 1;
                     break;
+                // left
                 case 1:
                     trackState = 2;
                     break;
+                // right
                 case 2:
                     trackState = 0;
                     break;
@@ -224,7 +226,7 @@ public class teleop extends OpMode {
             tapeAngleServo.setPosition(tapeAngle);
         }
 
-        if (gamepad2.left_stick_y < -.2) {
+        if (gamepad2.left_stick_y < -0.2) {
             tapeMotor.setPower(-.5);
         } else if (gamepad2.left_stick_y > .2) {
             tapeMotor.setPower(.5);
@@ -241,13 +243,6 @@ public class teleop extends OpMode {
 
         driveLeft.setPower(throttleLeft);
         driveRight.setPower(throttleRight);
-//        if(gamepad1.right_stick_y > 0.1) {
-//            driveRight.setPower(0.6);
-//        } else if (gamepad1.right_stick_y < -0.1) {
-//            driveRight.setPower(-0.6);
-//        } else {
-//            driveRight.setPower(0);
-//        }
 
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
@@ -277,7 +272,6 @@ public class teleop extends OpMode {
      * @param key
      * @return If the user is holding is still holding down the key
      */
-
     public boolean pressed(String key, boolean pressed) {
         int index = Arrays.asList(pressedKeys).indexOf(key);
         if (pressed == false) {
