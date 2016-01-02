@@ -35,7 +35,7 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
-    double tapeAngle = 0.5;
+    double tapeAngle = 0.9;
     int trackState = 0;
     int collectorState = 0;
 
@@ -211,7 +211,7 @@ public class teleop extends OpMode {
 
         //Tape
         if (gamepad2.right_stick_y < -.2) {
-            tapeAngle += .01;
+            tapeAngle += .005;
             if (tapeAngle > 1) {
                 tapeAngle = 1;
             }
@@ -219,7 +219,7 @@ public class teleop extends OpMode {
         }
 
         if (gamepad2.right_stick_y > .2) {
-            tapeAngle -= .01;
+            tapeAngle -= .005;
             if (tapeAngle < 0) {
                 tapeAngle = 0;
             }
