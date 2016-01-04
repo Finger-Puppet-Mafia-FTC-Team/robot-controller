@@ -51,6 +51,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -66,6 +67,9 @@ import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Filter;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.NoneFilter;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.ObjectDetection;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.Dimmer;
@@ -84,6 +88,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
@@ -121,6 +126,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     protected FtcRobotControllerService controllerService;
 
     protected FtcEventLoop eventLoop;
+    private int mImageDetectionFilterIndex;
 
     protected class RobotRestarter implements Restarter {
 
@@ -133,6 +139,26 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     // OpenCV
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mOpenCvCameraView2;
+    // Keys for storing the indices of the active filters.
+    private static final String STATE_IMAGE_DETECTION_FILTER_INDEX =
+            "imageDetectionFilterIndex";
+    private static final String STATE_CURVE_FILTER_INDEX =
+            "curveFilterIndex";
+    private static final String STATE_MIXER_FILTER_INDEX =
+            "mixerFilterIndex";
+    private static final String STATE_CONVOLUTION_FILTER_INDEX =
+            "convolutionFilterIndex";
+    // The filters.
+    private Filter[] mImageDetectionFilters;
+    private Filter[] mCurveFilters;
+    private Filter[] mMixerFilters;
+    private Filter[] mConvolutionFilters;
+    // The indices of the active filters.
+    //private int mImageDetectionFilterIndex;
+
+    private int mCurveFilterIndex;
+    private int mMixerFilterIndex;
+    private int mConvolutionFilterIndex;
 
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -141,6 +167,21 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i("test", "OpenCV loaded successfully");
+                    final Filter starryNight;
+                    try {
+                        starryNight = new ObjectDetection(
+                                FtcRobotControllerActivity.this,
+                                R.drawable.beacon_1);
+                    } catch (IOException e) {
+                        Log.e("test", "Failed to load drawable: " +
+                                "starry_night");
+                        e.printStackTrace();
+                        break;
+                    }
+                    mImageDetectionFilters = new Filter[]{
+                            new NoneFilter(),
+                            starryNight
+                    };
                     mOpenCvCameraView.enableView();
                 }
                 break;
@@ -157,6 +198,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     }
 
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Log.i("test", "frame");
         Mat mRgba = inputFrame.rgba();
         Mat mRgbaT = mRgba.t();
         // flip it since the phone is in portrait and the image is for landscape.
@@ -184,6 +226,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 //        }
 
         //return cropped;
+//        mImageDetectionFilters[mImageDetectionFilterIndex].apply(
+//                mRgbaT, mRgbaT);
         return mRgbaT;
     }
 
@@ -230,6 +274,27 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
         super.onCreate(savedInstanceState);
 
+         // image detection
+//        final Window window = getWindow();
+//        window.addFlags(
+//                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        if (savedInstanceState != null) {
+//
+//            mImageDetectionFilterIndex =
+//                    savedInstanceState.getInt(
+//                            STATE_IMAGE_DETECTION_FILTER_INDEX, 0);
+//            mCurveFilterIndex = savedInstanceState.getInt(
+//                    STATE_CURVE_FILTER_INDEX, 0);
+//            mMixerFilterIndex = savedInstanceState.getInt(
+//                    STATE_MIXER_FILTER_INDEX, 0);
+//            mConvolutionFilterIndex = savedInstanceState.getInt(
+//                    STATE_CONVOLUTION_FILTER_INDEX, 0);
+//        } else {
+//           mImageDetectionFilterIndex = 0; mCurveFilterIndex = 0; mMixerFilterIndex = 0; mConvolutionFilterIndex = 0;
+//        }
+
+
+        // end image detection
 
         utility = new Utility(this);
         context = this;
@@ -337,7 +402,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
     }
-
 
 
     @Override
