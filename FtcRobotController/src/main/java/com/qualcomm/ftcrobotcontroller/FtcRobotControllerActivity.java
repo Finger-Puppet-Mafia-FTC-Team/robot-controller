@@ -172,7 +172,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
                         starryNight = new ObjectDetection(
                                 FtcRobotControllerActivity.this,
                                 R.drawable.beacon_1);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Log.e("test", "Failed to load drawable: " +
                                 "starry_night");
                         e.printStackTrace();
@@ -363,6 +363,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     @Override
     protected void onResume() {
         super.onResume();
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
     }
 
     @Override
