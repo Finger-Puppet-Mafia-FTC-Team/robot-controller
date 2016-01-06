@@ -35,7 +35,7 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
-    double tapeAngle = 0.9;
+    double tapeAngle = 0.8;
     int trackState = 0;
     int collectorState = 0;
     float actualSpeedLeft = 0;
@@ -64,6 +64,8 @@ public class teleop extends OpMode {
         driveLeft = hardwareMap.dcMotor.get("driveLeft");
         driveRight = hardwareMap.dcMotor.get("driveRight");
 
+        driveRight.setDirection(DcMotor.Direction.REVERSE);
+
         // reset state
         leftWallIn = true;
     }
@@ -77,9 +79,9 @@ public class teleop extends OpMode {
         wallLeft.setPosition(0.8);
         wallRight.setPosition(0);
 
-        track.setPosition(0.5);
-        tapeAngleServo.setPosition(0.9);
-        catcherDoor.setPosition(0.51);
+        track.setPosition(.5);
+        tapeAngleServo.setPosition(.8);
+        catcherDoor.setPosition(.51);
     }
 
     @Override
