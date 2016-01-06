@@ -35,7 +35,7 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
-    double tapeAngle = 0.5;
+    double tapeAngle = 0.8;
     int trackState = 0;
     int collectorState = 0;
 
@@ -79,7 +79,7 @@ public class teleop extends OpMode {
         wallRight.setPosition(0);
 
         track.setPosition(.5);
-        tapeAngleServo.setPosition(.9);
+        tapeAngleServo.setPosition(.8);
         catcherDoor.setPosition(.51);
     }
 
