@@ -226,8 +226,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 //        }
 
         //return cropped;
-//        mImageDetectionFilters[mImageDetectionFilterIndex].apply(
-//                mRgbaT, mRgbaT);
+        mImageDetectionFilters[mImageDetectionFilterIndex].apply(
+                mRgbaT, mRgbaT);
         return mRgbaT;
     }
 
@@ -269,29 +269,32 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //setContentView(R.layout.HelloOpenCvLayout);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCameraIndex(1);
+        mOpenCvCameraView.setCameraIndex(0);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
         super.onCreate(savedInstanceState);
 
-         // image detection
-//        final Window window = getWindow();
-//        window.addFlags(
-//                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        if (savedInstanceState != null) {
-//
-//            mImageDetectionFilterIndex =
-//                    savedInstanceState.getInt(
-//                            STATE_IMAGE_DETECTION_FILTER_INDEX, 0);
-//            mCurveFilterIndex = savedInstanceState.getInt(
-//                    STATE_CURVE_FILTER_INDEX, 0);
-//            mMixerFilterIndex = savedInstanceState.getInt(
-//                    STATE_MIXER_FILTER_INDEX, 0);
-//            mConvolutionFilterIndex = savedInstanceState.getInt(
-//                    STATE_CONVOLUTION_FILTER_INDEX, 0);
-//        } else {
-//           mImageDetectionFilterIndex = 0; mCurveFilterIndex = 0; mMixerFilterIndex = 0; mConvolutionFilterIndex = 0;
-//        }
+        // image detection
+        final Window window = getWindow();
+        window.addFlags(
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (savedInstanceState != null) {
+
+            mImageDetectionFilterIndex =
+                    savedInstanceState.getInt(
+                            STATE_IMAGE_DETECTION_FILTER_INDEX, 0);
+            mCurveFilterIndex = savedInstanceState.getInt(
+                    STATE_CURVE_FILTER_INDEX, 0);
+            mMixerFilterIndex = savedInstanceState.getInt(
+                    STATE_MIXER_FILTER_INDEX, 0);
+            mConvolutionFilterIndex = savedInstanceState.getInt(
+                    STATE_CONVOLUTION_FILTER_INDEX, 0);
+        } else {
+            mImageDetectionFilterIndex = 0;
+            mCurveFilterIndex = 0;
+            mMixerFilterIndex = 0;
+            mConvolutionFilterIndex = 0;
+        }
 
 
         // end image detection
