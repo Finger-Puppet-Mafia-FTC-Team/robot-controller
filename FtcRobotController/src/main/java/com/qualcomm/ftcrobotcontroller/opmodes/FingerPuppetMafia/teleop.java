@@ -81,7 +81,7 @@ public class teleop extends OpMode {
 
         track.setPosition(.5);
         tapeAngleServo.setPosition(.8);
-        catcherDoor.setPosition(.51);
+        catcherDoor.setPosition(.43);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class teleop extends OpMode {
         if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
             if (catcherDoorUp == true) {
-                catcherDoor.setPosition(0.48);
+                catcherDoor.setPosition(0.43);
             } else {
                 catcherDoor.setPosition(0);
             }
@@ -322,7 +322,8 @@ public class teleop extends OpMode {
      */
     private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
         float result = 0;
-        float change = .01f;
+        float change = 0.04f;
+        change = change;
         //Optional parameter. This might not actually work
         if (faster.length > 0 && faster[0]) {
             // speed up change
@@ -359,8 +360,8 @@ public class teleop extends OpMode {
 	 * the robot more precisely at slower speeds.
 	 */
     double scaleInput(double dVal) {
-        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+        double[] scaleArray = {0, 0.30, 0.31, 0.32, 0.33, 0.34, 0.36, 0.38, 0.42,
+                0.46, 0.48, 0.50, 0.52, 0.65, 0.77, 0.89, .97, 1.00};
 
         // get the corresponding index for the scaleInput array.
         int index = (int) (dVal * 16.0);
