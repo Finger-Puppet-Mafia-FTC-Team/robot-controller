@@ -35,7 +35,11 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
+<<<<<<< HEAD
     double tapeAngle = 0.8;
+=======
+    double tapeAngle = 0.9;
+>>>>>>> origin/acceleration
     int trackState = 0;
     int collectorState = 0;
     float actualSpeedLeft = 0;
@@ -78,7 +82,7 @@ public class teleop extends OpMode {
 
         wallLeft.setPosition(0.8);
         wallRight.setPosition(0);
-
+        
         track.setPosition(.5);
         tapeAngleServo.setPosition(.8);
         catcherDoor.setPosition(.43);
@@ -323,7 +327,6 @@ public class teleop extends OpMode {
     private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
         float result = 0;
         float change = 0.04f;
-        change = change;
         //Optional parameter. This might not actually work
         if (faster.length > 0 && faster[0]) {
             // speed up change
