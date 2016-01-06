@@ -63,6 +63,8 @@ public class teleop extends OpMode {
         driveLeft = hardwareMap.dcMotor.get("driveLeft");
         driveRight = hardwareMap.dcMotor.get("driveRight");
 
+        driveRight.setDirection(DcMotor.Direction.REVERSE);
+
         // reset state
         leftWallIn = true;
     }
