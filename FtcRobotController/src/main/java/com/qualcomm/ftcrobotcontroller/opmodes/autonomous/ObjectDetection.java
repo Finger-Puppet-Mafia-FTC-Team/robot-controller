@@ -125,7 +125,8 @@ public class ObjectDetection implements Filter {
         findSceneCorners();
         // If the corners have been found, draw an outline around the
         // target image.
-        // Else, draw a thumbnail of the target image.    draw(src, dst);
+        // Else, draw a thumbnail of the target image.
+        draw(src, dst);
     }
 
     private void findSceneCorners() {

@@ -81,14 +81,12 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
@@ -171,7 +169,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
                     try {
                         starryNight = new ObjectDetection(
                                 FtcRobotControllerActivity.this,
-                                R.drawable.beacon_1);
+                                R.drawable.beacon_2_source);
                     } catch (Exception e) {
                         Log.e("test", "Failed to load drawable: " +
                                 "starry_night");
@@ -205,25 +203,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         Core.flip(mRgba.t(), mRgbaT, -1);
         Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 
-        // crop picture
-        //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
-        //Mat cropped = new Mat(mRgbaT, roi);
-
         autonomousCamera.picture = mRgbaT;
-//        if (autonomousCamera.isFixed && autonomousCamera.isFixedShown == false && autonomousCamera.getFixedPicture() != null) {
-//            Mat _picture = autonomousCamera.getFixedPicture();
-//            final Bitmap img = Bitmap.createBitmap(_picture.cols(),_picture.rows(),Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(_picture, img);
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mOpenCvCameraView2.setImageBitmap(img);
-//                    mOpenCvCameraView2.invalidate();
-//                }
-//            });
-//            autonomousCamera.isFixedShown = true;
-//            autonomousCamera.clearFixedPicture();
-//        }
 
         //return cropped;
         mImageDetectionFilters[mImageDetectionFilterIndex].apply(
@@ -282,7 +262,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
             mImageDetectionFilterIndex =
                     savedInstanceState.getInt(
-                            STATE_IMAGE_DETECTION_FILTER_INDEX, 0);
+                            STATE_IMAGE_DETECTION_FILTER_INDEX, 1);
             mCurveFilterIndex = savedInstanceState.getInt(
                     STATE_CURVE_FILTER_INDEX, 0);
             mMixerFilterIndex = savedInstanceState.getInt(
@@ -290,7 +270,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             mConvolutionFilterIndex = savedInstanceState.getInt(
                     STATE_CONVOLUTION_FILTER_INDEX, 0);
         } else {
-            mImageDetectionFilterIndex = 0;
+            mImageDetectionFilterIndex = 1;
             mCurveFilterIndex = 0;
             mMixerFilterIndex = 0;
             mConvolutionFilterIndex = 0;

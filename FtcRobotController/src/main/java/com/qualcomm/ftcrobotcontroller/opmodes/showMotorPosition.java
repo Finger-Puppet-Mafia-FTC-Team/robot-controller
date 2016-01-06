@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * TeleOp Mode
- * <p>
+ * <p/>
  * Enables control of the robot via the gamepad
  */
 public class showMotorPosition extends OpMode {
@@ -16,6 +16,8 @@ public class showMotorPosition extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
     DcMotor motorArm;
+
+    DcMotorController controller;
 
     /**
      * Constructor
@@ -36,19 +38,17 @@ public class showMotorPosition extends OpMode {
 //        motorArm.setDirection(DcMotor.Direction.FORWARD);
 //        motorArm.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
-        motorRight = hardwareMap.dcMotor.get("motor_2");
+        motorRight = hardwareMap.dcMotor.get("driveLeft");
         motorRight.setDirection(DcMotor.Direction.FORWARD);
-        motorRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        motorRight.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
-        motorLeft = hardwareMap.dcMotor.get("motor_1");
+        motorLeft = hardwareMap.dcMotor.get("driveRight");
         motorLeft.setDirection(DcMotor.Direction.FORWARD);
-        motorLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        motorLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
-        int position = motorLeft.getCurrentPosition();
+        controller = hardwareMap.dcMotorController.get("1");
+        controller.setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
 
-        motorLeft.setTargetPosition(position + 2800);
-        motorRight.setTargetPosition(position + 100);
-       // motorArm.setTargetPosition(position + 300);
     }
 
     /*
@@ -63,7 +63,7 @@ public class showMotorPosition extends OpMode {
         position = motorRight.getCurrentPosition();
         telemetry.addData("motor right position", position);
 //        position = motorArm.getCurrentPosition();
-       // telemetry.addData("motor arm position", position);
+        // telemetry.addData("motor arm position", position);
         //motorLeft.setPower(0.5);
     }
 
