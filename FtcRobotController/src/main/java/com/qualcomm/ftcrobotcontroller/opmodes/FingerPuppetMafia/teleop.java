@@ -87,6 +87,7 @@ public class teleop extends OpMode {
     public void loop() {
         float throttleLeft = gamepad1.left_stick_y;
         float throttleRight = gamepad1.right_stick_y;
+        double throttleTape;
 
         //------ Catcher --------
 
@@ -208,8 +209,23 @@ public class teleop extends OpMode {
             rightWallIn = !rightWallIn;
         }
 
+        //Drive motors
+        throttleLeft = Range.clip(throttleLeft, -1, 1);
+        throttleRight = Range.clip(throttleRight, -1, 1);
+
+        throttleLeft = (float) scaleInput(throttleLeft);
+        throttleRight = (float) scaleInput(throttleRight);
+
+        driveLeft.setPower(throttleLeft);
+        driveRight.setPower(throttleRight);
 
         //Tape
+        if (gamepad1.left_bumper) {
+            double average = Math.abs(throttleLeft) + Math.abs(throttleRight)/ 2;
+            throttleTape = average + .1;
+            throttleTape = Range.clip(throttleTape, -1, 1);
+
+        }
         if (gamepad2.right_stick_y < -.2) {
             tapeAngle += .01;
             if (tapeAngle > 1) {
@@ -227,22 +243,15 @@ public class teleop extends OpMode {
         }
 
         if (gamepad2.left_stick_y < -.2) {
-            tapeMotor.setPower(-.5);
+            throttleTape = -1;
         } else if (gamepad2.left_stick_y > .2) {
-            tapeMotor.setPower(.5);
+            throttleTape = 1;
         } else {
-            tapeMotor.setPower(0);
+            throttleTape = 0;
         }
+        tapeMotor.setPower(throttleTape);
 
-        //Drive motors
-        throttleLeft = Range.clip(throttleLeft, -1, 1);
-        throttleRight = Range.clip(throttleRight, -1, 1);
 
-        throttleLeft = (float) scaleInput(throttleLeft);
-        throttleRight = (float) scaleInput(throttleRight);
-
-        driveLeft.setPower(throttleLeft);
-        driveRight.setPower(throttleRight);
 //        if(gamepad1.right_stick_y > 0.1) {
 //            driveRight.setPower(0.6);
 //        } else if (gamepad1.right_stick_y < -0.1) {
