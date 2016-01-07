@@ -109,9 +109,9 @@ public class teleop extends OpMode {
         if (collectorState == 0) {
             collectorMotor.setPower(0);
         } else if (collectorState == 1) {
-            collectorMotor.setPower(.5);
+            collectorMotor.setPower(1);
         } else if (collectorState == 2) {
-            collectorMotor.setPower(-.5);
+            collectorMotor.setPower(-1);
         }
 
 
