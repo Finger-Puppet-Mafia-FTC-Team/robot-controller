@@ -23,19 +23,32 @@ public class autonomousLong extends OpMode{
         driveRight = hardwareMap.dcMotor.get("driveRight");
         collector = hardwareMap.dcMotor.get("collector");
 
-        driveRight.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        driveLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        driveRight.setDirection(DcMotor.Direction.REVERSE);
+        DcMotorController a = hardwareMap.dcMotorController.get("a");
+       // a.setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
+
+        driveRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        driveLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        driveLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // make sure it is out of our way
         tapeAngleServo = hardwareMap.servo.get("tapeAngle");
         tapeAngleServo.setPosition(0.8);
 
-        driveRight.setTargetPosition(5000);
-        driveLeft.setTargetPosition(5000);
-    }
 
+    }
+    public void init_loop () {
+
+
+        driveRight.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        driveLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+        driveRight.setTargetPosition(12500);
+        driveLeft.setTargetPosition(12500);
+    }
     public void loop () {
+
+
         long currentTime = new Date().getTime();
 
         telemetry.addData("time", currentTime - startTime);
@@ -46,7 +59,7 @@ public class autonomousLong extends OpMode{
 //            return;
 //        }
 
-        collector.setPower(-0.5);
+        collector.setPower(-1);
 
         // we drive backwards
         driveLeft.setPower(0.5);
