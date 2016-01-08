@@ -94,9 +94,9 @@ public class Autonomous2 extends OpMode {
 		 * configured your robot and created the configuration file.
 		 */
         //hardware.initStep(this);
-        hardware.motorRight = hardwareMap.dcMotor.get("motor_1");
+        hardware.motorRight = hardwareMap.dcMotor.get("driveRight");
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
-        hardware.motorLeft = hardwareMap.dcMotor.get("motor_2");
+        hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
         hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
     }

@@ -47,7 +47,6 @@ public class teleop extends OpMode {
         //TODO: This will need to be changed once the eclectronics are all on
         sideArmLeft = hardwareMap.servo.get("sideArmLeft");
         sideArmRight = hardwareMap.servo.get("sideArmRight");
-
         wallLeft = hardwareMap.servo.get("wallLeft");
         wallRight = hardwareMap.servo.get("wallRight");
 
