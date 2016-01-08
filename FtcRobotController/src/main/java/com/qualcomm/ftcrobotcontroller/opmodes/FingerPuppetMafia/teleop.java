@@ -110,9 +110,9 @@ public class teleop extends OpMode {
         if (collectorState == 0) {
             collectorMotor.setPower(0);
         } else if (collectorState == 1) {
-            collectorMotor.setPower(0.5);
+            collectorMotor.setPower(1);
         } else if (collectorState == 2) {
-            collectorMotor.setPower(-0.5);
+            collectorMotor.setPower(-1);
         }
 
 
@@ -323,7 +323,7 @@ public class teleop extends OpMode {
      */
     private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
         float result = 0;
-        float change = 0.04f;
+        float change = 0.02f;
         //Optional parameter. This might not actually work
         if (faster.length > 0 && faster[0]) {
             // speed up change
