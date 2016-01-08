@@ -87,6 +87,7 @@ public class teleop extends OpMode {
     public void loop() {
         float throttleLeft = gamepad1.left_stick_y;
         float throttleRight = gamepad1.right_stick_y;
+        double throttleTape = 0;
 
         //------ Catcher --------
 
@@ -108,9 +109,9 @@ public class teleop extends OpMode {
         if (collectorState == 0) {
             collectorMotor.setPower(0);
         } else if (collectorState == 1) {
-            collectorMotor.setPower(.5);
+            collectorMotor.setPower(1);
         } else if (collectorState == 2) {
-            collectorMotor.setPower(-.5);
+            collectorMotor.setPower(-1);
         }
 
 
@@ -208,32 +209,6 @@ public class teleop extends OpMode {
             rightWallIn = !rightWallIn;
         }
 
-
-        //Tape
-        if (gamepad2.right_stick_y < -.2) {
-            tapeAngle += .01;
-            if (tapeAngle > 1) {
-                tapeAngle = 1;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
-        }
-
-        if (gamepad2.right_stick_y > .2) {
-            tapeAngle -= .01;
-            if (tapeAngle < 0) {
-                tapeAngle = 0;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
-        }
-
-        if (gamepad2.left_stick_y < -.2) {
-            tapeMotor.setPower(-.5);
-        } else if (gamepad2.left_stick_y > .2) {
-            tapeMotor.setPower(.5);
-        } else {
-            tapeMotor.setPower(0);
-        }
-
         //Drive motors
         throttleLeft = Range.clip(throttleLeft, -1, 1);
         throttleRight = Range.clip(throttleRight, -1, 1);
@@ -243,6 +218,38 @@ public class teleop extends OpMode {
 
         driveLeft.setPower(throttleLeft);
         driveRight.setPower(throttleRight);
+
+        //Tape
+        if (gamepad1.left_bumper) {
+            double average = Math.abs(throttleLeft) + Math.abs(throttleRight)/ 2;
+            throttleTape = average + 0.1;
+            throttleTape = Range.clip(throttleTape, -1, 1);
+
+        }
+        if (gamepad2.right_stick_y < -0.2) {
+            tapeAngle += .01;
+            if (tapeAngle > 1) {
+                tapeAngle = 1;
+            }
+            tapeAngleServo.setPosition(tapeAngle);
+        }
+
+        if (gamepad2.right_stick_y > 0.2) {
+            tapeAngle -= .01;
+            if (tapeAngle < 0) {
+                tapeAngle = 0;
+            }
+            tapeAngleServo.setPosition(tapeAngle);
+        }
+
+        if (gamepad2.left_stick_y < -0.2) {
+            throttleTape = -1;
+        } else if (gamepad2.left_stick_y > 0.2) {
+            throttleTape = 1;
+        }
+        tapeMotor.setPower(throttleTape);
+
+
 //        if(gamepad1.right_stick_y > 0.1) {
 //            driveRight.setPower(0.6);
 //        } else if (gamepad1.right_stick_y < -0.1) {
@@ -262,6 +269,7 @@ public class teleop extends OpMode {
         telemetry.addData("rightArm In:", sideArmRightIn);
         telemetry.addData("trackState", String.valueOf(trackState));
         telemetry.addData("Tape Angle", tapeAngle);
+        telemetry.addData("Tape Power", throttleTape );
     }
 
     @Override
