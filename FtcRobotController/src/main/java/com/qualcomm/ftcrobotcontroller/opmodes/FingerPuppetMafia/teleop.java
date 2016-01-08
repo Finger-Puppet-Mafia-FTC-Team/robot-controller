@@ -72,11 +72,11 @@ public class teleop extends OpMode {
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.8);
-        sideArmRight.setPosition(0.7);
+        sideArmLeft.setPosition(0.37);
+        sideArmRight.setPosition(0.78);
 
-        wallLeft.setPosition(.8);
-        wallRight.setPosition(0);
+        wallLeft.setPosition(0);
+        wallRight.setPosition(0.8);
 
         track.setPosition(.5);
         tapeAngleServo.setPosition(.8);
@@ -166,23 +166,23 @@ public class teleop extends OpMode {
 
         //Left arm
         if (pressed("2x", gamepad2.x)) {
+            sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.1);
+                sideArmLeft.setPosition(0.37);
                 messages.add("Left Arm In");
             } else {
-                sideArmLeft.setPosition(0.8);
+                sideArmLeft.setPosition(0.9);
                 messages.add("Left Arm Out");
             }
-            sideArmLeftIn = !sideArmLeftIn;
 
         }
 
         //Right arm
         if (pressed("2b", gamepad2.b)) {
             if (sideArmRightIn) {
-                sideArmRight.setPosition(0.1);
+                sideArmRight.setPosition(0.25);
             } else {
-                sideArmRight.setPosition(0.9);
+                sideArmRight.setPosition(0.78);
             }
             sideArmRightIn = !sideArmRightIn;
         }
@@ -193,7 +193,7 @@ public class teleop extends OpMode {
                 wallLeft.setPosition(0.4);
                 messages.add("Left Wall In");
             } else {
-                wallLeft.setPosition(0.8);
+                wallLeft.setPosition(0);
                 messages.add("Left Wall Out");
             }
             leftWallIn = !leftWallIn;
@@ -203,7 +203,7 @@ public class teleop extends OpMode {
             if (rightWallIn) {
                 wallRight.setPosition(0.4);
             } else {
-                wallRight.setPosition(0);
+                wallRight.setPosition(0.8);
             }
             rightWallIn = !rightWallIn;
         }
