@@ -86,6 +86,7 @@ public class teleop extends OpMode {
 
     @Override
     public void loop() {
+        double throttleTape = 0;
         float targetSpeedLeft = gamepad1.left_stick_y;
         float targetSpeedRight = gamepad1.right_stick_y;
 
@@ -212,6 +213,22 @@ public class teleop extends OpMode {
             rightWallIn = !rightWallIn;
         }
 
+        //Drive motors
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -1, 1);
+        targetSpeedRight = Range.clip(targetSpeedRight, -1, 1);
+
+        targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
+        targetSpeedRight = (float) scaleInput(targetSpeedRight);
+
+
+
+        // transition to new speed over time
+        actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
+        actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
+
+        driveLeft.setPower(actualSpeedLeft);
+        driveRight.setPower(actualSpeedRight);
+
 
         //Tape
         if (gamepad2.right_stick_y < -.2) {
@@ -230,29 +247,22 @@ public class teleop extends OpMode {
             tapeAngleServo.setPosition(tapeAngle);
         }
 
+        if (gamepad1.left_bumper) {
+            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight))/ 2;
+            throttleTape = average + 0.2;
+            throttleTape = Range.clip(throttleTape, -1, 1);
+
+        }
+        
         if (gamepad2.left_stick_y < -0.2) {
-            tapeMotor.setPower(-.8);
+            throttleTape = -0.8;
         } else if (gamepad2.left_stick_y > .2) {
-            tapeMotor.setPower(.8);
-        } else {
-            tapeMotor.setPower(0);
+           throttleTape = 0.8;
         }
 
-        //Drive motors
-        targetSpeedLeft = Range.clip(targetSpeedLeft, -1, 1);
-        targetSpeedRight = Range.clip(targetSpeedRight, -1, 1);
-
-        targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
-        targetSpeedRight = (float) scaleInput(targetSpeedRight);
+        tapeMotor.setPower(throttleTape);
 
 
-
-        // transition to new speed over time
-        actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
-        actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
-
-        driveLeft.setPower(actualSpeedLeft);
-        driveRight.setPower(actualSpeedRight);
 
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
@@ -269,6 +279,7 @@ public class teleop extends OpMode {
         telemetry.addData("speed right", actualSpeedRight);
         telemetry.addData("speed left", actualSpeedLeft);
         telemetry.addData("target speed right", targetSpeedRight);
+        telemetry.addData("tape speed", throttleTape);
 
     }
 
