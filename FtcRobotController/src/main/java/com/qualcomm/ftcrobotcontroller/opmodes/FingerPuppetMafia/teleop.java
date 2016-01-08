@@ -77,13 +77,8 @@ public class teleop extends OpMode {
         sideArmLeft.setPosition(0.37);
         sideArmRight.setPosition(0.78);
 
-<<<<<<< HEAD
-        wallLeft.setPosition(0.8);
-        wallRight.setPosition(0);
-=======
         wallLeft.setPosition(0);
         wallRight.setPosition(0.8);
->>>>>>> competition
 
         track.setPosition(.5);
         tapeAngleServo.setPosition(.8);
