@@ -73,8 +73,8 @@ public class teleop extends OpMode {
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.37);
-        sideArmRight.setPosition(0.78);
+        sideArmLeft.setPosition(0.39);
+        sideArmRight.setPosition(0.79);
 
         wallLeft.setPosition(0);
         wallRight.setPosition(0.8);
@@ -172,7 +172,7 @@ public class teleop extends OpMode {
         if (pressed("2x", gamepad2.x)) {
             sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.37);
+                sideArmLeft.setPosition(0.39);
                 messages.add("Left Arm In");
             } else {
                 sideArmLeft.setPosition(0.9);
@@ -186,7 +186,7 @@ public class teleop extends OpMode {
             if (sideArmRightIn) {
                 sideArmRight.setPosition(0.25);
             } else {
-                sideArmRight.setPosition(0.78);
+                sideArmRight.setPosition(0.79);
             }
             sideArmRightIn = !sideArmRightIn;
         }
