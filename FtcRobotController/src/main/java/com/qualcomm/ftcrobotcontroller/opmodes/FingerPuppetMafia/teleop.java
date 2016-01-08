@@ -35,16 +35,18 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
+
     double tapeAngle = 0.8;
     int trackState = 0;
     int collectorState = 0;
+    float actualSpeedLeft = 0;
+    float actualSpeedRight = 0;
 
     public teleop() {
     }
 
     @Override
     public void init() {
-        //TODO: This will need to be changed once the eclectronics are all on
         sideArmLeft = hardwareMap.servo.get("sideArmLeft");
         sideArmRight = hardwareMap.servo.get("sideArmRight");
         wallLeft = hardwareMap.servo.get("wallLeft");
@@ -79,14 +81,13 @@ public class teleop extends OpMode {
 
         track.setPosition(.5);
         tapeAngleServo.setPosition(.8);
-        catcherDoor.setPosition(.51);
+        catcherDoor.setPosition(.43);
     }
 
     @Override
     public void loop() {
-        float throttleLeft = gamepad1.left_stick_y;
-        float throttleRight = gamepad1.right_stick_y;
-        double throttleTape = 0;
+        float targetSpeedLeft = gamepad1.left_stick_y;
+        float targetSpeedRight = gamepad1.right_stick_y;
 
         //------ Catcher --------
 
@@ -125,7 +126,7 @@ public class teleop extends OpMode {
         if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
             if (catcherDoorUp == true) {
-                catcherDoor.setPosition(0.48);
+                catcherDoor.setPosition(0.43);
             } else {
                 catcherDoor.setPosition(0);
             }
@@ -135,12 +136,15 @@ public class teleop extends OpMode {
         if (pressed("1x", gamepad1.x)) {
             // move to next state
             switch (trackState) {
+                // off
                 case 0:
                     trackState = 1;
                     break;
+                // left
                 case 1:
                     trackState = 2;
                     break;
+                // right
                 case 2:
                     trackState = 0;
                     break;
@@ -208,33 +212,18 @@ public class teleop extends OpMode {
             rightWallIn = !rightWallIn;
         }
 
-        //Drive motors
-        throttleLeft = Range.clip(throttleLeft, -1, 1);
-        throttleRight = Range.clip(throttleRight, -1, 1);
-
-        throttleLeft = (float) scaleInput(throttleLeft);
-        throttleRight = (float) scaleInput(throttleRight);
-
-        driveLeft.setPower(throttleLeft);
-        driveRight.setPower(throttleRight);
 
         //Tape
-        if (gamepad1.left_bumper) {
-            double average = Math.abs(throttleLeft) + Math.abs(throttleRight)/ 2;
-            throttleTape = average + 0.1;
-            throttleTape = Range.clip(throttleTape, -1, 1);
-
-        }
-        if (gamepad2.right_stick_y < -0.2) {
-            tapeAngle += .01;
+        if (gamepad2.right_stick_y < -.2) {
+            tapeAngle += .005;
             if (tapeAngle > 1) {
                 tapeAngle = 1;
             }
             tapeAngleServo.setPosition(tapeAngle);
         }
 
-        if (gamepad2.right_stick_y > 0.2) {
-            tapeAngle -= .01;
+        if (gamepad2.right_stick_y > .2) {
+            tapeAngle -= .005;
             if (tapeAngle < 0) {
                 tapeAngle = 0;
             }
@@ -242,33 +231,45 @@ public class teleop extends OpMode {
         }
 
         if (gamepad2.left_stick_y < -0.2) {
-            throttleTape = -1;
-        } else if (gamepad2.left_stick_y > 0.2) {
-            throttleTape = 1;
+            tapeMotor.setPower(-.8);
+        } else if (gamepad2.left_stick_y > .2) {
+            tapeMotor.setPower(.8);
+        } else {
+            tapeMotor.setPower(0);
         }
-        tapeMotor.setPower(throttleTape);
+
+        //Drive motors
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -1, 1);
+        targetSpeedRight = Range.clip(targetSpeedRight, -1, 1);
+
+        targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
+        targetSpeedRight = (float) scaleInput(targetSpeedRight);
 
 
-//        if(gamepad1.right_stick_y > 0.1) {
-//            driveRight.setPower(0.6);
-//        } else if (gamepad1.right_stick_y < -0.1) {
-//            driveRight.setPower(-0.6);
-//        } else {
-//            driveRight.setPower(0);
-//        }
+
+        // transition to new speed over time
+        actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
+        actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
+
+        driveLeft.setPower(actualSpeedLeft);
+        driveRight.setPower(actualSpeedRight);
 
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
 
         messages.clear();
+
         telemetry.addData("leftWall In:", leftWallIn);
         telemetry.addData("rightWall In:", rightWallIn);
         telemetry.addData("leftArm In:", sideArmLeftIn);
         telemetry.addData("rightArm In:", sideArmRightIn);
         telemetry.addData("trackState", String.valueOf(trackState));
         telemetry.addData("Tape Angle", tapeAngle);
-        telemetry.addData("Tape Power", throttleTape );
+        telemetry.addData("speed right", actualSpeedRight);
+        telemetry.addData("speed left", actualSpeedLeft);
+        telemetry.addData("target speed right", targetSpeedRight);
+
     }
 
     @Override
@@ -286,7 +287,6 @@ public class teleop extends OpMode {
      * @param key
      * @return If the user is holding is still holding down the key
      */
-
     public boolean pressed(String key, boolean pressed) {
         int index = Arrays.asList(pressedKeys).indexOf(key);
         if (pressed == false) {
@@ -311,14 +311,56 @@ public class teleop extends OpMode {
 
     }
 
+    /**
+     * Transitions speed from current to target.
+     * It gradually changes the power every time the loop runs.
+     * @param currentSpeed - the current power applied to motor
+     * @param finalSpeed - the target power
+     * @param faster - if the change should be faster. If true, the final speed will
+     *               be reached quicker
+     * @return power to give motor
+     */
+    private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
+        float result = 0;
+        float change = 0.02f;
+        //Optional parameter. This might not actually work
+        if (faster.length > 0 && faster[0]) {
+            // speed up change
+            change = change * 5;
+        }
+
+        if (currentSpeed == finalSpeed) {
+            // we have reached the final speed
+            result = finalSpeed;
+        } else if (currentSpeed < finalSpeed) {
+            // we are slower than the final speed
+            if (currentSpeed + finalSpeed > change) {
+                // the difference is smaller than the change
+                result = finalSpeed;
+            } else {
+                result = currentSpeed + change;
+            }
+        } else if (currentSpeed > finalSpeed) {
+            // we are faster than the final speed
+            if (currentSpeed - finalSpeed < change) {
+                //difference is bigger than change
+                result = finalSpeed;
+            } else {
+                result = currentSpeed - change;
+            }
+        }
+
+        return result;
+    }
+
     /*
      * This method scales the joystick input so for low joystick values, the
 	 * scaled value is less than linear.  This is to make it easier to drive
 	 * the robot more precisely at slower speeds.
 	 */
     double scaleInput(double dVal) {
-        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+        double[] scaleArray = {0, 0.30, 0.31, 0.32, 0.33, 0.34, 0.36, 0.38, 0.42,
+                0.46, 0.48, 0.50, 0.52, 0.65, 0.77, 0.89, .97, 1.00};
 
         // get the corresponding index for the scaleInput array.
         int index = (int) (dVal * 16.0);
