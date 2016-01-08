@@ -66,8 +66,7 @@ import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
-import com.qualcomm.hardware.ModernRoboticsHardwareFactory;
-import com.qualcomm.robotcore.hardware.HardwareFactory;
+import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.Dimmer;
 import com.qualcomm.robotcore.util.ImmersiveMode;
@@ -153,7 +152,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     };
 
-    void setPicture(Bitmap img){
+    void setPicture(Bitmap img) {
         mOpenCvCameraView2.setImageBitmap(img);
     }
 
@@ -267,9 +266,10 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         hittingMenuButtonBrightensScreen();
 
         if (USE_DEVICE_EMULATION) {
-            ModernRoboticsHardwareFactory.enableDeviceEmulation();
+            HardwareFactory.enableDeviceEmulation();
         }
     }
+
 
     @Override
     protected void onStart() {
@@ -298,22 +298,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     @Override
     protected void onResume() {
         super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
-
-    public void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
-
 
     @Override
     protected void onStop() {
@@ -339,6 +324,20 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             immersion.cancelSystemUIHide();
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
 
 
     @Override
@@ -406,6 +405,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     }
 
+
     public void onServiceBind(FtcRobotControllerService service) {
         DbgLog.msg("Bound to Ftc Controller Service");
         controllerService = service;
@@ -427,10 +427,12 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
         HardwareFactory factory;
 
+
         // Modern Robotics Factory for use with Modern Robotics hardware
-        ModernRoboticsHardwareFactory modernRoboticsFactory = new ModernRoboticsHardwareFactory(context);
+        HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
         modernRoboticsFactory.setXmlInputStream(fis);
         factory = modernRoboticsFactory;
+
 
         eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
 
