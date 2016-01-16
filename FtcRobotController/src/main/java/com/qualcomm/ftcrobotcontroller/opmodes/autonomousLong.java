@@ -14,8 +14,6 @@ public class autonomousLong extends OpMode{
 
     DcMotorController controller;
 
-    Servo tapeAngleServo;
-
     long startTime = new Date().getTime();
 
     public void init() {
@@ -30,11 +28,6 @@ public class autonomousLong extends OpMode{
         driveLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
         driveLeft.setDirection(DcMotor.Direction.REVERSE);
-
-        // make sure it is out of our way
-        tapeAngleServo = hardwareMap.servo.get("tapeAngle");
-        tapeAngleServo.setPosition(0.8);
-
 
     }
     public void init_loop () {
