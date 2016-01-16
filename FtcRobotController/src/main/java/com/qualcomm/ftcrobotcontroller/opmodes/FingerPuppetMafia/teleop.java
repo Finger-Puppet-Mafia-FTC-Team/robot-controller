@@ -21,13 +21,13 @@ public class teleop extends OpMode {
     Servo wallLeft;
     Servo wallRight;
     Servo track;
-    Servo tapeAngleServo;
     Servo catcherDoor;
 
     DcMotor tapeMotor;
     DcMotor collectorMotor;
     DcMotor driveLeft;
     DcMotor driveRight;
+    DcMotor tapeAngleMotor;
 
     // State
     boolean leftWallIn = true;
@@ -42,6 +42,9 @@ public class teleop extends OpMode {
     float actualSpeedLeft = 0;
     float actualSpeedRight = 0;
 
+    String trackStateText = "Off";
+
+
     public teleop() {
     }
 
@@ -54,16 +57,17 @@ public class teleop extends OpMode {
 
         track = hardwareMap.servo.get("track");
 
-        tapeAngleServo = hardwareMap.servo.get("tapeAngle");
         catcherDoor = hardwareMap.servo.get("catcherDoor");
 
 
         //Motors
+        tapeAngleMotor = hardwareMap.dcMotor.get("tapeAngle");
         tapeMotor = hardwareMap.dcMotor.get("tape");
         collectorMotor = hardwareMap.dcMotor.get("collector");
         driveLeft = hardwareMap.dcMotor.get("driveLeft");
         driveRight = hardwareMap.dcMotor.get("driveRight");
 
+        tapeAngleMotor.setDirection(DcMotor.Direction.REVERSE);
         driveLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // reset state
@@ -80,7 +84,6 @@ public class teleop extends OpMode {
         wallRight.setPosition(0.8);
 
         track.setPosition(.5);
-        tapeAngleServo.setPosition(.8);
         catcherDoor.setPosition(.43);
     }
 
@@ -156,15 +159,15 @@ public class teleop extends OpMode {
 
             if (trackState == 0) {
                 track.setPosition(0.5);
-                messages.add("Track not moving");
+                trackStateText = "Off";
             } else if (trackState == 1) {
                 track.setPosition(1);
-                messages.add("Track going left");
+                trackStateText = "Left";
             } else if (trackState == 2) {
                 track.setPosition(0);
-                messages.add("Track going right");
+                trackStateText = "Right";
             } else {
-                messages.add("Track state not found");
+                trackStateText = "Track state not found";
             }
         }
 
@@ -174,10 +177,8 @@ public class teleop extends OpMode {
             sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
                 sideArmLeft.setPosition(0.39);
-                messages.add("Left Arm In");
             } else {
                 sideArmLeft.setPosition(0.9);
-                messages.add("Left Arm Out");
             }
 
         }
@@ -196,10 +197,8 @@ public class teleop extends OpMode {
         if (pressed("1dpadleft", gamepad1.dpad_left) == true) {
             if (leftWallIn) {
                 wallLeft.setPosition(0.4);
-                messages.add("Left Wall In");
             } else {
                 wallLeft.setPosition(0);
-                messages.add("Left Wall Out");
             }
             leftWallIn = !leftWallIn;
         }
@@ -221,7 +220,6 @@ public class teleop extends OpMode {
         targetSpeedRight = (float) scaleInput(targetSpeedRight);
 
 
-
         // transition to new speed over time
         actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
         actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
@@ -232,36 +230,32 @@ public class teleop extends OpMode {
 
         //Tape
         if (gamepad2.right_stick_y < -.2) {
-            tapeAngle += .005;
-            if (tapeAngle > 1) {
-                tapeAngle = 1;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
-        }
-
-        if (gamepad2.right_stick_y > .2) {
-            tapeAngle -= .005;
-            if (tapeAngle < 0) {
-                tapeAngle = 0;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
+            tapeAngleMotor.setPower(-.1);
+        } else if (gamepad2.right_stick_y > .2) {
+            tapeAngleMotor.setPower(.1);
+        } else {
+            tapeAngleMotor.setPower(0);
         }
 
         if (gamepad1.left_bumper) {
-            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight))/ 2;
+            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight)) / 2;
             throttleTape = average + 0.2;
             throttleTape = Range.clip(throttleTape, -1, 1);
 
+        } else if (gamepad1.right_bumper) {
+            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight)) / 2;
+            throttleTape = (-1 * average) - 0.2;
+            throttleTape = Range.clip(throttleTape, -1, 1);
+
         }
-        
+
         if (gamepad2.left_stick_y < -0.2) {
             throttleTape = -0.8;
         } else if (gamepad2.left_stick_y > .2) {
-           throttleTape = 0.8;
+            throttleTape = 0.8;
         }
 
         tapeMotor.setPower(throttleTape);
-
 
 
         for (int i = 0; i < messages.size(); i++) {
@@ -269,17 +263,27 @@ public class teleop extends OpMode {
         }
 
         messages.clear();
+        if (!leftWallIn) {
+            telemetry.addData("Left Wall", "Open");
+        }
+        if (!rightWallIn) {
+            telemetry.addData("Right Wall", "Open");
+        }
+        if (!sideArmLeftIn) {
+            telemetry.addData("Left Arm In", "Open");
+        }
+        if (!sideArmRightIn) {
+            telemetry.addData("Right Arm", "Open");
+        }
+        if (trackStateText != "Off") {
+            telemetry.addData("trackState", trackStateText);
+        }
 
-        telemetry.addData("leftWall In:", leftWallIn);
-        telemetry.addData("rightWall In:", rightWallIn);
-        telemetry.addData("leftArm In:", sideArmLeftIn);
-        telemetry.addData("rightArm In:", sideArmRightIn);
-        telemetry.addData("trackState", String.valueOf(trackState));
-        telemetry.addData("Tape Angle", tapeAngle);
-        telemetry.addData("speed right", actualSpeedRight);
-        telemetry.addData("speed left", actualSpeedLeft);
-        telemetry.addData("target speed right", targetSpeedRight);
-        telemetry.addData("tape speed", throttleTape);
+        telemetry.addData("", "");
+//        telemetry.addData("speed right", actualSpeedRight);
+//        telemetry.addData("speed left", actualSpeedLeft);
+//        telemetry.addData("target speed right", targetSpeedRight);
+//        telemetry.addData("tape speed", throttleTape);
 
     }
 
@@ -325,10 +329,11 @@ public class teleop extends OpMode {
     /**
      * Transitions speed from current to target.
      * It gradually changes the power every time the loop runs.
+     *
      * @param currentSpeed - the current power applied to motor
-     * @param finalSpeed - the target power
-     * @param faster - if the change should be faster. If true, the final speed will
-     *               be reached quicker
+     * @param finalSpeed   - the target power
+     * @param faster       - if the change should be faster. If true, the final speed will
+     *                     be reached quicker
      * @return power to give motor
      */
     private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
