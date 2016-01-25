@@ -137,7 +137,7 @@ public class teleop extends OpMode {
         }
 
         //Belt
-        if (pressed("1x", gamepad1.x)) {
+        if (pressed("2leftBumper", gamepad2.left_bumper)) {
             // move to next state
             switch (trackState) {
                 // off
@@ -194,7 +194,7 @@ public class teleop extends OpMode {
         }
 
         //Left Wall
-        if (pressed("1dpadleft", gamepad1.dpad_left) == true) {
+        if (pressed("2dpadleft", gamepad2.dpad_left) == true) {
             if (leftWallIn) {
                 wallLeft.setPosition(0.4);
             } else {
@@ -203,7 +203,7 @@ public class teleop extends OpMode {
             leftWallIn = !leftWallIn;
         }
 
-        if (pressed("1dpadright", gamepad1.dpad_right) == true) {
+        if (pressed("2dpadright", gamepad2.dpad_right) == true) {
             if (rightWallIn) {
                 wallRight.setPosition(0.4);
             } else {
@@ -280,9 +280,9 @@ public class teleop extends OpMode {
         }
 
         telemetry.addData("", "");
-//        telemetry.addData("speed right", actualSpeedRight);
-//        telemetry.addData("speed left", actualSpeedLeft);
-//        telemetry.addData("target speed right", targetSpeedRight);
+        telemetry.addData("speed right", actualSpeedRight);
+        telemetry.addData("speed left", actualSpeedLeft);
+        telemetry.addData("target speed right", targetSpeedRight);
 //        telemetry.addData("tape speed", throttleTape);
 
     }
@@ -350,8 +350,9 @@ public class teleop extends OpMode {
             result = finalSpeed;
         } else if (currentSpeed < finalSpeed) {
             // we are slower than the final speed
-            if (currentSpeed + finalSpeed > change) {
+            if (Math.abs(currentSpeed + finalSpeed) < change) {
                 // the difference is smaller than the change
+                Log.i("test","2) difference is small" + currentSpeed + ", " + finalSpeed);
                 result = finalSpeed;
             } else {
                 result = currentSpeed + change;
@@ -359,6 +360,7 @@ public class teleop extends OpMode {
         } else if (currentSpeed > finalSpeed) {
             // we are faster than the final speed
             if (currentSpeed - finalSpeed < change) {
+                Log.i("test","difference is small" + currentSpeed + ", " + finalSpeed);
                 //difference is bigger than change
                 result = finalSpeed;
             } else {
