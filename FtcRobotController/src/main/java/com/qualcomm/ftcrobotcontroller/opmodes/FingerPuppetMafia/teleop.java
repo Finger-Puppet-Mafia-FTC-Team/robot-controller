@@ -232,7 +232,7 @@ public class teleop extends OpMode {
         if (gamepad2.right_stick_y < -.2) {
             tapeAngleMotor.setPower(-.1);
         } else if (gamepad2.right_stick_y > .2) {
-            tapeAngleMotor.setPower(.1);
+            tapeAngleMotor.setPower(.12);
         } else {
             tapeAngleMotor.setPower(0);
         }
