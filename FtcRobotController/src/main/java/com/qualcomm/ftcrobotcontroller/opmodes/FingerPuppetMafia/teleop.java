@@ -280,9 +280,9 @@ public class teleop extends OpMode {
         }
 
         telemetry.addData("", "");
-        telemetry.addData("speed right", actualSpeedRight);
-        telemetry.addData("speed left", actualSpeedLeft);
-        telemetry.addData("target speed right", targetSpeedRight);
+        //  telemetry.addData("speed right", actualSpeedRight);
+        //  telemetry.addData("speed left", actualSpeedLeft);
+        //  telemetry.addData("target speed right", targetSpeedRight);
 //        telemetry.addData("tape speed", throttleTape);
 
     }
@@ -352,7 +352,7 @@ public class teleop extends OpMode {
             // we are slower than the final speed
             if (Math.abs(currentSpeed + finalSpeed) < change) {
                 // the difference is smaller than the change
-                Log.i("test","2) difference is small" + currentSpeed + ", " + finalSpeed);
+                Log.i("test", "2) difference is small" + currentSpeed + ", " + finalSpeed);
                 result = finalSpeed;
             } else {
                 result = currentSpeed + change;
@@ -360,7 +360,7 @@ public class teleop extends OpMode {
         } else if (currentSpeed > finalSpeed) {
             // we are faster than the final speed
             if (currentSpeed - finalSpeed < change) {
-                Log.i("test","difference is small" + currentSpeed + ", " + finalSpeed);
+                Log.i("test", "difference is small" + currentSpeed + ", " + finalSpeed);
                 //difference is bigger than change
                 result = finalSpeed;
             } else {
