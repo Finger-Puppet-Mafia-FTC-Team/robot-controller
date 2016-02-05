@@ -41,6 +41,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -99,7 +100,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
     public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
 
-    protected SharedPreferences preferences;
+  protected WifiManager.WifiLock wifiLock;
+  protected SharedPreferences preferences;
 
     protected UpdateUI.Callback callback;
     protected Context context;
@@ -216,114 +218,121 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_ftc_controller);
 
-        Log.i("test", "called onCreate");
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        //setContentView(R.layout.HelloOpenCvLayout);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCameraIndex(1);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
 
 
-        utility = new Utility(this);
-        context = this;
-        entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-        buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-        buttonMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOptionsMenu();
-            }
-        });
+      Log.i("test", "called onCreate");
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      //setContentView(R.layout.HelloOpenCvLayout);
+      mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
+      mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+      mOpenCvCameraView.setCameraIndex(1);
+      mOpenCvCameraView.setCvCameraViewListener(this);
+      mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
 
-        textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-        textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
-        textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-        textOpMode = (TextView) findViewById(R.id.textOpMode);
-        textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-        textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-        textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-        immersion = new ImmersiveMode(getWindow().getDecorView());
-        dimmer = new Dimmer(this);
-        dimmer.longBright();
-        Restarter restarter = new RobotRestarter();
+    super.onCreate(savedInstanceState);
 
-        updateUI = new UpdateUI(this, dimmer);
-        updateUI.setRestarter(restarter);
-        updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-                textGamepad, textOpMode, textErrorMessage, textDeviceName);
-        callback = updateUI.new Callback();
+    setContentView(R.layout.activity_ftc_controller);
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+    utility = new Utility(this);
+    context = this;
+    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
+    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
+    buttonMenu.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        openOptionsMenu();
+      }
+    });
 
-        hittingMenuButtonBrightensScreen();
+    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
+    textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
+    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
+    textOpMode = (TextView) findViewById(R.id.textOpMode);
+    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
+    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
+    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
+    immersion = new ImmersiveMode(getWindow().getDecorView());
+    dimmer = new Dimmer(this);
+    dimmer.longBright();
+    Restarter restarter = new RobotRestarter();
 
-        if (USE_DEVICE_EMULATION) {
-            HardwareFactory.enableDeviceEmulation();
-        }
-    }
+    updateUI = new UpdateUI(this, dimmer);
+    updateUI.setRestarter(restarter);
+    updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
+        textGamepad, textOpMode, textErrorMessage, textDeviceName);
+    callback = updateUI.new Callback();
+
+    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+    preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+    WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
+
+    hittingMenuButtonBrightensScreen();
+
+    if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+
+    // save 4MB of logcat to the SD card
+    RobotLog.writeLogcatToDisk(this, 4 * 1024);
+
+    Intent intent = new Intent(this, FtcRobotControllerService.class);
+    bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+
+    callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
+
+    entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        dimmer.handleDimTimer();
+        return false;
+      }
+    });
+
+    wifiLock.acquire();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+  }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+  @Override
+  protected void onStop() {
+    super.onStop();
 
-        // save 4MB of logcat to the SD card
-        RobotLog.writeLogcatToDisk(this, 4 * 1024);
+    if (controllerService != null) unbindService(connection);
 
-        Intent intent = new Intent(this, FtcRobotControllerService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    RobotLog.cancelWriteLogcatToDisk(this);
 
-        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+    wifiLock.release();
+  }
 
-        callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-        entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                dimmer.handleDimTimer();
-                return false;
-            }
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (controllerService != null) unbindService(connection);
-
-        RobotLog.cancelWriteLogcatToDisk(this);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        // When the window loses focus (e.g., the action overflow is shown),
-        // cancel any pending hide action. When the window gains focus,
-        // hide the system UI.
-        if (hasFocus) {
-            if (ImmersiveMode.apiOver19()) {
-                // Immersive flag only works on API 19 and above.
-                immersion.hideSystemUI();
-            }
-        } else {
-            immersion.cancelSystemUIHide();
-        }
-    }
+  @Override
+  public void onWindowFocusChanged(boolean hasFocus) {
+      super.onWindowFocusChanged(hasFocus);
+      // When the window loses focus (e.g., the action overflow is shown),
+      // cancel any pending hide action. When the window gains focus,
+      // hide the system UI.
+      if (hasFocus) {
+          if (ImmersiveMode.apiOver19()) {
+              // Immersive flag only works on API 19 and above.
+              immersion.hideSystemUI();
+          }
+      } else {
+          immersion.cancelSystemUIHide();
+      }
+  }
 
     @Override
     public void onPause() {
