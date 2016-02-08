@@ -56,7 +56,7 @@ public class Autonomous1 extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;
-    OpticalDistanceSensor lightSensor;
+    ColorSensor lightSensor;
     int count = 0;
 
     double lightAmount = 0;
@@ -75,18 +75,12 @@ public class Autonomous1 extends OpMode {
      */
     @Override
     public void init() {
-        telemetry.addData("test", "init!");
-        drive = false;
-
 		/*
          * Use the hardwareMap to get the dc motors and servos by name. Note
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-        lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
-        motorRight = hardwareMap.dcMotor.get("motor_2");
-        motorLeft = hardwareMap.dcMotor.get("motor_1");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        lightSensor = hardwareMap.colorSensor.get("color");
     }
 
     /**
@@ -96,48 +90,11 @@ public class Autonomous1 extends OpMode {
      */
     @Override
     public void loop() {
-        count += 1;
-        // The f turns it into a float number.
-        float right = 0.05f;
-        float left = 0.05f;
+        lightSensor.enableLed(false);
+        telemetry.addData("red", lightSensor.red());
+        telemetry.addData("blue", lightSensor.blue());
+        telemetry.addData("green", lightSensor.green());
 
-        lightAmount = lightSensor.getLightDetected();
-
-        if (lightAmount > 0.2) {
-            // tape brightness in the robotics room is 0.2
-            // TODO: figure out why it is so low
-            // don't move after we have found the tape
-            left = 0;
-            right = 0;
-            telemetry.addData("light material", "tape");
-        } else {
-            telemetry.addData("light material", "other");
-        }
-        //telemetry.addData("light connection", lightSensor.getConnectionInfo());
-        telemetry.addData("light brightness", lightSensor.getLightDetected());
-        telemetry.addData("light", lightSensor.getLightDetectedRaw());
-        //telemetry.addData("light status", lightSensor.status());
-
-		/*
-		 * Gamepad 1
-		 * 
-		 * Stops/starts the robot with Y
-		 */
-
-        // toggle drive when a is pressed
-        if (gamepad1.a) {
-
-            drive = !drive;
-        }
-
-        if (drive == false) {
-            // gamepad1.a was pressed. Don't move.
-            right = 0;
-            left = 0;
-        }
-
-        motorRight.setPower(right);
-        motorLeft.setPower(left);
     }
 
     /*
@@ -148,6 +105,5 @@ public class Autonomous1 extends OpMode {
     @Override
     public void stop() {
         telemetry.addData("Text", "stop");
-        telemetry.addData("Light", lightSensor.getLightDetected());
     }
 }
