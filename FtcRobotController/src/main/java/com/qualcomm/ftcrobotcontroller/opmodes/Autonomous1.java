@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -57,6 +59,7 @@ public class Autonomous1 extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
     ColorSensor lightSensor;
+    OpticalDistanceSensor ods;
     int count = 0;
 
     double lightAmount = 0;
@@ -81,6 +84,7 @@ public class Autonomous1 extends OpMode {
 		 * configured your robot and created the configuration file.
 		 */
         lightSensor = hardwareMap.colorSensor.get("color");
+        ods = hardwareMap.opticalDistanceSensor.get("ods");
     }
 
     /**
@@ -90,11 +94,12 @@ public class Autonomous1 extends OpMode {
      */
     @Override
     public void loop() {
-        lightSensor.enableLed(false);
-        telemetry.addData("red", lightSensor.red());
+        lightSensor.enableLed(true);
+        Log.i("test", String.valueOf(lightSensor.argb()));
+        telemetry.addData("red", lightSensor.argb());
         telemetry.addData("blue", lightSensor.blue());
         telemetry.addData("green", lightSensor.green());
-
+        telemetry.addData("ods", ods.getLightDetected());
     }
 
     /*

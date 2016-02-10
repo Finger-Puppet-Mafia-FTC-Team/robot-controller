@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -14,14 +15,13 @@ import java.util.Date;
  * <p/>
  * Hardware:
  * Motors:
- * - motor_1
- * - motor_2
+ * - driveLeft
+ * - driveRight
  * Sensors:
- * - light_1
+ * - ods
  *
  * Autonomous program Version 2
  *
- * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
     AutonomousHardware hardware;
@@ -54,10 +54,8 @@ public class Autonomous2 extends OpMode {
     // array of step instances in order to be run.
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
-            new FindCenterTape(),
-            new turnTowardBeacon(),
-            new driveTowardBeacon(),
-            new alignWithBeacon()
+            new findWhiteTape(),
+            new followTape()
     };
 
     // feed
@@ -98,7 +96,7 @@ public class Autonomous2 extends OpMode {
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
         hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
-        hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
+        hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("ods");
     }
 
     void nextStep() {
