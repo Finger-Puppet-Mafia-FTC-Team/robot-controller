@@ -33,11 +33,11 @@
         android:name="android.permission.WRITE_SETTINGS"
         android:required="true" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.front" />
     <uses-feature android:name="android.hardware.usb.accessory" />
 
-<<<<<<< HEAD
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -47,26 +47,6 @@
     <uses-feature
         android:name="android.hardware.camera.front.autofocus"
         android:required="false" />
-=======
-  <application
-    android:allowBackup="true"
-    android:icon="@drawable/ic_launcher"
-    android:label="@string/app_name"
-    android:theme="@style/AppTheme" >
-    <activity
-      android:name=".FtcRobotControllerActivity"
-      android:configChanges="orientation|screenSize"
-      android:label="@string/app_name"
-      android:launchMode="singleTask" >
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-
-      <intent-filter>
-        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-      </intent-filter>
->>>>>>> 92eb63af30ed434a5f3953e4f5dd261b8052d6bb
 
     <application
         android:allowBackup="true"
@@ -80,9 +60,10 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
+            <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
 
