@@ -30,7 +30,7 @@ public class findWhiteTape extends step{
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         // check if found tape
        // int
         //hardware.motorRight.setTargetPosition();

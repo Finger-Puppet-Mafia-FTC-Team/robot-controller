@@ -20,7 +20,7 @@ public class step {
         Log.i("test", "initStep() not overridden");
 
     }
-    public void runStep (OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         Log.i("test", "runStep() not overridden");
 
     }

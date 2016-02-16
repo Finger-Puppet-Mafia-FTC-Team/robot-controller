@@ -59,7 +59,9 @@ public class Autonomous1 extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
     ColorSensor lightSensor;
+    ColorSensor lightSensor2;
     OpticalDistanceSensor ods;
+    TelemetryHelpers th = new TelemetryHelpers();
     int count = 0;
 
     double lightAmount = 0;
@@ -83,8 +85,13 @@ public class Autonomous1 extends OpMode {
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-        lightSensor = hardwareMap.colorSensor.get("color");
+        lightSensor = hardwareMap.colorSensor.get("bottomColor");
+        lightSensor2 = hardwareMap.colorSensor.get("topColor");
         ods = hardwareMap.opticalDistanceSensor.get("ods");
+        lightSensor.enableLed(true);
+        lightSensor2.enableLed(false);
+
+        //ods = hardwareMap.opticalDistanceSensor.get("ods");
     }
 
     /**
@@ -94,12 +101,25 @@ public class Autonomous1 extends OpMode {
      */
     @Override
     public void loop() {
-        lightSensor.enableLed(true);
-        Log.i("test", String.valueOf(lightSensor.argb()));
-        telemetry.addData("red", lightSensor.argb());
-        telemetry.addData("blue", lightSensor.blue());
-        telemetry.addData("green", lightSensor.green());
-        telemetry.addData("ods", ods.getLightDetected());
+        count += 1;
+        //Log.i("test", String.valueOf(lightSensor.argb()));
+        lightSensor2.enableLed(true);
+        telemetry.addData("0 count", count);
+        telemetry.addData("1 ods", ods.getLightDetected());
+        telemetry.addData("2      ", "1   | 2   ");
+        telemetry.addData("3 -----", "----------");
+        String redText = lightSensor.red() + " | " + lightSensor2.red();
+        telemetry.addData("3 red  ", redText);
+        telemetry.addData("4 blue ", lightSensor.blue());
+        telemetry.addData("5 green", lightSensor.green());
+        telemetry.addData("6 test ", lightSensor.getDeviceName());
+
+        telemetry.addData("7 test2", lightSensor.argb());
+
+        telemetry.addData("8red", lightSensor2.red());
+        telemetry.addData("8blue", lightSensor2.blue());
+        telemetry.addData("8green", lightSensor2.green());
+        telemetry.addData("8test", lightSensor2.getDeviceName());
     }
 
     /*

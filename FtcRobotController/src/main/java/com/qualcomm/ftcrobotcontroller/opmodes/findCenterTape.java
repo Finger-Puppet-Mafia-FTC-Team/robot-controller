@@ -40,11 +40,11 @@ class FindCenterTape extends step {
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         float right = 0;
         float left = 0;
 
-        lightAmount = hardware.lightSensor.getLightDetected();
+        lightAmount = hardware.ods.getLightDetected();
 
         /*
          * Moves away from wall until it finds the center tape.

@@ -52,7 +52,7 @@ public class turnTowardBeacon extends step{
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         //Log.i("test", String.valueOf(hardware.motorRight.getCurrentPosition()) +' ' + String.valueOf(origionalPosition + rightTurn));
         if(rightTurn > 0) {
             if (hardware.motorRight.getCurrentPosition() >= origionalPosition + rightTurn) {

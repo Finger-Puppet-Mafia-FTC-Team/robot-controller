@@ -5,7 +5,6 @@ import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class findWhiteTape extends step{
-
     public boolean done = false;
 
     @Override
@@ -19,10 +18,11 @@ public class findWhiteTape extends step{
     }
 
     @Override
-    public void runStep (OpMode OpModeInstance, AutonomousHardware hardware) {
-        double brightness = hardware.lightSensor.getLightDetected();
+    public void runStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
 
-        if(brightness > 0.10) {
+//        double brightness = hardware.lightSensor.getLightDetected();
+
+        if(hardware.ods.getLightDetected() > OpModeInstance.getFloorBrightness() + 0.1 ) {
             hardware.motorLeft.setPower(0);
             hardware.motorRight.setPower(0);
             done = true;

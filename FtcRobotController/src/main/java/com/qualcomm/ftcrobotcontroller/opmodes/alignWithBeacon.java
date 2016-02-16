@@ -29,7 +29,7 @@ public class alignWithBeacon extends step{
         didInit = true;
     }
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if(hardware.motorRight.getCurrentPosition() == origionalPosition + 20000000) {
             shouldContinue = true;
             return;

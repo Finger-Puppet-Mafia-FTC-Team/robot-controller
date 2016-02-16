@@ -19,16 +19,26 @@ public class followTape extends step{
     }
 
     @Override
-    public void runStep (OpMode OpModeInstance, AutonomousHardware hardware) {
-        double brightness = hardware.lightSensor.getLightDetected();
+    public void runStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
+        double brightness = hardware.ods.getLightDetected();
 
-        if(brightness > 0.10) {
-            hardware.motorLeft.setPower(-0.35);
-            hardware.motorRight.setPower(0);
-            done = true;
+        if(brightness > 0.15 + OpModeInstance.getFloorBrightness()) {
+            hardware.motorLeft.setPower(0);
+            hardware.motorRight.setPower(-0.5);
+            OpModeInstance.addMessage("on tape");
         } else {
+            OpModeInstance.addMessage("off tape");
+            hardware.motorLeft.setPower(-0.5);
             hardware.motorRight.setPower(0);
-            hardware.motorLeft.setPower(-0.35);
         }
+        if(hardware.sonicLeft.getUltrasonicLevel() < 8) {
+            done = true;
+        }
+        if(hardware.sonicRight.getUltrasonicLevel() < 8) {
+            done = true;
+        }
+        OpModeInstance.addMessage("sonic distance l" + hardware.sonicLeft.getUltrasonicLevel());
+        OpModeInstance.addMessage("sonic distance r" + hardware.sonicRight.getUltrasonicLevel());
+
     }
 }

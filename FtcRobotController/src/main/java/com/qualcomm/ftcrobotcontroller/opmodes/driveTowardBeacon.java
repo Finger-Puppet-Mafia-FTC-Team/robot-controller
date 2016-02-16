@@ -39,7 +39,7 @@ public class driveTowardBeacon extends step {
     }
 
     @Override
-    public void runStep(OpMode OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         if (hardware.motorLeft.getCurrentPosition() >= origional + 6500 - 1) {
             shouldContinue = true;
             return;

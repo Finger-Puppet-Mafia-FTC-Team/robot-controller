@@ -7,6 +7,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -19,12 +20,18 @@ import java.util.Date;
  * - driveRight
  * Sensors:
  * - ods
- *
+ * <p/>
  * Autonomous program Version 2
- *
  */
 public class Autonomous2 extends OpMode {
     AutonomousHardware hardware;
+
+    ArrayList<String> messages = new ArrayList<String>();
+
+    public void addMessage(String message) {
+        messages.add(message);
+    }
+
 
     /* === Steps ===
      * Each step is in it's own class. We create a variable to reference the class instance here
@@ -39,8 +46,8 @@ public class Autonomous2 extends OpMode {
     long startTime = 0;
 
     // used by steps
-    double redTape = .5;
-    double whiteTape = 0.6;
+    double floorBrightness = 0;
+    double whiteBrightness = 0;
 
     boolean dev = false;
 
@@ -55,7 +62,8 @@ public class Autonomous2 extends OpMode {
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
             new findWhiteTape(),
-            new followTape()
+            new followTape(),
+            new stop()
     };
 
     // feed
@@ -64,13 +72,25 @@ public class Autonomous2 extends OpMode {
     /**
      * Constructor
      */
-    public Autonomous2() {}
+    public Autonomous2() {
+    }
 
-    public boolean getIsBlue () {
+    /*
+     * Colors
+     */
+    public double getFloorBrightness() {
+        return floorBrightness;
+    }
+
+    public void setFloorBrightness(double brightnes) {
+        floorBrightness = brightnes;
+    }
+
+    public boolean getIsBlue() {
         return isBlue;
     }
 
-    public boolean isDev () {
+    public boolean isDev() {
         return dev;
     }
 
@@ -96,7 +116,10 @@ public class Autonomous2 extends OpMode {
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
         hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
-        hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        hardware.topColor = hardwareMap.colorSensor.get("topColor");
+        hardware.ods = hardwareMap.opticalDistanceSensor.get("ods");
+        hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
+        hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
     }
 
     void nextStep() {
@@ -113,6 +136,11 @@ public class Autonomous2 extends OpMode {
         }
         Log.i("test", stepClasses[index].getClass().getName());
         stepIndex = index;
+    }
+
+    @Override
+    public void init_loop() {
+        setFloorBrightness(hardware.ods.getLightDetected());
     }
 
     /**
@@ -138,11 +166,17 @@ public class Autonomous2 extends OpMode {
 
         // run step
         step a = stepClasses[stepIndex];
-         a.initStep(this, hardware);
-         a.runStep(this, hardware);
+        a.initStep(this, hardware);
+        a.runStep(this, hardware);
         // log step time
         telemetry.addData("step index", stepIndex);
         telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
+        telemetry.addData("floor brightness", getFloorBrightness());
+        for (int i = 0; i < messages.size(); i++) {
+            telemetry.addData(String.valueOf(i), messages.get(i));
+        }
+
+        messages.clear();
         if (a.shouldContinue()) {
             nextStep();
         }
