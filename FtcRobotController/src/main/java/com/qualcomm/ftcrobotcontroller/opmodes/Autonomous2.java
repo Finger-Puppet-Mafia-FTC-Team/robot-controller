@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -63,6 +64,8 @@ public class Autonomous2 extends OpMode {
     step[] stepClasses = {
             new findWhiteTape(),
             new followTape(),
+            new AlignWithBeacon(),
+            new DriveClose(),
             new stop()
     };
 
@@ -120,6 +123,7 @@ public class Autonomous2 extends OpMode {
         hardware.ods = hardwareMap.opticalDistanceSensor.get("ods");
         hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
+        hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
     }
 
     void nextStep() {

@@ -1,12 +1,16 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import org.swerverobotics.library.*;
+import org.swerverobotics.library.interfaces.*;
 
 public class AutonomousHardware {
     boolean didInit = false;
@@ -15,9 +19,11 @@ public class AutonomousHardware {
     public DcMotor motorLeft;
     public OpticalDistanceSensor ods;
     public ColorSensor topColor;
+    public
     public DcMotor plowMotor;
     public UltrasonicSensor sonicLeft;
     public UltrasonicSensor sonicRight;
+    public ModernRoboticsI2cGyro gyro;
 
     // distance for competition robot
     // amount traveled per rotation
