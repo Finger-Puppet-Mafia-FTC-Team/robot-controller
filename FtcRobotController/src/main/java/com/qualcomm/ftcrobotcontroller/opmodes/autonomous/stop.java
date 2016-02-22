@@ -12,5 +12,4 @@ public class stop  extends step{
         hardware.motorLeft.setPower(0);
         hardware.motorRight.setPower(0);
     }
-
 }

@@ -31,10 +31,10 @@ public class followTape extends step{
             hardware.motorLeft.setPower(-0.5);
             hardware.motorRight.setPower(0);
         }
-        if(hardware.sonicLeft.getUltrasonicLevel() < 8) {
+        if(hardware.sonicLeft.getUltrasonicLevel() < 15) {
             done = true;
         }
-        if(hardware.sonicRight.getUltrasonicLevel() < 8) {
+        if(hardware.sonicRight.getUltrasonicLevel() < 15) {
             done = true;
         }
         OpModeInstance.addMessage("sonic distance l" + hardware.sonicLeft.getUltrasonicLevel());
