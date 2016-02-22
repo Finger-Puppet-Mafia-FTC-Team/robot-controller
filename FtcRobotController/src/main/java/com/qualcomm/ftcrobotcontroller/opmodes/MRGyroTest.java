@@ -37,6 +37,7 @@ import android.view.View;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftcrobotcontroller.R;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -58,7 +59,7 @@ public class MRGyroTest extends LinearOpMode {
   @Override
   public void runOpMode() throws InterruptedException {
 
-    GyroSensor sensorGyro;
+    ModernRoboticsI2cGyro sensorGyro;
     int xVal, yVal, zVal = 0;
     int heading = 0;
 
@@ -67,7 +68,7 @@ public class MRGyroTest extends LinearOpMode {
     hardwareMap.logDevices();
 
     // get a reference to our GyroSensor object.
-    sensorGyro = hardwareMap.gyroSensor.get("gyro");
+    sensorGyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
     // calibrate the gyro.
     sensorGyro.calibrate();
@@ -101,6 +102,7 @@ public class MRGyroTest extends LinearOpMode {
       telemetry.addData("2. y", String.format("%03d", yVal));
       telemetry.addData("3. z", String.format("%03d", zVal));
       telemetry.addData("4. h", String.format("%03d", heading));
+      telemetry.addData("5. i", String.format("%03d", sensorGyro.getIntegratedZValue()));
 
       Thread.sleep(100);
     }
