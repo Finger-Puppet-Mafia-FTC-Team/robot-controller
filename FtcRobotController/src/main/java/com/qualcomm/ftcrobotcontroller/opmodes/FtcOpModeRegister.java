@@ -68,11 +68,12 @@ public class FtcOpModeRegister implements OpModeRegister {
         //manager.register("Autonomous - Long", autonomousLong.class);
         //  manager.register("Autonomous - Blue", Autonomous2.class);
         //  manager.register("Autonomous - Red", autonomousRed.class);
+        manager.register("debug - Gyro", MRGyroTest.class);
         manager.register("debug - Autonomous Blue", AutonomouseDebug.class);
-        manager.register("debug - Autonomous Red", AutoRedDebug.class);
+        //manager.register("debug - Autonomous Red", AutoRedDebug.class);
         manager.register("debug - Distance", distance.class);
         manager.register("debug - Light Brightness", Autonomous1.class);
-        manager.register("debug - Show Motor Position", showMotorPosition.class);
-        manager.register("debug - Hardware", DebugHardware.class);
+        //manager.register("debug - Show Motor Position", showMotorPosition.class);
+        //manager.register("debug - Hardware", DebugHardware.class);
     }
 }
