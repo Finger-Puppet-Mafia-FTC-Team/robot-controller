@@ -22,6 +22,7 @@ public class teleop extends OpMode {
     Servo wallRight;
     Servo track;
     Servo catcherDoor;
+    Servo preloadArm;
 
     DcMotor tapeMotor;
     DcMotor collectorMotor;
@@ -35,6 +36,8 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
+
+    boolean preloadArmDown = true;
 
     double tapeAngle = 0.8;
     int trackState = 0;
@@ -54,6 +57,8 @@ public class teleop extends OpMode {
         sideArmRight = hardwareMap.servo.get("sideArmRight");
         wallLeft = hardwareMap.servo.get("wallLeft");
         wallRight = hardwareMap.servo.get("wallRight");
+
+        preloadArm = hardwareMap.servo.get("preloadArm");
 
         track = hardwareMap.servo.get("track");
 
@@ -77,7 +82,7 @@ public class teleop extends OpMode {
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.39);
+        sideArmLeft.setPosition(0.33);
         sideArmRight.setPosition(0.79);
 
         wallLeft.setPosition(0);
@@ -85,13 +90,27 @@ public class teleop extends OpMode {
 
         track.setPosition(.5);
         catcherDoor.setPosition(.43);
+
+        preloadArm.setPosition(0.9);
     }
+
 
     @Override
     public void loop() {
         double throttleTape = 0;
         float targetSpeedLeft = gamepad1.left_stick_y;
         float targetSpeedRight = gamepad1.right_stick_y;
+
+
+        // preload arm
+        if(pressed("1a", gamepad1.a)) {
+            if(preloadArmDown == true) {
+                preloadArm.setPosition(0);
+            } else {
+                preloadArm.setPosition(0.9);
+            }
+            preloadArmDown = !preloadArmDown;
+        }
 
         //------ Catcher --------
 
@@ -176,7 +195,7 @@ public class teleop extends OpMode {
         if (pressed("2x", gamepad2.x)) {
             sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.39);
+                sideArmLeft.setPosition(0.33);
             } else {
                 sideArmLeft.setPosition(0.9);
             }
@@ -263,6 +282,11 @@ public class teleop extends OpMode {
         }
 
         messages.clear();
+
+        if(!preloadArmDown) {
+            telemetry.addData("Preload Arm", "Up");
+        }
+
         if (!leftWallIn) {
             telemetry.addData("Left Wall", "Open");
         }
