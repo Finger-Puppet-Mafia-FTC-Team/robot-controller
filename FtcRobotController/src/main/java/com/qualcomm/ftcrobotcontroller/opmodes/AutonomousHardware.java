@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import org.swerverobotics.library.*;
-import org.swerverobotics.library.interfaces.*;
+
 
 public class AutonomousHardware {
     boolean didInit = false;
     public HardwareMap hardwareMap = new HardwareMap();
     public DcMotor motorRight;
     public DcMotor motorLeft;
+    public DcMotor collector;
     public OpticalDistanceSensor ods;
     public ColorSensor topColor;
     public ColorSensor bottomColor;
@@ -27,6 +27,9 @@ public class AutonomousHardware {
     public ModernRoboticsI2cGyro gyro;
 
     public Servo preloadArm;
+    public Servo track;
+    public Servo wallLeft;
+
     // distance for competition robot
     // amount traveled per rotation
     public double rotation = 179.3568;

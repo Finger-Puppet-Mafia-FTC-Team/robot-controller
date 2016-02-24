@@ -47,8 +47,8 @@ public class Autonomous2 extends OpMode {
     long startTime = 0;
 
     // used by steps
+    double[] floorColor = {0, 0, 0};
     double floorBrightness = 0;
-    double whiteBrightness = 0;
 
     boolean dev = false;
 
@@ -129,6 +129,7 @@ public class Autonomous2 extends OpMode {
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
         hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
+        hardware.collector = hardwareMap.dcMotor.get("collector");
         hardware.topColor = hardwareMap.colorSensor.get("topColor");
         hardware.bottomColor = hardwareMap.colorSensor.get("bottomColor");
         hardware.ods = hardwareMap.opticalDistanceSensor.get("ods");
@@ -136,6 +137,8 @@ public class Autonomous2 extends OpMode {
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
         hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         hardware.preloadArm = hardwareMap.servo.get("preloadArm");
+        hardware.track = hardwareMap.servo.get("track");
+        hardware.wallLeft = hardwareMap.servo.get("wallLeft");
     }
 
     void nextStep() {
@@ -156,7 +159,13 @@ public class Autonomous2 extends OpMode {
 
     @Override
     public void init_loop() {
+
+        hardware.preloadArm.setPosition(0.9);
+
+        setFloorColor(hardware.bottomColor.red(), hardware.bottomColor.green(), hardware.bottomColor.blue());
         setFloorBrightness(hardware.ods.getLightDetected());
+
+        hardware.wallLeft.setPosition(0.4);
     }
 
     /**
@@ -184,10 +193,15 @@ public class Autonomous2 extends OpMode {
         step a = stepClasses[stepIndex];
         a.initStep(this, hardware);
         a.runStep(this, hardware);
+
+        // run collector to get debris out of the way
+        hardware.collector.setPower(1);
+        hardware.track.setPosition(1);
+
         // log step time
         telemetry.addData("step index", stepIndex);
         telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
-        telemetry.addData("floor brightness", getFloorBrightness());
+        telemetry.addData("floor brightness", getFloorColor());
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
