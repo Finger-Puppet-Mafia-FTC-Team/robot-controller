@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import org.swerverobotics.library.*;
 import org.swerverobotics.library.interfaces.*;
@@ -25,6 +26,7 @@ public class AutonomousHardware {
     public UltrasonicSensor sonicRight;
     public ModernRoboticsI2cGyro gyro;
 
+    public Servo preloadArm;
     // distance for competition robot
     // amount traveled per rotation
     public double rotation = 179.3568;

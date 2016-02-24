@@ -66,6 +66,7 @@ public class Autonomous2 extends OpMode {
             new followTape(),
             new AlignWithBeacon(),
             new DriveClose(),
+            new dumpClimbers(),
             new stop()
     };
 
@@ -134,6 +135,7 @@ public class Autonomous2 extends OpMode {
         hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
         hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        hardware.preloadArm = hardwareMap.servo.get("preloadArm");
     }
 
     void nextStep() {
