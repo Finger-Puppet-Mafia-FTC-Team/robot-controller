@@ -81,12 +81,21 @@ public class Autonomous2 extends OpMode {
     /*
      * Colors
      */
-    public double getFloorBrightness() {
-        return floorBrightness;
+    public double[] getFloorColor() {
+        return floorColor;
     }
 
-    public void setFloorBrightness(double brightnes) {
-        floorBrightness = brightnes;
+    public void setFloorColor(double red, double green, double blue) {
+        floorColor[0] = red;
+        floorColor[1] = green;
+        floorColor[2] = blue;
+    }
+
+    public double getFloorBrightness () {
+        return floorBrightness;
+    }
+    public void setFloorBrightness(double brightness) {
+        floorBrightness = brightness;
     }
 
     public boolean getIsBlue() {
@@ -120,6 +129,7 @@ public class Autonomous2 extends OpMode {
         hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
         hardware.topColor = hardwareMap.colorSensor.get("topColor");
+        hardware.bottomColor = hardwareMap.colorSensor.get("bottomColor");
         hardware.ods = hardwareMap.opticalDistanceSensor.get("ods");
         hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");

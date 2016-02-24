@@ -19,7 +19,7 @@ public class AutonomousHardware {
     public DcMotor motorLeft;
     public OpticalDistanceSensor ods;
     public ColorSensor topColor;
-    public
+    public ColorSensor bottomColor;
     public DcMotor plowMotor;
     public UltrasonicSensor sonicLeft;
     public UltrasonicSensor sonicRight;
