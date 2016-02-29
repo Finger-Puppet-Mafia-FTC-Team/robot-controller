@@ -16,7 +16,7 @@ public class dumpClimbers extends step {
 
     @Override
     public void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
-        hardware.preloadArm.setPosition(0);
+        hardware.preloadArm.setPosition(0.9);
         //stepStartTime = new Date().getTime();
     }
 
