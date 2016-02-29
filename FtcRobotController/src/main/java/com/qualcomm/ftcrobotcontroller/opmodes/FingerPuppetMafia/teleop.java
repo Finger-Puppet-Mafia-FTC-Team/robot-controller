@@ -82,7 +82,7 @@ public class teleop extends OpMode {
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.33);
+        sideArmLeft.setPosition(0.1);
         sideArmRight.setPosition(0.79);
 
         wallLeft.setPosition(0);
@@ -91,7 +91,7 @@ public class teleop extends OpMode {
         track.setPosition(.5);
         catcherDoor.setPosition(.43);
 
-        preloadArm.setPosition(0.9);
+        preloadArm.setPosition(0);
     }
 
 
@@ -105,9 +105,10 @@ public class teleop extends OpMode {
         // preload arm
         if(pressed("1a", gamepad1.a)) {
             if(preloadArmDown == true) {
-                preloadArm.setPosition(0);
-            } else {
                 preloadArm.setPosition(0.9);
+
+            } else {
+                preloadArm.setPosition(0);
             }
             preloadArmDown = !preloadArmDown;
         }
@@ -195,9 +196,9 @@ public class teleop extends OpMode {
         if (pressed("2x", gamepad2.x)) {
             sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.33);
+                sideArmLeft.setPosition(0.1);
             } else {
-                sideArmLeft.setPosition(0.9);
+                sideArmLeft.setPosition(1);
             }
 
         }
@@ -205,7 +206,7 @@ public class teleop extends OpMode {
         //Right arm
         if (pressed("2b", gamepad2.b)) {
             if (sideArmRightIn) {
-                sideArmRight.setPosition(0.25);
+                sideArmRight.setPosition(0.1);
             } else {
                 sideArmRight.setPosition(0.79);
             }
@@ -215,7 +216,7 @@ public class teleop extends OpMode {
         //Left Wall
         if (pressed("2dpadleft", gamepad2.dpad_left) == true) {
             if (leftWallIn) {
-                wallLeft.setPosition(0.4);
+                wallLeft.setPosition(0.6);
             } else {
                 wallLeft.setPosition(0);
             }
@@ -268,9 +269,9 @@ public class teleop extends OpMode {
 
         }
 
-        if (gamepad2.left_stick_y < -0.2) {
+        if (gamepad2.left_stick_y < -0.4) {
             throttleTape = -0.8;
-        } else if (gamepad2.left_stick_y > .2) {
+        } else if (gamepad2.left_stick_y > 0.4) {
             throttleTape = 0.8;
         }
 
@@ -303,6 +304,7 @@ public class teleop extends OpMode {
             telemetry.addData("trackState", trackStateText);
         }
 
+        telemetry.addData("tapethrottle", throttleTape);
         telemetry.addData("", "");
         //  telemetry.addData("speed right", actualSpeedRight);
         //  telemetry.addData("speed left", actualSpeedLeft);
