@@ -56,11 +56,21 @@ public class followTape extends step{
         if(isWhite) {
             hardware.motorLeft.setPower(0);
             hardware.motorRight.setPower(-0.5);
+            if(OpModeInstance.getIsBlue()) {
+                // drive opposite direction if on blue team
+                hardware.motorLeft.setPower(-0.5);
+                hardware.motorRight.setPower(0);
+            }
             OpModeInstance.addMessage("on tape");
         } else {
             OpModeInstance.addMessage("off tape");
             hardware.motorLeft.setPower(-0.5);
             hardware.motorRight.setPower(0);
+            if(OpModeInstance.getIsBlue()) {
+                // drive opposite direction if on blue team
+                hardware.motorLeft.setPower(0);
+                hardware.motorRight.setPower(-0.5);
+            }
         }
         if(hardware.sonicLeft.getUltrasonicLevel() < 15) {
             done = true;
@@ -68,6 +78,9 @@ public class followTape extends step{
         if(hardware.sonicRight.getUltrasonicLevel() < 15) {
             done = true;
         }
+
+
+
         OpModeInstance.addMessage("sonic distance l" + hardware.sonicLeft.getUltrasonicLevel());
         OpModeInstance.addMessage("sonic distance r" + hardware.sonicRight.getUltrasonicLevel());
 
