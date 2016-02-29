@@ -139,6 +139,14 @@ public class Autonomous2 extends OpMode {
         hardware.preloadArm = hardwareMap.servo.get("preloadArm");
         hardware.track = hardwareMap.servo.get("track");
         hardware.wallLeft = hardwareMap.servo.get("wallLeft");
+        hardware.wallRight = hardwareMap.servo.get("wallRight");
+        hardware.armLeft = hardwareMap.servo.get("sideArmLeft");
+        hardware.armRight = hardwareMap.servo.get("sideArmRight");
+        hardware.catcherDoor = hardwareMap.servo.get("catcherDoor");
+
+        hardware.gyro.calibrate();
+        hardware.bottomColor.enableLed(true);
+        hardware.topColor.enableLed(false);
     }
 
     void nextStep() {
@@ -160,12 +168,16 @@ public class Autonomous2 extends OpMode {
     @Override
     public void init_loop() {
 
-        hardware.preloadArm.setPosition(0.9);
+        hardware.preloadArm.setPosition(0);
 
         setFloorColor(hardware.bottomColor.red(), hardware.bottomColor.green(), hardware.bottomColor.blue());
         setFloorBrightness(hardware.ods.getLightDetected());
 
-        hardware.wallLeft.setPosition(0.4);
+        hardware.wallLeft.setPosition(0.6);
+        hardware.wallRight.setPosition(0.4);
+        hardware.catcherDoor.setPosition(0.43);
+        hardware.armLeft.setPosition(0.1);
+        hardware.armRight.setPosition(0.79);
     }
 
     /**
@@ -175,6 +187,12 @@ public class Autonomous2 extends OpMode {
      */
     @Override
     public void loop() {
+
+        if(hardware.gyro.isCalibrating()) {
+            telemetry.addData("Gyro", "Is Calibrating. Please Wait");
+            return;
+        }
+
         if (startTime == 0) {
             startTime = new Date().getTime();
         }
@@ -189,19 +207,29 @@ public class Autonomous2 extends OpMode {
 
         telemetry.addData("step", stepClasses[stepIndex].getClass().getName());
 
+        // run collector to get debris out of the way. We do this before the step so it can override it.
+        hardware.collector.setPower(1);
+        hardware.track.setPosition(1);
+
+
+        if(getIsBlue()) {
+            telemetry.addData("track", "1");
+            hardware.track.setPosition(1);
+        } else {
+            telemetry.addData("track", "0");
+            hardware.track.setPosition(0);
+        }
         // run step
         step a = stepClasses[stepIndex];
         a.initStep(this, hardware);
         a.runStep(this, hardware);
 
-        // run collector to get debris out of the way
-        hardware.collector.setPower(1);
-        hardware.track.setPosition(1);
+
 
         // log step time
         telemetry.addData("step index", stepIndex);
         telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
-        telemetry.addData("floor brightness", getFloorColor());
+        telemetry.addData("heading", hardware.gyro.getIntegratedZValue());
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }

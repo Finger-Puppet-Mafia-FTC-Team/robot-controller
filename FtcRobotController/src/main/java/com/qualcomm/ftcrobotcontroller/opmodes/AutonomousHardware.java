@@ -29,6 +29,10 @@ public class AutonomousHardware {
     public Servo preloadArm;
     public Servo track;
     public Servo wallLeft;
+    public Servo wallRight;
+    public Servo armLeft;
+    public Servo armRight;
+    public Servo catcherDoor;
 
     // distance for competition robot
     // amount traveled per rotation
