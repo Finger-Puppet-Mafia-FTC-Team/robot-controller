@@ -18,7 +18,7 @@ public class DriveClose extends step{
     @Override
     public void runStep (Autonomous2 instance, AutonomousHardware hardware) {
         double distance = hardware.sonicLeft.getUltrasonicLevel();
-        if(distance > 14) {
+        if(distance > 12) {
             hardware.motorRight.setPower(-0.4);
             hardware.motorLeft.setPower(-0.4);
         } else {
