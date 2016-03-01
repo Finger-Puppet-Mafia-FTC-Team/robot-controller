@@ -150,6 +150,15 @@ public class Autonomous2 extends OpMode {
         hardware.bottomColor.enableLed(false);
         hardware.topColor.setI2cAddress(16);
         hardware.topColor.enableLed(false);
+
+        // put everything in closed position
+        hardware.wallRight.setPosition(0.8);
+        hardware.wallLeft.setPosition(0);
+
+        hardware.armRight.setPosition(0.79);
+        hardware.armLeft.setPosition(0.1);
+        hardware.preloadArm.setPosition(0.8);
+        hardware.catcherDoor.setPosition(0.43);
     }
 
     void nextStep() {
