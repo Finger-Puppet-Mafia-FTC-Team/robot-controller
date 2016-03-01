@@ -86,10 +86,12 @@ public class Autonomous1 extends OpMode {
 		 * configured your robot and created the configuration file.
 		 */
         lightSensor = hardwareMap.colorSensor.get("bottomColor");
+        lightSensor.setI2cAddress(60);
         lightSensor2 = hardwareMap.colorSensor.get("topColor");
+        lightSensor2.setI2cAddress(16);
         ods = hardwareMap.opticalDistanceSensor.get("ods");
         lightSensor.enableLed(true);
-        lightSensor2.enableLed(false);
+        lightSensor2.enableLed(true);
 
         //ods = hardwareMap.opticalDistanceSensor.get("ods");
     }
@@ -105,11 +107,11 @@ public class Autonomous1 extends OpMode {
         //Log.i("test", String.valueOf(lightSensor.argb()));
         lightSensor2.enableLed(true);
         telemetry.addData("0 count", count);
-        telemetry.addData("1 ods", ods.getLightDetected());
-        telemetry.addData("2      ", "1   | 2   ");
-        telemetry.addData("3 -----", "----------");
-        String redText = lightSensor.red() + " | " + lightSensor2.red();
-        telemetry.addData("3 red  ", redText);
+        //telemetry.addData("1 ods", ods.getLightDetected());
+        //telemetry.addData("2      ", "1   | 2   ");
+        //telemetry.addData("3 -----", "----------");
+        //String redText = lightSensor.red() + " | " + lightSensor2.red();
+        telemetry.addData("3 red  ", lightSensor.red());
         telemetry.addData("4 blue ", lightSensor.blue());
         telemetry.addData("5 green", lightSensor.green());
         telemetry.addData("6 test ", lightSensor.getDeviceName());
