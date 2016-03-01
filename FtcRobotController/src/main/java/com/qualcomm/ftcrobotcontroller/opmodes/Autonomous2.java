@@ -63,6 +63,7 @@ public class Autonomous2 extends OpMode {
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
             new findWhiteTape(),
+            new NormalizePosition(),
             new followTape(),
             new AlignWithBeacon(),
             new DriveClose(),
