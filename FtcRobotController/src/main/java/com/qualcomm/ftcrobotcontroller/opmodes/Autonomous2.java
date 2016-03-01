@@ -145,10 +145,10 @@ public class Autonomous2 extends OpMode {
         hardware.catcherDoor = hardwareMap.servo.get("catcherDoor");
 
         hardware.gyro.calibrate();
-        hardware.bottomColor.setI2cAddress(60);
-        hardware.bottomColor.enableLed(true);
+        hardware.bottomColor.setI2cAddress(22);
+        hardware.bottomColor.enableLed(false);
         hardware.topColor.setI2cAddress(16);
-        hardware.topColor.enableLed(true);
+        hardware.topColor.enableLed(false);
     }
 
     void nextStep() {
@@ -180,6 +180,9 @@ public class Autonomous2 extends OpMode {
         hardware.catcherDoor.setPosition(0.43);
         hardware.armLeft.setPosition(0.1);
         hardware.armRight.setPosition(0.79);
+
+        hardware.bottomColor.enableLed(true);
+        hardware.topColor.enableLed(true);
     }
 
     /**
