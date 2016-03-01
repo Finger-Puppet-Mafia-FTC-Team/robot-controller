@@ -12,7 +12,7 @@ public class distance extends OpMode {
 
     @Override
     public void init() {
-        //l = hardwareMap.ultrasonicSensor.get("l");
+        l = hardwareMap.ultrasonicSensor.get("sonicRight");
         r = hardwareMap.ultrasonicSensor.get("sonicLeft");
         driveLeft = hardwareMap.dcMotor.get("driveLeft");
         driveRight = hardwareMap.dcMotor.get("driveRight");
@@ -36,6 +36,7 @@ public class distance extends OpMode {
 //            driveRight.setPower(0);
 //        }
 //        telemetry.addData("l", l.getUltrasonicLevel());
-        telemetry.addData("r", r.getUltrasonicLevel());
+        telemetry.addData("l", r.getUltrasonicLevel());
+        telemetry.addData("r", l.getUltrasonicLevel());
     }
 }
