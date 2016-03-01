@@ -72,10 +72,10 @@ public class followTape extends step{
                 hardware.motorRight.setPower(-0.5);
             }
         }
-        if(hardware.sonicLeft.getUltrasonicLevel() < 15) {
+        if(hardware.sonicLeft.getUltrasonicLevel() < 16) {
             done = true;
         }
-        if(hardware.sonicRight.getUltrasonicLevel() < 15) {
+        if(hardware.sonicRight.getUltrasonicLevel() < 16) {
             done = true;
         }
 
