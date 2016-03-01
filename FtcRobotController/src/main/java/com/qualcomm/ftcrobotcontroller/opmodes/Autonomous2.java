@@ -68,6 +68,8 @@ public class Autonomous2 extends OpMode {
             new AlignWithBeacon(),
             new DriveClose(),
             new dumpClimbers(),
+            new DriveCloser(),
+            new pushButton(),
             new stop()
     };
 
@@ -151,6 +153,7 @@ public class Autonomous2 extends OpMode {
         hardware.topColor.setI2cAddress(16);
         hardware.topColor.enableLed(false);
 
+
         // put everything in closed position
         hardware.wallRight.setPosition(0.8);
         hardware.wallLeft.setPosition(0);
@@ -159,6 +162,7 @@ public class Autonomous2 extends OpMode {
         hardware.armLeft.setPosition(0.1);
         hardware.preloadArm.setPosition(0.8);
         hardware.catcherDoor.setPosition(0.43);
+        hardware.track.setPosition(0.5);
     }
 
     void nextStep() {
@@ -177,23 +181,24 @@ public class Autonomous2 extends OpMode {
         stepIndex = index;
     }
 
+
     @Override
     public void init_loop() {
+
+
 
         hardware.preloadArm.setPosition(0);
 
         setFloorColor(hardware.bottomColor.red(), hardware.bottomColor.green(), hardware.bottomColor.blue());
         setFloorBrightness(hardware.ods.getLightDetected());
 
-        hardware.wallLeft.setPosition(0.6);
-        hardware.wallRight.setPosition(0.4);
-        hardware.catcherDoor.setPosition(0.43);
-        hardware.armLeft.setPosition(0.1);
-        hardware.armRight.setPosition(0.79);
+        telemetry.addData("stage", "init_loop");
 
         hardware.bottomColor.enableLed(true);
-        hardware.topColor.enableLed(true);
+        hardware.topColor.enableLed(false);
     }
+
+    boolean firstRun = false;
 
     /**
      * This method will be called repeatedly in a loop
@@ -203,6 +208,18 @@ public class Autonomous2 extends OpMode {
     @Override
     public void loop() {
 
+        if(!firstRun) {
+
+            telemetry.addData("stage", "init");
+            hardware.wallLeft.setPosition(0.6);
+            hardware.wallRight.setPosition(0.4);
+            hardware.catcherDoor.setPosition(0.43);
+            hardware.armLeft.setPosition(0.1);
+            hardware.armRight.setPosition(0.79);
+
+            firstRun = true;
+        }
+
         if(hardware.gyro.isCalibrating()) {
             telemetry.addData("Gyro", "Is Calibrating. Please Wait");
             return;
@@ -211,6 +228,13 @@ public class Autonomous2 extends OpMode {
         if (startTime == 0) {
             startTime = new Date().getTime();
         }
+
+        // Motors will keep following their last command
+        // until they receive a new command. It is easy to forget
+        // to stop a motor, so we will have it stop unless the
+        // step tells it to do otherwise.
+        hardware.motorLeft.setPower(0);
+        hardware.motorRight.setPower(0);
 
         // wait 8 seconds
         telemetry.addData("dev", this.isDev());
