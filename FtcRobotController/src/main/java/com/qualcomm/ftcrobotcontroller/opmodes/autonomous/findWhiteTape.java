@@ -32,7 +32,7 @@ public class findWhiteTape extends step{
 
         // modify drive speed to stay straight
         double headingError = hardware.gyro.getIntegratedZValue();
-        double driveAdjustment = headingError * 0.001;
+        double driveAdjustment = headingError * 0.006;
 
         boolean isWhite = true;
 
