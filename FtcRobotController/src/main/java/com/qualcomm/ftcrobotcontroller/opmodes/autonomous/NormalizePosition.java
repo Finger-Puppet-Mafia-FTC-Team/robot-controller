@@ -79,20 +79,22 @@ public class NormalizePosition extends step{
                 hardware.motorRight.setPower(-0.35);
                 hardware.motorLeft.setPower(-0.35);
             } else {
-                Log.i("test", "off tape. finished");
-                done = true;
-                return;
+                detected += 1;
+                Log.i("test", "detected " + detected);
+                hardware.motorLeft.setPower(-0.35);
+                hardware.motorRight.setPower(-0.35);
+                if(detected > 20) {
+                    Log.i("test", "off tape. finished");
+
+                    done = true;
+                    return;
+                };
             }
         } else {
-            detected += 1;
-            Log.i("test", "detected " + detected);
-            hardware.motorLeft.setPower(1);
-            hardware.motorRight.setPower(1);
-            if(detected > 5) {
-                Log.i("test", "is red. skipping normalize");
-                done = true;
-                return;
-            }
+            Log.i("test", "is red. skipping normalize");
+            done = true;
+            return;
+
         }
     }
 }
