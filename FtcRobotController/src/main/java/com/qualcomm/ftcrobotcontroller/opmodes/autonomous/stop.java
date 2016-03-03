@@ -5,7 +5,11 @@ import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
 public class stop  extends step{
     public boolean shouldContinue = false;
-    // don't override anything since this step doesn't do anything
+
+    @Override
+    public void initStep (Autonomous2 instance, AutonomousHardware hardware) {
+
+    }
 
     @Override
     public void runStep(Autonomous2 instance, AutonomousHardware hardware) {
