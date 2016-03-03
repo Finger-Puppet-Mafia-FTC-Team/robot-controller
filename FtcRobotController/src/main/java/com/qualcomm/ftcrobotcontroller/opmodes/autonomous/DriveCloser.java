@@ -18,6 +18,10 @@ public class DriveCloser extends step{
     @Override
     public void runStep (Autonomous2 instance, AutonomousHardware hardware) {
 
+        if(instance.getIsBlue()) {
+            done = true;
+            return;
+        }
         double distanceLeft = hardware.sonicLeft.getUltrasonicLevel();
         double distanceRight = hardware.sonicRight.getUltrasonicLevel();
         double distance = Math.min(distanceLeft, distanceRight);
