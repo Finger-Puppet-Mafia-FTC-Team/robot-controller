@@ -59,7 +59,7 @@ public class pushButton extends step {
             hardware.motorLeft.setPower(0);
         } else {
             hardware.motorLeft.setPower(-0.4);
-            hardware.motorRight.setPower(0.4);
+            hardware.motorRight.setPower(0);
         }
         hardware.collector.setPower(0);
     }
