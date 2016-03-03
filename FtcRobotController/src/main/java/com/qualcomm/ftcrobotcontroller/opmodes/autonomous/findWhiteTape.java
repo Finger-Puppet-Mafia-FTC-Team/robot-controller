@@ -32,7 +32,8 @@ public class findWhiteTape extends step{
 
         // modify drive speed to stay straight
         double headingError = hardware.gyro.getIntegratedZValue();
-        double driveAdjustment = headingError * 0.05;
+        Log.i("gyro", String.valueOf(headingError));
+        double driveAdjustment = headingError * 0.08;
 
         boolean isWhite = true;
 
@@ -48,7 +49,7 @@ public class findWhiteTape extends step{
         // All colors should be about the same size, resulting in
         // a number near zero when dividing the max color by the min color
         if(maxColor / minColor > 1.5) {
-            Log.i("test", "One number too large");
+          //  Log.i("test", "One number too large");
             isWhite = false;
         }
 
@@ -56,29 +57,29 @@ public class findWhiteTape extends step{
         // The white tape's color should be more than twice as high
         // as the floor's color.
         if(floorRed * 2 > red) {
-            Log.i("test", "Red large");
+          //  Log.i("test", "Red large");
             isWhite = false;
         }
         if(floorGreen * 2 > green) {
-            Log.i("test", "Green large");
+           // Log.i("test", "Green large");
 
             isWhite = false;
         }
         if(floorBlue * 2 > blue) {
-            Log.i("test", "Blue large");
+           // Log.i("test", "Blue large");
 
             isWhite = false;
         }
         if(blue == 0 && green == 0 && red == 0) {
-            Log.i("test", "is zeros");
+           // Log.i("test", "is zeros");
 
             isWhite = false;
         }
 
         if(isWhite) {
-            Log.i("test", "Is white");
-            Log.i("test", floorRed + "," + floorGreen + "," + floorBlue);
-            Log.i("test", red + "," + green + "," + blue);
+            //Log.i("test", "Is white");
+            //Log.i("test", floorRed + "," + floorGreen + "," + floorBlue);
+            //Log.i("test", red + "," + green + "," + blue);
             hardware.motorLeft.setPower(0);
             hardware.motorRight.setPower(0);
             done = true;

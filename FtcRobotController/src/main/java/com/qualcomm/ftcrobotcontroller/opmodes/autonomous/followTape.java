@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
+import android.util.Log;
+
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
@@ -72,17 +74,29 @@ public class followTape extends step{
                 hardware.motorRight.setPower(-0.5);
             }
         }
-        if(hardware.sonicLeft.getUltrasonicLevel() < 16) {
-            done = true;
-        }
-        if(hardware.sonicRight.getUltrasonicLevel() < 16) {
-            done = true;
-        }
-
-
 
         OpModeInstance.addMessage("sonic distance l" + hardware.sonicLeft.getUltrasonicLevel());
         OpModeInstance.addMessage("sonic distance r" + hardware.sonicRight.getUltrasonicLevel());
+
+        if(hardware.sonicLeft.getUltrasonicLevel() == 0 ||
+                hardware.sonicRight.getUltrasonicLevel() == 0) {
+            Log.i("test", "is zero. continuing");
+            hardware.motorLeft.setPower(0);
+            hardware.motorRight.setPower(0);
+            return;
+        }
+
+        if(hardware.sonicLeft.getUltrasonicLevel() < 16) {
+            Log.i("test", "sonic left" + hardware.sonicLeft.getUltrasonicLevel());
+            done = true;
+        }
+        if(hardware.sonicRight.getUltrasonicLevel() < 16) {
+            Log.i("test", "sonic right" + hardware.sonicRight.getUltrasonicLevel());
+            done = true;
+        }
+
+
+
 
     }
 }

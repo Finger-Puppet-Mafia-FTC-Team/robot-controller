@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
+import android.util.Log;
+
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
@@ -19,6 +21,8 @@ public class AlignWithBeacon extends step{
     public void runStep (Autonomous2 instance, AutonomousHardware hardware) {
         double difference = hardware.sonicLeft.getUltrasonicLevel() - hardware.sonicRight.getUltrasonicLevel();
         if(Math.abs(difference) == 0) {
+            Log.i("test", "soniceleft" + hardware.sonicLeft.getUltrasonicLevel());
+            Log.i("test", "sonicright" + hardware.sonicRight.getUltrasonicLevel());
             done = true;
             return;
         }

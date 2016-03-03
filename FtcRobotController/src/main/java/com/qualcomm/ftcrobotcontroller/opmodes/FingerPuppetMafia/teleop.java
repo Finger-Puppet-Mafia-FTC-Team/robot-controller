@@ -74,6 +74,7 @@ public class teleop extends OpMode {
 
         tapeAngleMotor.setDirection(DcMotor.Direction.REVERSE);
         driveLeft.setDirection(DcMotor.Direction.REVERSE);
+        driveRight.setDirection(DcMotor.Direction.FORWARD);
 
         // reset state
         leftWallIn = true;

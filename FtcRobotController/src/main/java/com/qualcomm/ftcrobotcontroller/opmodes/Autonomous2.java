@@ -237,6 +237,9 @@ public class Autonomous2 extends OpMode {
         hardware.motorRight.setPower(0);
 
         // wait 8 seconds
+        // ==============================
+        //     Change delay time here
+        // ===============================
         telemetry.addData("dev", this.isDev());
         if (new Date().getTime() - startTime < 8000 && this.isDev() == false) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);

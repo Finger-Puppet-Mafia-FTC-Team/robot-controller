@@ -6,9 +6,15 @@ import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
 public class NormalizePosition extends step{
+    int detected = 0;
+    boolean didInit = false;
     @Override
     public void initStep (Autonomous2 instance, AutonomousHardware hardware) {
-
+        if(didInit) {
+            return;
+        }
+        didInit = true;
+        detected = 0;
     }
 
     @Override
@@ -42,7 +48,7 @@ public class NormalizePosition extends step{
             // All colors should be about the same size, resulting in
             // a number near zero when dividing the max color by the min color
             if(maxColor / minColor > 1.5) {
-                Log.i("test", "One number too large");
+               // Log.i("test", "One number too large");
                 isWhite = false;
             }
 
@@ -50,34 +56,43 @@ public class NormalizePosition extends step{
             // The white tape's color should be more than twice as high
             // as the floor's color.
             if(floorRed * 2 > red) {
-                Log.i("test", "Red large");
+              //  Log.i("test", "Red large");
                 isWhite = false;
             }
             if(floorGreen * 2 > green) {
-                Log.i("test", "Green large");
+              //  Log.i("test", "Green large");
 
                 isWhite = false;
             }
             if(floorBlue * 2 > blue) {
-                Log.i("test", "Blue large");
+               // Log.i("test", "Blue large");
 
                 isWhite = false;
             }
             if(blue == 0 && green == 0 && red == 0) {
-                Log.i("test", "is zeros");
+                //Log.i("test", "is zeros");
 
                 isWhite = false;
             }
             if(isWhite) {
-                hardware.motorRight.setPower(-0.4);
-                hardware.motorLeft.setPower(-0.4);
+                Log.i("test", "on tape");
+                hardware.motorRight.setPower(-0.35);
+                hardware.motorLeft.setPower(-0.35);
             } else {
+                Log.i("test", "off tape. finished");
                 done = true;
                 return;
             }
         } else {
-            done = true;
-            return;
+            detected += 1;
+            Log.i("test", "detected " + detected);
+            hardware.motorLeft.setPower(1);
+            hardware.motorRight.setPower(1);
+            if(detected > 5) {
+                Log.i("test", "is red. skipping normalize");
+                done = true;
+                return;
+            }
         }
     }
 }
