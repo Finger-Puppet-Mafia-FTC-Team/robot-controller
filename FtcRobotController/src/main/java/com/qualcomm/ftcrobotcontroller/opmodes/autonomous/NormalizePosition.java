@@ -5,12 +5,13 @@ import android.util.Log;
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
-public class NormalizePosition extends step{
+public class NormalizePosition extends step {
     int detected = 0;
     boolean didInit = false;
+
     @Override
-    public void initStep (Autonomous2 instance, AutonomousHardware hardware) {
-        if(didInit) {
+    public void initStep(Autonomous2 instance, AutonomousHardware hardware) {
+        if (didInit) {
             return;
         }
         didInit = true;
@@ -24,8 +25,12 @@ public class NormalizePosition extends step{
 
 
     @Override
-    public void runStep (Autonomous2 instance, AutonomousHardware hardware) {
-        if(instance.getIsBlue()) {
+    public void runStep(Autonomous2 instance, AutonomousHardware hardware) {
+        if (true) {
+            done = true;
+            return;
+        }
+        if (instance.getIsBlue()) {
             double floorRed = instance.getFloorColor()[0];
             double floorGreen = instance.getFloorColor()[1];
             double floorBlue = instance.getFloorColor()[2];
@@ -47,34 +52,34 @@ public class NormalizePosition extends step{
 
             // All colors should be about the same size, resulting in
             // a number near zero when dividing the max color by the min color
-            if(maxColor / minColor > 1.5) {
-               // Log.i("test", "One number too large");
+            if (maxColor / minColor > 1.5) {
+                // Log.i("test", "One number too large");
                 isWhite = false;
             }
 
             //decide if it is a lighter grey than the floor
             // The white tape's color should be more than twice as high
             // as the floor's color.
-            if(floorRed * 2 > red) {
-              //  Log.i("test", "Red large");
+            if (floorRed * 2 > red) {
+                //  Log.i("test", "Red large");
                 isWhite = false;
             }
-            if(floorGreen * 2 > green) {
-              //  Log.i("test", "Green large");
+            if (floorGreen * 2 > green) {
+                //  Log.i("test", "Green large");
 
                 isWhite = false;
             }
-            if(floorBlue * 2 > blue) {
-               // Log.i("test", "Blue large");
+            if (floorBlue * 2 > blue) {
+                // Log.i("test", "Blue large");
 
                 isWhite = false;
             }
-            if(blue == 0 && green == 0 && red == 0) {
+            if (blue == 0 && green == 0 && red == 0) {
                 //Log.i("test", "is zeros");
 
                 isWhite = false;
             }
-            if(isWhite) {
+            if (isWhite) {
                 Log.i("test", "on tape");
                 hardware.motorRight.setPower(-0.35);
                 hardware.motorLeft.setPower(-0.35);
@@ -83,12 +88,13 @@ public class NormalizePosition extends step{
                 Log.i("test", "detected " + detected);
                 hardware.motorLeft.setPower(-0.35);
                 hardware.motorRight.setPower(-0.35);
-                if(detected > 20) {
+                if (detected > 20) {
                     Log.i("test", "off tape. finished");
 
                     done = true;
                     return;
-                };
+                }
+                ;
             }
         } else {
             Log.i("test", "is red. skipping normalize");
