@@ -7,6 +7,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,9 +96,10 @@ public class Autonomous2 extends OpMode {
         floorColor[2] = blue;
     }
 
-    public double getFloorBrightness () {
+    public double getFloorBrightness() {
         return floorBrightness;
     }
+
     public void setFloorBrightness(double brightness) {
         floorBrightness = brightness;
     }
@@ -132,6 +134,7 @@ public class Autonomous2 extends OpMode {
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
         hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
+
         hardware.collector = hardwareMap.dcMotor.get("collector");
         hardware.topColor = hardwareMap.colorSensor.get("topColor");
         hardware.bottomColor = hardwareMap.colorSensor.get("bottomColor");
@@ -152,7 +155,6 @@ public class Autonomous2 extends OpMode {
         hardware.bottomColor.enableLed(false);
         hardware.topColor.setI2cAddress(16);
         hardware.topColor.enableLed(false);
-
 
         // put everything in closed position
         hardware.wallRight.setPosition(0.8);
@@ -186,7 +188,6 @@ public class Autonomous2 extends OpMode {
     public void init_loop() {
 
 
-
         hardware.preloadArm.setPosition(0);
 
         setFloorColor(hardware.bottomColor.red(), hardware.bottomColor.green(), hardware.bottomColor.blue());
@@ -208,11 +209,14 @@ public class Autonomous2 extends OpMode {
     @Override
     public void loop() {
 
-        if(!firstRun) {
+        if (!firstRun) {
 
             telemetry.addData("stage", "init");
-            hardware.wallLeft.setPosition(0.6);
-            hardware.wallRight.setPosition(0.4);
+            if (getIsBlue()) {
+                hardware.wallLeft.setPosition(0.6);
+            } else {
+                hardware.wallRight.setPosition(0.4);
+            }
             hardware.catcherDoor.setPosition(0.43);
             hardware.armLeft.setPosition(0.1);
             hardware.armRight.setPosition(0.79);
@@ -220,7 +224,7 @@ public class Autonomous2 extends OpMode {
             firstRun = true;
         }
 
-        if(hardware.gyro.isCalibrating()) {
+        if (hardware.gyro.isCalibrating()) {
             telemetry.addData("Gyro", "Is Calibrating. Please Wait");
             return;
         }
@@ -241,6 +245,7 @@ public class Autonomous2 extends OpMode {
         //     Change delay time here
         // ===============================
         telemetry.addData("dev", this.isDev());
+
         if (new Date().getTime() - startTime < 8000 && this.isDev() == false) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
             // not ready yet so we will return
@@ -254,7 +259,7 @@ public class Autonomous2 extends OpMode {
         hardware.track.setPosition(1);
 
 
-        if(getIsBlue()) {
+        if (getIsBlue()) {
             telemetry.addData("track", "1");
             hardware.track.setPosition(1);
         } else {
@@ -265,7 +270,6 @@ public class Autonomous2 extends OpMode {
         step a = stepClasses[stepIndex];
         a.initStep(this, hardware);
         a.runStep(this, hardware);
-
 
 
         // log step time
