@@ -81,11 +81,11 @@ public class followTape extends step{
             return;
         }
 
-        if(hardware.sonicLeft.getUltrasonicLevel() < 16) {
+        if(hardware.sonicLeft.getUltrasonicLevel() < 12) {
             Log.i("test", "sonic left" + hardware.sonicLeft.getUltrasonicLevel());
             done = true;
         }
-        if(hardware.sonicRight.getUltrasonicLevel() < 16) {
+        if(hardware.sonicRight.getUltrasonicLevel() < 12) {
             Log.i("test", "sonic right" + hardware.sonicRight.getUltrasonicLevel());
             done = true;
         }
