@@ -6,8 +6,13 @@ import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import com.qualcomm.robotcore.util.Range;
 
+import java.util.Date;
+
+
 public class findWhiteTape extends step{
     public boolean done = false;
+    public double startTime;
+    boolean didInit = false;
 
     @Override
     public boolean shouldContinue() {
@@ -16,7 +21,11 @@ public class findWhiteTape extends step{
 
     @Override
     public void initStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
-
+        if(didInit) {
+            return;
+        }
+        didInit = true;
+        startTime = new Date().getTime();
     }
 
     @Override
@@ -84,13 +93,18 @@ public class findWhiteTape extends step{
             hardware.motorRight.setPower(0);
             done = true;
         } else {
-            double powerLeft = -0.5 - driveAdjustment;
-            double powerRight = -0.5 + driveAdjustment;
+            double runTime = new Date().getTime() - startTime;
+            double basePower = -1 *  Math.max(1 - (Math.pow(runTime, 2) / 60000000), 0.5);
+
+            double powerLeft = basePower - driveAdjustment;
+            double powerRight = basePower + driveAdjustment;
 
             powerLeft = Range.clip(powerLeft, -1, 1);
             powerRight = Range.clip(powerRight, -1, 1);
             hardware.motorRight.setPower(powerLeft);
             hardware.motorLeft.setPower(powerRight);
+
+            OpModeInstance.addMessage("power - " + basePower);
         }
         OpModeInstance.addMessage("adjustment - " + driveAdjustment);
         OpModeInstance.addMessage("heading - " + headingError);
