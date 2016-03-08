@@ -34,12 +34,11 @@ public class AlignWithBeacon extends step{
 
         // we only move one motor since we want to stay on the tape and the sensor is not in the center
         if(difference > 0) {
-            hardware.motorRight.setPower(0.45);
-            hardware.motorLeft.setPower(-0.45);
+            hardware.motorRight.setPower(0.50);
+            hardware.motorLeft.setPower(-0.50);
         } else if (difference < 0) {
-            hardware.motorRight.setPower(-0.45);
-            hardware.motorLeft.setPower(0.45);
+            hardware.motorRight.setPower(-0.50);
+            hardware.motorLeft.setPower(0.50);
         }
-        hardware.motorRight.setPower(0);
     }
 }
