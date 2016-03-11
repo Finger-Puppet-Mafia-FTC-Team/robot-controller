@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.Date;
 
 
-public class findWhiteTape extends step{
+public class findWhiteTape extends step {
     public boolean done = false;
     public double startTime;
     boolean didInit = false;
@@ -20,8 +20,8 @@ public class findWhiteTape extends step{
     }
 
     @Override
-    public void initStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
-        if(didInit) {
+    public void initStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
+        if (didInit) {
             return;
         }
         didInit = true;
@@ -29,7 +29,7 @@ public class findWhiteTape extends step{
     }
 
     @Override
-    public void runStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
+    public void runStep(Autonomous2 OpModeInstance, AutonomousHardware hardware) {
         hardware.collector.setPower(-1);
 
         double floorRed = OpModeInstance.getFloorColor()[0];
@@ -57,35 +57,35 @@ public class findWhiteTape extends step{
 
         // All colors should be about the same size, resulting in
         // a number near zero when dividing the max color by the min color
-        if(maxColor / minColor > 1.5) {
-          //  Log.i("test", "One number too large");
+        if (maxColor / minColor > 1.5) {
+            //  Log.i("test", "One number too large");
             isWhite = false;
         }
 
         //decide if it is a lighter grey than the floor
         // The white tape's color should be more than twice as high
         // as the floor's color.
-        if(floorRed * 2 > red) {
-          //  Log.i("test", "Red large");
+        if (floorRed * 2 > red) {
+            //  Log.i("test", "Red large");
             isWhite = false;
         }
-        if(floorGreen * 2 > green) {
-           // Log.i("test", "Green large");
+        if (floorGreen * 2 > green) {
+            // Log.i("test", "Green large");
 
             isWhite = false;
         }
-        if(floorBlue * 2 > blue) {
-           // Log.i("test", "Blue large");
+        if (floorBlue * 2 > blue) {
+            // Log.i("test", "Blue large");
 
             isWhite = false;
         }
-        if(blue == 0 && green == 0 && red == 0) {
-           // Log.i("test", "is zeros");
+        if (blue == 0 && green == 0 && red == 0) {
+            // Log.i("test", "is zeros");
 
             isWhite = false;
         }
 
-        if(isWhite) {
+        if (isWhite) {
             //Log.i("test", "Is white");
             //Log.i("test", floorRed + "," + floorGreen + "," + floorBlue);
             //Log.i("test", red + "," + green + "," + blue);
@@ -94,7 +94,13 @@ public class findWhiteTape extends step{
             done = true;
         } else {
             double runTime = new Date().getTime() - startTime;
-            double basePower = -1 *  Math.max(1 - (Math.pow(runTime, 2) / 60000000), 0.5);
+            double basePower;
+            if (runTime < 5000) {
+                basePower = -1;
+            } else {
+                basePower = -1 * Math.max(1 - (Math.pow(runTime, 2) / 60000000), 0.5);
+            }
+            basePower = -1;
 
             double powerLeft = basePower - driveAdjustment;
             double powerRight = basePower + driveAdjustment;
