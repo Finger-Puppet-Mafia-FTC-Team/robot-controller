@@ -20,7 +20,6 @@ public class teleop extends OpMode {
     Servo sideArmRight;
     Servo wallLeft;
     Servo wallRight;
-    Servo track;
     Servo catcherDoor;
     Servo preloadArm;
 
@@ -29,6 +28,8 @@ public class teleop extends OpMode {
     DcMotor driveLeft;
     DcMotor driveRight;
     DcMotor tapeAngleMotor;
+    DcMotor track;
+
 
     // State
     boolean leftWallIn = true;
@@ -60,7 +61,7 @@ public class teleop extends OpMode {
 
         preloadArm = hardwareMap.servo.get("preloadArm");
 
-        track = hardwareMap.servo.get("track");
+        track = hardwareMap.dcMotor.get("track");
 
         catcherDoor = hardwareMap.servo.get("catcherDoor");
 
@@ -86,15 +87,14 @@ public class teleop extends OpMode {
         sideArmLeft.setPosition(0.1);
         sideArmRight.setPosition(0.79);
 
-        wallLeft.setPosition(0);
+        wallLeft.setPosition(0.1);
         wallRight.setPosition(0.8);
 
-        track.setPosition(.5);
-        catcherDoor.setPosition(.43);
+        track.setPower(0);
+        catcherDoor.setPosition(0);
 
         preloadArm.setPosition(0);
     }
-
 
     @Override
     public void loop() {
@@ -104,8 +104,8 @@ public class teleop extends OpMode {
 
 
         // preload arm
-        if(pressed("1a", gamepad1.a)) {
-            if(preloadArmDown == true) {
+        if (pressed("1a", gamepad1.a)) {
+            if (preloadArmDown == true) {
                 preloadArm.setPosition(0.9);
 
             } else {
@@ -151,45 +151,46 @@ public class teleop extends OpMode {
         if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
             if (catcherDoorUp == true) {
-                catcherDoor.setPosition(0.43);
-            } else {
                 catcherDoor.setPosition(0);
+            } else {
+                catcherDoor.setPosition(0.48);
             }
         }
 
         //Belt
         if (pressed("2leftBumper", gamepad2.left_bumper)) {
-            // move to next state
-            switch (trackState) {
-                // off
-                case 0:
-                    trackState = 1;
-                    break;
-                // left
-                case 1:
-                    trackState = 2;
-                    break;
-                // right
-                case 2:
-                    trackState = 0;
-                    break;
-                default:
-                    Log.i("Test", "default");
-            }
-            Log.i("Test", String.valueOf(trackState));
-
+            telemetry.addData("test", trackState);
+            Log.i("track2", "left pressed");
             if (trackState == 0) {
-                track.setPosition(0.5);
-                trackStateText = "Off";
-            } else if (trackState == 1) {
-                track.setPosition(1);
-                trackStateText = "Left";
-            } else if (trackState == 2) {
-                track.setPosition(0);
-                trackStateText = "Right";
+                Log.i("track2", "1");
+                trackState = 2;
             } else {
-                trackStateText = "Track state not found";
+                Log.i("track2", "left pressed 0");
+                trackState = 0;
             }
+        }
+        if (pressed("2rightBumper", gamepad2.right_bumper)) {
+            telemetry.addData("test", trackState);
+            telemetry.addData("track2", "right pressed");
+            if (trackState == 0) {
+                trackState = 1;
+            } else {
+                trackState = 0;
+            }
+        }
+
+
+        if (trackState == 0) {
+            track.setPower(0);
+            trackStateText = "Off";
+        } else if (trackState == 1) {
+            track.setPower(-0.25);
+            trackStateText = "Left";
+        } else if (trackState == 2) {
+            track.setPower(0.25);
+            trackStateText = "Right";
+        } else {
+            trackStateText = "Track state not found";
         }
 
 
@@ -234,8 +235,8 @@ public class teleop extends OpMode {
         }
 
         //Drive motors
-        targetSpeedLeft = Range.clip(targetSpeedLeft, -1, 1);
-        targetSpeedRight = Range.clip(targetSpeedRight, -1, 1);
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -0.5f, 0.5f);
+        targetSpeedRight = Range.clip(targetSpeedRight, -0.5f, 0.5f);
 
         targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
         targetSpeedRight = (float) scaleInput(targetSpeedRight);
@@ -285,7 +286,7 @@ public class teleop extends OpMode {
 
         messages.clear();
 
-        if(!preloadArmDown) {
+        if (!preloadArmDown) {
             telemetry.addData("Preload Arm", "Up");
         }
 
@@ -302,15 +303,20 @@ public class teleop extends OpMode {
             telemetry.addData("Right Arm", "Open");
         }
         if (trackStateText != "Off") {
-            telemetry.addData("trackState", trackStateText);
+            telemetry.addData("trackStateText", trackStateText);
         }
+        telemetry.addData("trackState", trackState);
 
         telemetry.addData("tapethrottle", throttleTape);
+        telemetry.addData("trackStateText", trackStateText);
+
         telemetry.addData("", "");
         //  telemetry.addData("speed right", actualSpeedRight);
         //  telemetry.addData("speed left", actualSpeedLeft);
         //  telemetry.addData("target speed right", targetSpeedRight);
 //        telemetry.addData("tape speed", throttleTape);
+
+        Log.i("trackLoop", String.valueOf(trackState));
 
     }
 
