@@ -39,11 +39,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-<<<<<<< HEAD
 import android.graphics.Bitmap;
-=======
 import android.hardware.usb.UsbDevice;
->>>>>>> 83d998b9e9937e51b96acae151aa10b993ca1a83
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -164,7 +161,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         mOpenCvCameraView2.setImageBitmap(img);
     }
 
-<<<<<<< HEAD
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat mRgba = inputFrame.rgba();
         Mat mRgbaT = mRgba.t();
@@ -195,10 +191,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //return cropped;
         return mRgbaT;
     }
-=======
   protected FtcEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
->>>>>>> 83d998b9e9937e51b96acae151aa10b993ca1a83
 
     public void onCameraViewStarted(int width, int height) {
     }
@@ -220,106 +214,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     };
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
-            // a new USB device has been attached
-            DbgLog.msg("USB Device attached; app restart may be needed");
-        }
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_ftc_controller);
-
-
-        Log.i("test", "called onCreate");
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        //setContentView(R.layout.HelloOpenCvLayout);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCameraIndex(1);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
-
-        super.onCreate(savedInstanceState);
-
-
-        utility = new Utility(this);
-        context = this;
-        entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-        buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-        buttonMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOptionsMenu();
-            }
-        });
-
-        textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-        textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
-        textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-        textOpMode = (TextView) findViewById(R.id.textOpMode);
-        textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-        textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-        textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-        immersion = new ImmersiveMode(getWindow().getDecorView());
-        dimmer = new Dimmer(this);
-        dimmer.longBright();
-        Restarter restarter = new RobotRestarter();
-
-        updateUI = new UpdateUI(this, dimmer);
-        updateUI.setRestarter(restarter);
-        updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-                textGamepad, textOpMode, textErrorMessage, textDeviceName);
-        callback = updateUI.new Callback();
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
-
-        hittingMenuButtonBrightensScreen();
-
-        if (USE_DEVICE_EMULATION) {
-            HardwareFactory.enableDeviceEmulation();
-        }
-    }
-<<<<<<< HEAD
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // save 4MB of logcat to the SD card
-        RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-        Intent intent = new Intent(this, FtcRobotControllerService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
-        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-        callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-        entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                dimmer.handleDimTimer();
-                return false;
-            }
-        });
-
-        wifiLock.acquire();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-=======
-  };
 
   @Override
   protected void onNewIntent(Intent intent) {
@@ -364,6 +258,16 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     eventLoop = null;
 
     setContentView(R.layout.activity_ftc_controller);
+
+    //opencv
+    Log.i("test","called onCreate");
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    //setContentView(R.layout.HelloOpenCvLayout);
+    mOpenCvCameraView=(CameraBridgeViewBase)findViewById(R.id.Camera);
+    mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+    mOpenCvCameraView.setCameraIndex(1);
+    mOpenCvCameraView.setCvCameraViewListener(this);
+    mOpenCvCameraView2=(ImageView)findViewById(R.id.Camera2);
 
     utility = new Utility(this);
     context = this;
@@ -464,7 +368,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
       }
     } else {
       immersion.cancelSystemUIHide();
->>>>>>> 83d998b9e9937e51b96acae151aa10b993ca1a83
     }
 
 
@@ -477,22 +380,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         RobotLog.cancelWriteLogcatToDisk(this);
 
         wifiLock.release();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        // When the window loses focus (e.g., the action overflow is shown),
-        // cancel any pending hide action. When the window gains focus,
-        // hide the system UI.
-        if (hasFocus) {
-            if (ImmersiveMode.apiOver19()) {
-                // Immersive flag only works on API 19 and above.
-                immersion.hideSystemUI();
-            }
-        } else {
-            immersion.cancelSystemUIHide();
-        }
     }
 
     @Override
@@ -596,19 +483,11 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
         HardwareFactory factory;
 
-
-<<<<<<< HEAD
-        // Modern Robotics Factory for use with Modern Robotics hardware
-        HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
-        modernRoboticsFactory.setXmlInputStream(fis);
-        factory = modernRoboticsFactory;
-=======
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);
 
     passReceivedUsbAttachmentsToEventLoop();
   }
->>>>>>> 83d998b9e9937e51b96acae151aa10b993ca1a83
 
 
         eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
