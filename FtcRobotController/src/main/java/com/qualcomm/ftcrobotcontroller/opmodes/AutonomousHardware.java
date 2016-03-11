@@ -21,13 +21,12 @@ public class AutonomousHardware {
     public OpticalDistanceSensor ods;
     public ColorSensor topColor;
     public ColorSensor bottomColor;
-    public DcMotor plowMotor;
+    public DcMotor track;
     public UltrasonicSensor sonicLeft;
     public UltrasonicSensor sonicRight;
     public ModernRoboticsI2cGyro gyro;
 
     public Servo preloadArm;
-    public Servo track;
     public Servo wallLeft;
     public Servo wallRight;
     public Servo armLeft;

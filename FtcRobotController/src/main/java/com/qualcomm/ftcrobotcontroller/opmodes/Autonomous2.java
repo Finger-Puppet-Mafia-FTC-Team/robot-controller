@@ -143,7 +143,7 @@ public class Autonomous2 extends OpMode {
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
         hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         hardware.preloadArm = hardwareMap.servo.get("preloadArm");
-        hardware.track = hardwareMap.servo.get("track");
+        hardware.track = hardwareMap.dcMotor.get("track");
         hardware.wallLeft = hardwareMap.servo.get("wallLeft");
         hardware.wallRight = hardwareMap.servo.get("wallRight");
         hardware.armLeft = hardwareMap.servo.get("sideArmLeft");
@@ -164,7 +164,7 @@ public class Autonomous2 extends OpMode {
         hardware.armLeft.setPosition(0.1);
         hardware.preloadArm.setPosition(0.8);
         hardware.catcherDoor.setPosition(0.43);
-        hardware.track.setPosition(0.5);
+        hardware.track.setPower(0);
     }
 
     void nextStep() {
@@ -213,9 +213,9 @@ public class Autonomous2 extends OpMode {
 
             telemetry.addData("stage", "init");
             if (getIsBlue()) {
-                hardware.wallLeft.setPosition(0.6);
+             //   hardware.wallLeft.setPosition(0.6);
             } else {
-                hardware.wallRight.setPosition(0.4);
+            //    hardware.wallRight.setPosition(0.4);
             }
             hardware.catcherDoor.setPosition(0.43);
             hardware.armLeft.setPosition(0.1);
@@ -256,15 +256,14 @@ public class Autonomous2 extends OpMode {
 
         // run collector to get debris out of the way. We do this before the step so it can override it.
         hardware.collector.setPower(1);
-        hardware.track.setPosition(1);
 
 
         if (getIsBlue()) {
             telemetry.addData("track", "1");
-            hardware.track.setPosition(1);
+            hardware.track.setPower(0.05);
         } else {
             telemetry.addData("track", "0");
-            hardware.track.setPosition(0);
+            hardware.track.setPower(-0.05);
         }
         // run step
         step a = stepClasses[stepIndex];
@@ -273,7 +272,6 @@ public class Autonomous2 extends OpMode {
 
 
         // log step time
-        telemetry.addData("step index", stepIndex);
         telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
         telemetry.addData("heading", hardware.gyro.getIntegratedZValue());
         for (int i = 0; i < messages.size(); i++) {
