@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import com.qualcomm.robotcore.util.Range;
 
 public class DriveClose extends step{

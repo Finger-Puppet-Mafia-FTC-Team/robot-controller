@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
 public class followTape extends step{
 

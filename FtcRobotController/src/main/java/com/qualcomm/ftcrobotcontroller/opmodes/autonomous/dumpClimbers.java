@@ -1,7 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import java.util.Date;
 
 
