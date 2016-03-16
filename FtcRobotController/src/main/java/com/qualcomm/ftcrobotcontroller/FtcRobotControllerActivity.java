@@ -41,7 +41,10 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.hardware.usb.UsbDevice;
+=======
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 import android.hardware.usb.UsbManager;
@@ -163,6 +166,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
     Mat mRgba = inputFrame.rgba();
     Mat mRgbaT = mRgba.t();
@@ -170,6 +174,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     Core.flip(mRgba.t(), mRgbaT, -1);
     Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 =======
+=======
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat mRgba = inputFrame.rgba();
         Mat mRgbaT = mRgba.t();
@@ -235,6 +241,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     public void onServiceDisconnected(ComponentName name) {
       controllerService = null;
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
   };
 
@@ -378,10 +385,15 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     } else {
       immersion.cancelSystemUIHide();
 =======
+=======
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
     @Override
     protected void onResume() {
         super.onResume();
+<<<<<<< HEAD
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
+=======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
     }
   }
@@ -505,12 +517,15 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);
 
     passReceivedUsbAttachmentsToEventLoop();
   }
 =======
+=======
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
         // Modern Robotics Factory for use with Modern Robotics hardware
         HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
         modernRoboticsFactory.setXmlInputStream(fis);
