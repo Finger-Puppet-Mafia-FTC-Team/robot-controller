@@ -40,10 +40,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-<<<<<<< HEAD
 import android.hardware.usb.UsbDevice;
-=======
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -90,6 +87,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 
@@ -162,21 +161,12 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     mOpenCvCameraView2.setImageBitmap(img);
   }
 
-<<<<<<< HEAD
   public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
     Mat mRgba = inputFrame.rgba();
     Mat mRgbaT = mRgba.t();
     // flip it since the phone is in portrait and the image is for landscape.
     Core.flip(mRgba.t(), mRgbaT, -1);
     Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
-=======
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Mat mRgba = inputFrame.rgba();
-        Mat mRgbaT = mRgba.t();
-        // flip it since the phone is in portrait and the image is for landscape.
-        Core.flip(mRgba.t(), mRgbaT, -1);
-        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
     // crop picture
     //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
@@ -198,22 +188,9 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 //            autonomousCamera.clearFixedPicture();
 //        }
 
-<<<<<<< HEAD
     //return cropped;
     return mRgbaT;
   }
-=======
-        //return cropped;
-        return mRgbaT;
-    }
-
-    public void onCameraViewStarted(int width, int height) {
-    }
-
-    public void onCameraViewStopped() {
-    }
-
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
@@ -235,7 +212,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     public void onServiceDisconnected(ComponentName name) {
       controllerService = null;
     }
-<<<<<<< HEAD
   };
 
 
@@ -377,12 +353,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
       }
     } else {
       immersion.cancelSystemUIHide();
-=======
-
-    @Override
-    protected void onResume() {
-        super.onResume();
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
     }
   }
 
@@ -504,21 +474,11 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
     eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
 
-<<<<<<< HEAD
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);
 
     passReceivedUsbAttachmentsToEventLoop();
   }
-=======
-        // Modern Robotics Factory for use with Modern Robotics hardware
-        HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
-        modernRoboticsFactory.setXmlInputStream(fis);
-        factory = modernRoboticsFactory;
-
-
-        eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
   private FileInputStream fileSetup() {
 
