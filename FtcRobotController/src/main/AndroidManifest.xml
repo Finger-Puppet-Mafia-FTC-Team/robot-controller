@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-<<<<<<< HEAD
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qualcomm.ftcrobotcontroller"
     android:versionCode="6"
     android:versionName="1.5">
-=======
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.qualcomm.ftcrobotcontroller"
-          android:versionCode="7"
-          android:versionName="1.6">
->>>>>>> 83d998b9e9937e51b96acae151aa10b993ca1a83
 
 
     <uses-permission
