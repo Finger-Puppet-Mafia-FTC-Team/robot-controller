@@ -42,10 +42,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
 import android.hardware.usb.UsbDevice;
-=======
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
@@ -170,7 +167,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
   public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
     Mat mRgba = inputFrame.rgba();
     Mat mRgbaT = mRgba.t();
@@ -178,8 +174,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     Core.flip(mRgba.t(), mRgbaT, -1);
     Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 =======
-=======
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
@@ -247,7 +241,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     public void onServiceDisconnected(ComponentName name) {
       controllerService = null;
     }
-<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   };
@@ -394,16 +387,11 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 =======
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
-=======
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
     @Override
     protected void onResume() {
         super.onResume();
 <<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
-=======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
@@ -530,15 +518,12 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);
 
     passReceivedUsbAttachmentsToEventLoop();
   }
 =======
-=======
->>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 =======
 >>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
         // Modern Robotics Factory for use with Modern Robotics hardware
