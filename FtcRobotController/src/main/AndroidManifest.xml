@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
           xmlns:tools="http://schemas.android.com/tools"
           package="com.qualcomm.ftcrobotcontroller"
           android:versionCode="7"
           android:versionName="1.6">
+=======
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.qualcomm.ftcrobotcontroller"
+    android:versionCode="6"
+    android:versionName="1.5">
+>>>>>>> parent of f0bb93e... Merge branch 'master' of https://github.com/ftctechnh/ftc_app into autonomous
 
 
     <uses-permission
