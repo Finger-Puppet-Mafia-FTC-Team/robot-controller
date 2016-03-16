@@ -94,85 +94,85 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 
 public class FtcRobotControllerActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-  private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
-  private boolean showedDevImage = false;
+    private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
+    private boolean showedDevImage = false;
 
-  private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
-  private static final boolean USE_DEVICE_EMULATION = false;
-  private static final int NUM_GAMEPADS = 2;
+    private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+    private static final boolean USE_DEVICE_EMULATION = false;
+    private static final int NUM_GAMEPADS = 2;
 
-  public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
+    public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
 
-  protected WifiManager.WifiLock wifiLock;
-  protected SharedPreferences preferences;
+    protected WifiManager.WifiLock wifiLock;
+    protected SharedPreferences preferences;
 
-  protected UpdateUI.Callback callback;
-  protected Context context;
-  private Utility utility;
-  protected ImageButton buttonMenu;
+    protected UpdateUI.Callback callback;
+    protected Context context;
+    private Utility utility;
+    protected ImageButton buttonMenu;
 
-  protected TextView textDeviceName;
-  protected TextView textWifiDirectStatus;
-  protected TextView textRobotStatus;
-  protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
-  protected TextView textOpMode;
-  protected TextView textErrorMessage;
-  protected ImmersiveMode immersion;
+    protected TextView textDeviceName;
+    protected TextView textWifiDirectStatus;
+    protected TextView textRobotStatus;
+    protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
+    protected TextView textOpMode;
+    protected TextView textErrorMessage;
+    protected ImmersiveMode immersion;
 
-  protected UpdateUI updateUI;
-  protected Dimmer dimmer;
-  protected LinearLayout entireScreenLayout;
+    protected UpdateUI updateUI;
+    protected Dimmer dimmer;
+    protected LinearLayout entireScreenLayout;
 
-  protected FtcRobotControllerService controllerService;
+    protected FtcRobotControllerService controllerService;
 
-  protected FtcEventLoop eventLoop;
+    protected FtcEventLoop eventLoop;
 
-  protected class RobotRestarter implements Restarter {
+    protected class RobotRestarter implements Restarter {
 
-    public void requestRestart() {
-      requestRobotRestart();
+        public void requestRestart() {
+            requestRobotRestart();
+        }
+
     }
 
-  }
-
-  // OpenCV
-  private CameraBridgeViewBase mOpenCvCameraView;
-  private ImageView mOpenCvCameraView2;
+    // OpenCV
+    private CameraBridgeViewBase mOpenCvCameraView;
+    private ImageView mOpenCvCameraView2;
 
 
-  private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-    @Override
-    public void onManagerConnected(int status) {
-      switch (status) {
-        case LoaderCallbackInterface.SUCCESS: {
-          Log.i("test", "OpenCV loaded successfully");
-          mOpenCvCameraView.enableView();
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS: {
+                    Log.i("test", "OpenCV loaded successfully");
+                    mOpenCvCameraView.enableView();
+                }
+                break;
+                default: {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
         }
-        break;
-        default: {
-          super.onManagerConnected(status);
-        }
-        break;
-      }
+    };
+
+    void setPicture(Bitmap img) {
+        mOpenCvCameraView2.setImageBitmap(img);
     }
-  };
 
-  void setPicture(Bitmap img) {
-    mOpenCvCameraView2.setImageBitmap(img);
-  }
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Mat mRgba = inputFrame.rgba();
+        Mat mRgbaT = mRgba.t();
+        // flip it since the phone is in portrait and the image is for landscape.
+        Core.flip(mRgba.t(), mRgbaT, -1);
+        Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
 
-  public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-    Mat mRgba = inputFrame.rgba();
-    Mat mRgbaT = mRgba.t();
-    // flip it since the phone is in portrait and the image is for landscape.
-    Core.flip(mRgba.t(), mRgbaT, -1);
-    Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+        // crop picture
+        //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
+        //Mat cropped = new Mat(mRgbaT, roi);
 
-    // crop picture
-    //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
-    //Mat cropped = new Mat(mRgbaT, roi);
-
-    autonomousCamera.picture = mRgbaT;
+        autonomousCamera.picture = mRgbaT;
 //        if (autonomousCamera.isFixed && autonomousCamera.isFixedShown == false && autonomousCamera.getFixedPicture() != null) {
 //            Mat _picture = autonomousCamera.getFixedPicture();
 //            final Bitmap img = Bitmap.createBitmap(_picture.cols(),_picture.rows(),Bitmap.Config.ARGB_8888);
@@ -188,31 +188,31 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 //            autonomousCamera.clearFixedPicture();
 //        }
 
-    //return cropped;
-    return mRgbaT;
-  }
-
+        //return cropped;
+        return mRgbaT;
+    }
+  protected FtcEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
-  public void onCameraViewStarted(int width, int height) {
-  }
-
-  public void onCameraViewStopped() {
-  }
-
-
-  protected ServiceConnection connection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-      FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
-      onServiceBind(binder.getService());
+    public void onCameraViewStarted(int width, int height) {
     }
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-      controllerService = null;
+    public void onCameraViewStopped() {
     }
-  };
+
+
+    protected ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
+            onServiceBind(binder.getService());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            controllerService = null;
+        }
+    };
 
 
   @Override
@@ -234,13 +234,14 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
   protected void passReceivedUsbAttachmentsToEventLoop() {
     if (this.eventLoop != null) {
-      for (; ; ) {
+      for (;;) {
         UsbDevice usbDevice = receivedUsbAttachmentNotifications.poll();
         if (usbDevice == null)
           break;
         this.eventLoop.onUsbDeviceAttached(usbDevice);
       }
-    } else {
+    }
+    else {
       // Paranoia: we don't want the pending list to grow without bound when we don't
       // (yet) have an event loop
       while (receivedUsbAttachmentNotifications.size() > 100) {
@@ -259,14 +260,14 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     setContentView(R.layout.activity_ftc_controller);
 
     //opencv
-    Log.i("test", "called onCreate");
+    Log.i("test","called onCreate");
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     //setContentView(R.layout.HelloOpenCvLayout);
-    mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.Camera);
+    mOpenCvCameraView=(CameraBridgeViewBase)findViewById(R.id.Camera);
     mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
     mOpenCvCameraView.setCameraIndex(1);
     mOpenCvCameraView.setCvCameraViewListener(this);
-    mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
+    mOpenCvCameraView2=(ImageView)findViewById(R.id.Camera2);
 
     utility = new Utility(this);
     context = this;
@@ -294,7 +295,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     updateUI = new UpdateUI(this, dimmer);
     updateUI.setRestarter(restarter);
     updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-            textGamepad, textOpMode, textErrorMessage, textDeviceName);
+        textGamepad, textOpMode, textErrorMessage, textDeviceName);
     callback = updateUI.new Callback();
 
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -305,9 +306,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
     hittingMenuButtonBrightensScreen();
 
-    if (USE_DEVICE_EMULATION) {
-      HardwareFactory.enableDeviceEmulation();
-    }
+    if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
   }
 
   @Override
@@ -341,21 +340,9 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
   }
 
   @Override
-  public void onWindowFocusChanged(boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
-    // When the window loses focus (e.g., the action overflow is shown),
-    // cancel any pending hide action. When the window gains focus,
-    // hide the system UI.
-    if (hasFocus) {
-      if (ImmersiveMode.apiOver19()) {
-        // Immersive flag only works on API 19 and above.
-        immersion.hideSystemUI();
-      }
-    } else {
-      immersion.cancelSystemUIHide();
-    }
+  public void onPause() {
+    super.onPause();
   }
-
 
   @Override
   protected void onStop() {
@@ -369,110 +356,132 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
   }
 
   @Override
-  public void onPause() {
-    super.onPause();
-    if (mOpenCvCameraView != null)
-      mOpenCvCameraView.disableView();
-  }
-
-  public void onDestroy() {
-    super.onDestroy();
-    if (mOpenCvCameraView != null)
-      mOpenCvCameraView.disableView();
-  }
-
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.action_restart_robot:
-        dimmer.handleDimTimer();
-        Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-        requestRobotRestart();
-        return true;
-      case R.id.action_settings:
-        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-        Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
-        startActivityForResult(settingsIntent, LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
-        return true;
-      case R.id.action_about:
-        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-        Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
-        startActivity(intent);
-        return true;
-      case R.id.action_exit_app:
-        finish();
-        return true;
-      case R.id.action_view_logs:
-        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-        Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
-        viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(this));
-        startActivity(viewLogsIntent);
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
-    }
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    // don't destroy assets on screen rotation
-  }
-
-  @Override
-  protected void onActivityResult(int request, int result, Intent intent) {
-    if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
-      if (result == RESULT_OK) {
-        Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        showToast(toast);
+  public void onWindowFocusChanged(boolean hasFocus){
+    super.onWindowFocusChanged(hasFocus);
+    // When the window loses focus (e.g., the action overflow is shown),
+    // cancel any pending hide action. When the window gains focus,
+    // hide the system UI.
+    if (hasFocus) {
+      if (ImmersiveMode.apiOver19()){
+        // Immersive flag only works on API 19 and above.
+        immersion.hideSystemUI();
       }
+    } else {
+      immersion.cancelSystemUIHide();
     }
-    if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
-      if (result == RESULT_OK) {
-        Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
-        if (extra != null) {
-          utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
-          utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (controllerService != null) unbindService(connection);
+
+        RobotLog.cancelWriteLogcatToDisk(this);
+
+        wifiLock.release();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_restart_robot:
+                dimmer.handleDimTimer();
+                Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
+                requestRobotRestart();
+                return true;
+            case R.id.action_settings:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
+                startActivityForResult(settingsIntent, LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
+                return true;
+            case R.id.action_about:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
+                startActivity(intent);
+                return true;
+            case R.id.action_exit_app:
+                finish();
+                return true;
+            case R.id.action_view_logs:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
+                viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(this));
+                startActivity(viewLogsIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-      }
-
     }
-  }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // don't destroy assets on screen rotation
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent intent) {
+        if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
+            if (result == RESULT_OK) {
+                Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                showToast(toast);
+            }
+        }
+        if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
+            if (result == RESULT_OK) {
+                Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
+                if (extra != null) {
+                    utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
+                    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+                }
+            }
+
+        }
+    }
 
 
-  public void onServiceBind(FtcRobotControllerService service) {
-    DbgLog.msg("Bound to Ftc Controller Service");
-    controllerService = service;
-    updateUI.setControllerService(controllerService);
+    public void onServiceBind(FtcRobotControllerService service) {
+        DbgLog.msg("Bound to Ftc Controller Service");
+        controllerService = service;
+        updateUI.setControllerService(controllerService);
 
-    callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
-    callback.robotUpdate(controllerService.getRobotStatus());
-    requestRobotSetup();
-  }
+        callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
+        callback.robotUpdate(controllerService.getRobotStatus());
+        requestRobotSetup();
+    }
 
-  private void requestRobotSetup() {
-    if (controllerService == null) return;
+    private void requestRobotSetup() {
+        if (controllerService == null) return;
 
-    FileInputStream fis = fileSetup();
-    // if we can't find the file, don't try and build the robot.
-    if (fis == null) { return; }
+        FileInputStream fis = fileSetup();
+        // if we can't find the file, don't try and build the robot.
+        if (fis == null) {
+            return;
+        }
 
-    HardwareFactory factory;
-
-    // Modern Robotics Factory for use with Modern Robotics hardware
-    HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
-    modernRoboticsFactory.setXmlInputStream(fis);
-    factory = modernRoboticsFactory;
-
-    eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
+        HardwareFactory factory;
 
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);
@@ -480,55 +489,62 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
     passReceivedUsbAttachmentsToEventLoop();
   }
 
-  private FileInputStream fileSetup() {
 
-    final String filename = Utility.CONFIG_FILES_DIR
-            + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
+        eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
 
-    FileInputStream fis;
-    try {
-      fis = new FileInputStream(filename);
-    } catch (FileNotFoundException e) {
-      String msg = "Cannot open robot configuration file - " + filename;
-      utility.complainToast(msg, context);
-      DbgLog.msg(msg);
-      utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
-      fis = null;
+        controllerService.setCallback(callback);
+        controllerService.setupRobot(eventLoop);
     }
-    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-    return fis;
-  }
 
-  private void requestRobotShutdown() {
-    if (controllerService == null) return;
-    controllerService.shutdownRobot();
-  }
+    private FileInputStream fileSetup() {
 
-  private void requestRobotRestart() {
-    requestRobotShutdown();
-    requestRobotSetup();
-  }
+        final String filename = Utility.CONFIG_FILES_DIR
+                + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
 
-  protected void hittingMenuButtonBrightensScreen() {
-    ActionBar actionBar = getActionBar();
-    if (actionBar != null) {
-      actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-        @Override
-        public void onMenuVisibilityChanged(boolean isVisible) {
-          if (isVisible) {
-            dimmer.handleDimTimer();
-          }
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(filename);
+        } catch (FileNotFoundException e) {
+            String msg = "Cannot open robot configuration file - " + filename;
+            utility.complainToast(msg, context);
+            DbgLog.msg(msg);
+            utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
+            fis = null;
         }
-      });
+        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+        return fis;
     }
-  }
 
-  public void showToast(final Toast toast) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        toast.show();
-      }
-    });
-  }
+    private void requestRobotShutdown() {
+        if (controllerService == null) return;
+        controllerService.shutdownRobot();
+    }
+
+    private void requestRobotRestart() {
+        requestRobotShutdown();
+        requestRobotSetup();
+    }
+
+    protected void hittingMenuButtonBrightensScreen() {
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+                @Override
+                public void onMenuVisibilityChanged(boolean isVisible) {
+                    if (isVisible) {
+                        dimmer.handleDimTimer();
+                    }
+                }
+            });
+        }
+    }
+
+    public void showToast(final Toast toast) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toast.show();
+            }
+        });
+    }
 }
