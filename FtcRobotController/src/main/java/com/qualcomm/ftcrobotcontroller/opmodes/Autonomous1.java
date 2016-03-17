@@ -76,7 +76,7 @@ public class Autonomous1 extends OpMode {
     /**
      * Code to run when the op mode is first enabled goes here
      *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
+     * @see OpMode#start()
      */
     @Override
     public void init() {
@@ -99,7 +99,7 @@ public class Autonomous1 extends OpMode {
     /**
      * This method will be called repeatedly in a loop
      *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
+     * @see OpMode#run()
      */
     @Override
     public void loop() {

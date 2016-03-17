@@ -22,6 +22,7 @@ public class teleop extends OpMode {
     Servo wallRight;
     Servo catcherDoor;
     Servo preloadArm;
+    Servo slider;
 
     DcMotor tapeMotor;
     DcMotor collectorMotor;
@@ -59,6 +60,8 @@ public class teleop extends OpMode {
         wallLeft = hardwareMap.servo.get("wallLeft");
         wallRight = hardwareMap.servo.get("wallRight");
 
+        slider = hardwareMap.servo.get("slider");
+
         preloadArm = hardwareMap.servo.get("preloadArm");
 
         track = hardwareMap.dcMotor.get("track");
@@ -87,17 +90,20 @@ public class teleop extends OpMode {
         sideArmLeft.setPosition(0.1);
         sideArmRight.setPosition(0.79);
 
-        wallLeft.setPosition(0.1);
-        wallRight.setPosition(0.8);
+        wallLeft.setPosition(0);
+        wallRight.setPosition(1);
 
         track.setPower(0);
         catcherDoor.setPosition(0);
 
         preloadArm.setPosition(0);
+        slider.setPosition(0.5);
     }
 
     @Override
     public void loop() {
+        slider.setPosition(0.5);
+
         double throttleTape = 0;
         float targetSpeedLeft = gamepad1.left_stick_y;
         float targetSpeedRight = gamepad1.right_stick_y;
@@ -184,10 +190,10 @@ public class teleop extends OpMode {
             track.setPower(0);
             trackStateText = "Off";
         } else if (trackState == 1) {
-            track.setPower(-0.25);
+            track.setPower(-0.15);
             trackStateText = "Left";
         } else if (trackState == 2) {
-            track.setPower(0.25);
+            track.setPower(0.15);
             trackStateText = "Right";
         } else {
             trackStateText = "Track state not found";
@@ -225,18 +231,26 @@ public class teleop extends OpMode {
             leftWallIn = !leftWallIn;
         }
 
+        if(pressed("2dpadback", gamepad2.back) == true) {
+            wallLeft.setPosition(1);
+        }
+
         if (pressed("2dpadright", gamepad2.dpad_right) == true) {
             if (rightWallIn) {
-                wallRight.setPosition(0.4);
+                wallRight.setPosition(0.5);
             } else {
-                wallRight.setPosition(0.8);
+                wallRight.setPosition(1);
             }
             rightWallIn = !rightWallIn;
         }
 
+        if(pressed("2dpadstart", gamepad2.start) == true) {
+            wallRight.setPosition(0.2);
+        }
+
         //Drive motors
-        targetSpeedLeft = Range.clip(targetSpeedLeft, -0.5f, 0.5f);
-        targetSpeedRight = Range.clip(targetSpeedRight, -0.5f, 0.5f);
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -1f, 1f);
+        targetSpeedRight = Range.clip(targetSpeedRight, -1f, 1f);
 
         targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
         targetSpeedRight = (float) scaleInput(targetSpeedRight);
@@ -245,6 +259,8 @@ public class teleop extends OpMode {
         // transition to new speed over time
         actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
         actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
+
+        Log.i("actualSpeedLeft", String.valueOf(gamepad1.left_stick_y));
 
         driveLeft.setPower(actualSpeedLeft);
         driveRight.setPower(actualSpeedRight);
@@ -410,11 +426,12 @@ public class teleop extends OpMode {
 	 * the robot more precisely at slower speeds.
 	 */
     double scaleInput(double dVal) {
-        double[] scaleArray = {0, 0.30, 0.31, 0.32, 0.33, 0.34, 0.36, 0.38, 0.42,
+        double[] scaleArray = {0, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.42,
                 0.46, 0.48, 0.50, 0.52, 0.65, 0.77, 0.89, .97, 1.00};
 
         // get the corresponding index for the scaleInput array.
         int index = (int) (dVal * 16.0);
+        Log.i("index", String.valueOf(index));
 
         // index should be positive.
         if (index < 0) {

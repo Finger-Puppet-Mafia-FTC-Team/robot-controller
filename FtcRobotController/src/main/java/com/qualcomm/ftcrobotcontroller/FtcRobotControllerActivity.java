@@ -87,11 +87,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
+//import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 
 public class FtcRobotControllerActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
+    //private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
     private boolean showedDevImage = false;
 
     private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
@@ -169,7 +169,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
         //Mat cropped = new Mat(mRgbaT, roi);
 
-        autonomousCamera.picture = mRgbaT;
+       // autonomousCamera.picture = mRgbaT;
 //        if (autonomousCamera.isFixed && autonomousCamera.isFixedShown == false && autonomousCamera.getFixedPicture() != null) {
 //            Mat _picture = autonomousCamera.getFixedPicture();
 //            final Bitmap img = Bitmap.createBitmap(_picture.cols(),_picture.rows(),Bitmap.Config.ARGB_8888);

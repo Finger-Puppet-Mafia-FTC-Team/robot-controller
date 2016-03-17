@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,12 +9,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 
 public class AutonomousHardware {
     boolean didInit = false;
-    public HardwareMap hardwareMap = new HardwareMap();
     public DcMotor motorRight;
     public DcMotor motorLeft;
     public DcMotor collector;
@@ -25,6 +25,7 @@ public class AutonomousHardware {
     public UltrasonicSensor sonicLeft;
     public UltrasonicSensor sonicRight;
     public ModernRoboticsI2cGyro gyro;
+    public TouchSensor touch;
 
     public Servo preloadArm;
     public Servo wallLeft;
@@ -32,6 +33,7 @@ public class AutonomousHardware {
     public Servo armLeft;
     public Servo armRight;
     public Servo catcherDoor;
+    public Servo slider;
 
     // distance for competition robot
     // amount traveled per rotation

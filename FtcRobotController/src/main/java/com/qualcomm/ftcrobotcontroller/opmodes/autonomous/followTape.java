@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
 public class followTape extends step{
 
@@ -21,6 +20,19 @@ public class followTape extends step{
 
     @Override
     public void runStep (Autonomous2 OpModeInstance, AutonomousHardware hardware) {
+        double ultrasonicLeft = hardware.sonicLeft.getUltrasonicLevel();
+        double ultrasonicRight = hardware.sonicRight.getUltrasonicLevel();
+
+        if(ultrasonicLeft == 0 ||
+                hardware.sonicRight.getUltrasonicLevel() == 0) {
+            Log.i("test", "ultrasonic is zero. stopping");
+            hardware.motorLeft.setPower(0);
+            hardware.motorRight.setPower(0);
+            return;
+        }
+
+        Log.i("gyro", String.valueOf(hardware.gyro.getIntegratedZValue()));
+
         double floorRed = OpModeInstance.getFloorColor()[0];
         double floorGreen = OpModeInstance.getFloorColor()[1];
         double floorBlue = OpModeInstance.getFloorColor()[2];
@@ -61,37 +73,26 @@ public class followTape extends step{
             OpModeInstance.addMessage("on tape");
         } else {
             OpModeInstance.addMessage("off tape");
-            hardware.motorLeft.setPower(-0.6);
+            hardware.motorLeft.setPower(-0.8);
             hardware.motorRight.setPower(0);
             if(OpModeInstance.getIsBlue()) {
                 // drive opposite direction if on blue team
                 hardware.motorLeft.setPower(0);
-                hardware.motorRight.setPower(-0.6);
+                hardware.motorRight.setPower(-0.8);
             }
         }
 
-        OpModeInstance.addMessage("sonic distance l" + hardware.sonicLeft.getUltrasonicLevel());
+        OpModeInstance.addMessage("sonic distance l" + ultrasonicLeft);
         OpModeInstance.addMessage("sonic distance r" + hardware.sonicRight.getUltrasonicLevel());
 
-        if(hardware.sonicLeft.getUltrasonicLevel() == 0 ||
-                hardware.sonicRight.getUltrasonicLevel() == 0) {
-            Log.i("test", "is zero. continuing");
-            hardware.motorLeft.setPower(0);
-            hardware.motorRight.setPower(0);
-            return;
-        }
-
-        if(hardware.sonicLeft.getUltrasonicLevel() < 12) {
-            Log.i("test", "sonic left" + hardware.sonicLeft.getUltrasonicLevel());
+        if(ultrasonicLeft < 14) {
+            Log.i("test", "sonic left" + ultrasonicLeft);
             done = true;
         }
-        if(hardware.sonicRight.getUltrasonicLevel() < 12) {
+        if(hardware.sonicRight.getUltrasonicLevel() < 14) {
             Log.i("test", "sonic right" + hardware.sonicRight.getUltrasonicLevel());
             done = true;
         }
-
-
-
 
     }
 }

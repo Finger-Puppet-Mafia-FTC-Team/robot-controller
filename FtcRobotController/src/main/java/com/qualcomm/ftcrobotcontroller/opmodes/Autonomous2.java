@@ -7,11 +7,21 @@ import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
+
+/**
+ * TODO: put slider in middle after finding middle
+ * TODO: detect side of beacon robot is on
+ * TODO: detect color detected
+ * TODO: decide side
+ * TODO: move slider
+ * TODO: move forward
+ * TODO: move back
+ */
 
 /**
  * TeleOp Mode
@@ -60,6 +70,11 @@ public class Autonomous2 extends OpMode {
 
     int stepIndex = 0;
 
+    // data steps can share with other steps
+    public HashMap<String, String> sharedData = new HashMap<String, String>();
+
+    public SlideHelpers slider;
+
     // array of step instances in order to be run.
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
@@ -69,7 +84,7 @@ public class Autonomous2 extends OpMode {
             new AlignWithBeacon(),
             new DriveClose(),
             new dumpClimbers(),
-            new DriveCloser(),
+            new AlignWithBeacon(),
             new pushButton(),
             new stop()
     };
@@ -142,6 +157,7 @@ public class Autonomous2 extends OpMode {
         hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
         hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
         hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        hardware.touch = hardwareMap.touchSensor.get("touch");
         hardware.preloadArm = hardwareMap.servo.get("preloadArm");
         hardware.track = hardwareMap.dcMotor.get("track");
         hardware.wallLeft = hardwareMap.servo.get("wallLeft");
@@ -149,6 +165,7 @@ public class Autonomous2 extends OpMode {
         hardware.armLeft = hardwareMap.servo.get("sideArmLeft");
         hardware.armRight = hardwareMap.servo.get("sideArmRight");
         hardware.catcherDoor = hardwareMap.servo.get("catcherDoor");
+        hardware.slider = hardwareMap.servo.get("slider");
 
         hardware.gyro.calibrate();
         hardware.bottomColor.setI2cAddress(22);
@@ -157,7 +174,7 @@ public class Autonomous2 extends OpMode {
         hardware.topColor.enableLed(false);
 
         // put everything in closed position
-        hardware.wallRight.setPosition(0.8);
+        hardware.wallRight.setPosition(1);
         hardware.wallLeft.setPosition(0);
 
         hardware.armRight.setPosition(0.79);
@@ -165,6 +182,7 @@ public class Autonomous2 extends OpMode {
         hardware.preloadArm.setPosition(0.8);
         hardware.catcherDoor.setPosition(0.43);
         hardware.track.setPower(0);
+        hardware.slider.setPosition(0.5);
     }
 
     void nextStep() {
@@ -186,7 +204,7 @@ public class Autonomous2 extends OpMode {
 
     @Override
     public void init_loop() {
-
+        sharedData.put("calculatedSlideTime", "0");
 
         hardware.preloadArm.setPosition(0);
 
@@ -197,6 +215,14 @@ public class Autonomous2 extends OpMode {
 
         hardware.bottomColor.enableLed(true);
         hardware.topColor.enableLed(false);
+
+
+        slider = new SlideHelpers(hardware);
+        slider.addStep("calculateTime");
+        slider.addStep("moveTo .2");
+        //slider.addStep("moveLeft");
+        //slider.addStep("moveRight");
+        //slider.addStep("moveCenter");
     }
 
     boolean firstRun = false;
@@ -204,14 +230,17 @@ public class Autonomous2 extends OpMode {
     /**
      * This method will be called repeatedly in a loop
      *
-     * @see OpMode#run()
+     * @see OpMode#loop()
      */
     @Override
     public void loop() {
+        hardware.slider.setPosition(0.5);
 
+
+        if (startTime == 0) {
+            startTime = new Date().getTime();
+        }
         if (!firstRun) {
-
-            telemetry.addData("stage", "init");
             if (getIsBlue()) {
              //   hardware.wallLeft.setPosition(0.6);
             } else {
@@ -224,14 +253,14 @@ public class Autonomous2 extends OpMode {
             firstRun = true;
         }
 
+        slider.run();
+
         if (hardware.gyro.isCalibrating()) {
             telemetry.addData("Gyro", "Is Calibrating. Please Wait");
             return;
         }
 
-        if (startTime == 0) {
-            startTime = new Date().getTime();
-        }
+
 
         // Motors will keep following their last command
         // until they receive a new command. It is easy to forget
@@ -253,17 +282,15 @@ public class Autonomous2 extends OpMode {
         }
 
         telemetry.addData("step", stepClasses[stepIndex].getClass().getName());
-
+        telemetry.addData("touch", sharedData.get("calculatedSlideTime"));
         // run collector to get debris out of the way. We do this before the step so it can override it.
         hardware.collector.setPower(1);
 
 
         if (getIsBlue()) {
-            telemetry.addData("track", "1");
-            hardware.track.setPower(0.05);
+            hardware.track.setPower(0.1);
         } else {
-            telemetry.addData("track", "0");
-            hardware.track.setPower(-0.05);
+            hardware.track.setPower(-0.1);
         }
         // run step
         step a = stepClasses[stepIndex];
@@ -272,13 +299,11 @@ public class Autonomous2 extends OpMode {
 
 
         // log step time
-        telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
-        telemetry.addData("heading", hardware.gyro.getIntegratedZValue());
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
-
         messages.clear();
+
         if (a.shouldContinue()) {
             nextStep();
         }

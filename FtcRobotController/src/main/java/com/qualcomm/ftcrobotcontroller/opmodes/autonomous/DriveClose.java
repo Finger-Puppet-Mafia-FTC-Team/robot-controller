@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import com.qualcomm.robotcore.util.Range;
 
 public class DriveClose extends step{
@@ -47,7 +46,15 @@ public class DriveClose extends step{
 
             //hardware.motorRight.setPower(-0.37);
             //hardware.motorLeft.setPower(-0.37);
-        } else {
+        } else if (distance < 9) {
+            double powerLeft = 0.37 + driveAdjustment;
+            double powerRight = 0.37 - driveAdjustment;
+
+            powerLeft = Range.clip(powerLeft, -1, 1);
+            powerRight = Range.clip(powerRight, -1, 1);
+            hardware.motorRight.setPower(powerLeft);
+            hardware.motorLeft.setPower(powerRight);
+        } else{
             hardware.motorLeft.setPower(0);
             hardware.motorRight.setPower(0);
             done = true;

@@ -1,12 +1,14 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
+import android.util.Log;
+
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 import java.util.Date;
 
 
 public class pushButton extends step {
     String target;
+    String side;
     long stepStartTime = 0;
     boolean didInit = false;
 
@@ -33,9 +35,19 @@ public class pushButton extends step {
             target = "right";
         } else if (!instance.getIsBlue() && !isBlue) {
             target = "right";
+        }  else if (red == 0 && blue == 0) {
+          target = "none";
         } else {
             target = "left";
         }
+
+        if(target == "right") {
+            instance.slider.addStep("moveRight");
+        }
+        if(target == "left") {
+            instance.slider.addStep("moveTo 0.2");
+        }
+        Log.i("test", target);
     }
 
 
@@ -49,19 +61,27 @@ public class pushButton extends step {
             return;
         }
 
-        if(new Date().getTime() - stepStartTime > 3000) {
+        if(new Date().getTime() - stepStartTime < 3000) {
+            // make sure slider is in place
+            return;
+        }
+
+        if(new Date().getTime() - stepStartTime > 7000) {
             done = true;
             return;
         }
 
         if (target == "right") {
             hardware.motorRight.setPower(-0.4);
-            hardware.motorLeft.setPower(0);
-        } else {
             hardware.motorLeft.setPower(-0.4);
-            hardware.motorRight.setPower(0);
+        } else if(target == "left") {
+            hardware.motorLeft.setPower(-0.4);
+            hardware.motorRight.setPower(-0.4);
         }
         hardware.collector.setPower(0);
+
+        instance.addMessage("target: " + target);
+
     }
 }
 

@@ -1,7 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.autonomous;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.Autonomous2;
-import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousHardware;
 
 public class DriveCloser extends step{
     @Override
@@ -18,7 +17,8 @@ public class DriveCloser extends step{
     @Override
     public void runStep (Autonomous2 instance, AutonomousHardware hardware) {
 
-        if(instance.getIsBlue()) {
+        if(true) {
+            //always skip this
             done = true;
             return;
         }

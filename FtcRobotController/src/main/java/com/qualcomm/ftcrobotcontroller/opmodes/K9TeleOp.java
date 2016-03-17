@@ -179,8 +179,8 @@ public class K9TeleOp extends OpMode {
         clawPosition = Range.clip(clawPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
 
 		// write position values to the wrist and claw servo
-//		arm.setPosition(armPosition);
-//		claw.setPosition(clawPosition);
+		arm.setPosition(armPosition);
+		claw.setPosition(clawPosition);
 
 
 
