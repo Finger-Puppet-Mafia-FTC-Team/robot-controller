@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * TeleOp for the competition on Dec. 12
@@ -47,6 +48,8 @@ public class teleop extends OpMode {
     float actualSpeedLeft = 0;
     float actualSpeedRight = 0;
 
+    double startTime = 0;
+
     String trackStateText = "Off";
 
 
@@ -82,6 +85,7 @@ public class teleop extends OpMode {
 
         // reset state
         leftWallIn = true;
+        startTime = new Date().getTime();
     }
 
     @Override
@@ -163,6 +167,14 @@ public class teleop extends OpMode {
             }
         }
 
+        if(!catcherDoorUp) {
+            if(new Date().getSeconds() % 2 == 0) {
+                catcherDoor.setPosition(0.55);
+            } else {
+                catcherDoor.setPosition(0.48);
+            }
+        }
+
         //Belt
         if (pressed("2leftBumper", gamepad2.left_bumper)) {
             telemetry.addData("test", trackState);
@@ -224,7 +236,7 @@ public class teleop extends OpMode {
         //Left Wall
         if (pressed("2dpadleft", gamepad2.dpad_left) == true) {
             if (leftWallIn) {
-                wallLeft.setPosition(0.6);
+                wallLeft.setPosition(0.7);
             } else {
                 wallLeft.setPosition(0);
             }
@@ -237,7 +249,7 @@ public class teleop extends OpMode {
 
         if (pressed("2dpadright", gamepad2.dpad_right) == true) {
             if (rightWallIn) {
-                wallRight.setPosition(0.5);
+                wallRight.setPosition(0.6);
             } else {
                 wallRight.setPosition(1);
             }
