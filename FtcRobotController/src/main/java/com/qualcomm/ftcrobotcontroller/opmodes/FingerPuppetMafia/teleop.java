@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * TeleOp for the competition on Dec. 12
@@ -20,14 +21,17 @@ public class teleop extends OpMode {
     Servo sideArmRight;
     Servo wallLeft;
     Servo wallRight;
-    Servo track;
-    Servo tapeAngleServo;
     Servo catcherDoor;
+    Servo preloadArm;
+    Servo slider;
 
     DcMotor tapeMotor;
     DcMotor collectorMotor;
     DcMotor driveLeft;
     DcMotor driveRight;
+    DcMotor tapeAngleMotor;
+    DcMotor track;
+
 
     // State
     boolean leftWallIn = true;
@@ -35,59 +39,90 @@ public class teleop extends OpMode {
     boolean sideArmLeftIn = true;
     boolean sideArmRightIn = true;
     boolean catcherDoorUp = true;
+
+    boolean preloadArmDown = true;
+
     double tapeAngle = 0.8;
     int trackState = 0;
     int collectorState = 0;
+    float actualSpeedLeft = 0;
+    float actualSpeedRight = 0;
+
+    double startTime = 0;
+
+    String trackStateText = "Off";
+
 
     public teleop() {
     }
 
     @Override
     public void init() {
-        //TODO: This will need to be changed once the eclectronics are all on
         sideArmLeft = hardwareMap.servo.get("sideArmLeft");
         sideArmRight = hardwareMap.servo.get("sideArmRight");
-
         wallLeft = hardwareMap.servo.get("wallLeft");
         wallRight = hardwareMap.servo.get("wallRight");
 
-        track = hardwareMap.servo.get("track");
+        slider = hardwareMap.servo.get("slider");
 
-        tapeAngleServo = hardwareMap.servo.get("tapeAngle");
+        preloadArm = hardwareMap.servo.get("preloadArm");
+
+        track = hardwareMap.dcMotor.get("track");
+
         catcherDoor = hardwareMap.servo.get("catcherDoor");
 
 
         //Motors
+        tapeAngleMotor = hardwareMap.dcMotor.get("tapeAngle");
         tapeMotor = hardwareMap.dcMotor.get("tape");
         collectorMotor = hardwareMap.dcMotor.get("collector");
         driveLeft = hardwareMap.dcMotor.get("driveLeft");
         driveRight = hardwareMap.dcMotor.get("driveRight");
 
+        tapeAngleMotor.setDirection(DcMotor.Direction.REVERSE);
         driveLeft.setDirection(DcMotor.Direction.REVERSE);
+        driveRight.setDirection(DcMotor.Direction.FORWARD);
 
         // reset state
         leftWallIn = true;
+        startTime = new Date().getTime();
     }
 
     @Override
     public void init_loop() {
         // initial positions for servos
-        sideArmLeft.setPosition(0.37);
-        sideArmRight.setPosition(0.78);
+        sideArmLeft.setPosition(0.1);
+        sideArmRight.setPosition(0.79);
 
         wallLeft.setPosition(0);
-        wallRight.setPosition(0.8);
+        wallRight.setPosition(1);
 
-        track.setPosition(.5);
-        tapeAngleServo.setPosition(.8);
-        catcherDoor.setPosition(.51);
+        track.setPower(0);
+        catcherDoor.setPosition(0);
+
+        preloadArm.setPosition(0);
+        slider.setPosition(0.5);
     }
 
     @Override
     public void loop() {
-        float throttleLeft = gamepad1.left_stick_y;
-        float throttleRight = gamepad1.right_stick_y;
+        slider.setPosition(0.5);
+
         double throttleTape = 0;
+        float targetSpeedLeft = gamepad1.left_stick_y;
+        float targetSpeedRight = gamepad1.right_stick_y;
+
+
+        // preload arm
+        if (pressed("1a", gamepad1.a)) {
+            if (preloadArmDown == true) {
+                preloadArm.setPosition(0.9);
+
+            } else {
+                preloadArm.setPosition(0);
+            }
+            preloadArmDown = !preloadArmDown;
+        }
 
         //------ Catcher --------
 
@@ -126,42 +161,54 @@ public class teleop extends OpMode {
         if (pressed("2y", gamepad2.y)) {
             catcherDoorUp = !catcherDoorUp;
             if (catcherDoorUp == true) {
-                catcherDoor.setPosition(0.48);
-            } else {
                 catcherDoor.setPosition(0);
+            } else {
+                catcherDoor.setPosition(0.48);
+            }
+        }
+
+        if(!catcherDoorUp) {
+            if(new Date().getSeconds() % 2 == 0) {
+                catcherDoor.setPosition(0.55);
+            } else {
+                catcherDoor.setPosition(0.48);
             }
         }
 
         //Belt
-        if (pressed("1x", gamepad1.x)) {
-            // move to next state
-            switch (trackState) {
-                case 0:
-                    trackState = 1;
-                    break;
-                case 1:
-                    trackState = 2;
-                    break;
-                case 2:
-                    trackState = 0;
-                    break;
-                default:
-                    Log.i("Test", "default");
-            }
-            Log.i("Test", String.valueOf(trackState));
-
+        if (pressed("2leftBumper", gamepad2.left_bumper)) {
+            telemetry.addData("test", trackState);
+            Log.i("track2", "left pressed");
             if (trackState == 0) {
-                track.setPosition(0.5);
-                messages.add("Track not moving");
-            } else if (trackState == 1) {
-                track.setPosition(1);
-                messages.add("Track going left");
-            } else if (trackState == 2) {
-                track.setPosition(0);
-                messages.add("Track going right");
+                Log.i("track2", "1");
+                trackState = 2;
             } else {
-                messages.add("Track state not found");
+                Log.i("track2", "left pressed 0");
+                trackState = 0;
             }
+        }
+        if (pressed("2rightBumper", gamepad2.right_bumper)) {
+            telemetry.addData("test", trackState);
+            telemetry.addData("track2", "right pressed");
+            if (trackState == 0) {
+                trackState = 1;
+            } else {
+                trackState = 0;
+            }
+        }
+
+
+        if (trackState == 0) {
+            track.setPower(0);
+            trackStateText = "Off";
+        } else if (trackState == 1) {
+            track.setPower(-0.15);
+            trackStateText = "Left";
+        } else if (trackState == 2) {
+            track.setPower(0.15);
+            trackStateText = "Right";
+        } else {
+            trackStateText = "Track state not found";
         }
 
 
@@ -169,11 +216,9 @@ public class teleop extends OpMode {
         if (pressed("2x", gamepad2.x)) {
             sideArmLeftIn = !sideArmLeftIn;
             if (sideArmLeftIn) {
-                sideArmLeft.setPosition(0.37);
-                messages.add("Left Arm In");
+                sideArmLeft.setPosition(0.1);
             } else {
-                sideArmLeft.setPosition(0.9);
-                messages.add("Left Arm Out");
+                sideArmLeft.setPosition(1);
             }
 
         }
@@ -181,95 +226,130 @@ public class teleop extends OpMode {
         //Right arm
         if (pressed("2b", gamepad2.b)) {
             if (sideArmRightIn) {
-                sideArmRight.setPosition(0.25);
+                sideArmRight.setPosition(0.1);
             } else {
-                sideArmRight.setPosition(0.78);
+                sideArmRight.setPosition(0.79);
             }
             sideArmRightIn = !sideArmRightIn;
         }
 
         //Left Wall
-        if (pressed("1dpadleft", gamepad1.dpad_left) == true) {
+        if (pressed("2dpadleft", gamepad2.dpad_left) == true) {
             if (leftWallIn) {
-                wallLeft.setPosition(0.4);
-                messages.add("Left Wall In");
+                wallLeft.setPosition(0.7);
             } else {
                 wallLeft.setPosition(0);
-                messages.add("Left Wall Out");
             }
             leftWallIn = !leftWallIn;
         }
 
-        if (pressed("1dpadright", gamepad1.dpad_right) == true) {
+        if(pressed("2dpadback", gamepad2.back) == true) {
+            wallLeft.setPosition(1);
+        }
+
+        if (pressed("2dpadright", gamepad2.dpad_right) == true) {
             if (rightWallIn) {
-                wallRight.setPosition(0.4);
+                wallRight.setPosition(0.6);
             } else {
+<<<<<<< HEAD
                 wallRight.setPosition(0);
+=======
+                wallRight.setPosition(1);
+>>>>>>> origin/autonomous
             }
             rightWallIn = !rightWallIn;
         }
 
+        if(pressed("2dpadstart", gamepad2.start) == true) {
+            wallRight.setPosition(0.2);
+        }
+
         //Drive motors
-        throttleLeft = Range.clip(throttleLeft, -1, 1);
-        throttleRight = Range.clip(throttleRight, -1, 1);
+        targetSpeedLeft = Range.clip(targetSpeedLeft, -1f, 1f);
+        targetSpeedRight = Range.clip(targetSpeedRight, -1f, 1f);
 
-        throttleLeft = (float) scaleInput(throttleLeft);
-        throttleRight = (float) scaleInput(throttleRight);
+        targetSpeedLeft = (float) scaleInput(targetSpeedLeft);
+        targetSpeedRight = (float) scaleInput(targetSpeedRight);
 
-        driveLeft.setPower(throttleLeft);
-        driveRight.setPower(throttleRight);
+
+        // transition to new speed over time
+        actualSpeedLeft = transitionSpeed(actualSpeedLeft, targetSpeedLeft);
+        actualSpeedRight = transitionSpeed(actualSpeedRight, targetSpeedRight);
+
+        Log.i("actualSpeedLeft", String.valueOf(gamepad1.left_stick_y));
+
+        driveLeft.setPower(actualSpeedLeft);
+        driveRight.setPower(actualSpeedRight);
+
 
         //Tape
+        if (gamepad2.right_stick_y < -.2) {
+            tapeAngleMotor.setPower(-.1);
+        } else if (gamepad2.right_stick_y > .2) {
+            tapeAngleMotor.setPower(.12);
+        } else {
+            tapeAngleMotor.setPower(0);
+        }
+
         if (gamepad1.left_bumper) {
-            double average = Math.abs(throttleLeft) + Math.abs(throttleRight)/ 2;
-            throttleTape = average + 0.1;
+            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight)) / 2;
+            throttleTape = average + 0.2;
+            throttleTape = Range.clip(throttleTape, -1, 1);
+
+        } else if (gamepad1.right_bumper) {
+            double average = (Math.abs(actualSpeedLeft) + Math.abs(actualSpeedRight)) / 2;
+            throttleTape = (-1 * average) - 0.2;
             throttleTape = Range.clip(throttleTape, -1, 1);
 
         }
-        if (gamepad2.right_stick_y < -0.2) {
-            tapeAngle += .01;
-            if (tapeAngle > 1) {
-                tapeAngle = 1;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
+
+        if (gamepad2.left_stick_y < -0.4) {
+            throttleTape = -0.8;
+        } else if (gamepad2.left_stick_y > 0.4) {
+            throttleTape = 0.8;
         }
 
-        if (gamepad2.right_stick_y > 0.2) {
-            tapeAngle -= .01;
-            if (tapeAngle < 0) {
-                tapeAngle = 0;
-            }
-            tapeAngleServo.setPosition(tapeAngle);
-        }
-
-        if (gamepad2.left_stick_y < -0.2) {
-            throttleTape = -1;
-        } else if (gamepad2.left_stick_y > 0.2) {
-            throttleTape = 1;
-        }
         tapeMotor.setPower(throttleTape);
 
-
-//        if(gamepad1.right_stick_y > 0.1) {
-//            driveRight.setPower(0.6);
-//        } else if (gamepad1.right_stick_y < -0.1) {
-//            driveRight.setPower(-0.6);
-//        } else {
-//            driveRight.setPower(0);
-//        }
 
         for (int i = 0; i < messages.size(); i++) {
             telemetry.addData(String.valueOf(i), messages.get(i));
         }
 
         messages.clear();
-        telemetry.addData("leftWall In:", leftWallIn);
-        telemetry.addData("rightWall In:", rightWallIn);
-        telemetry.addData("leftArm In:", sideArmLeftIn);
-        telemetry.addData("rightArm In:", sideArmRightIn);
-        telemetry.addData("trackState", String.valueOf(trackState));
-        telemetry.addData("Tape Angle", tapeAngle);
-        telemetry.addData("Tape Power", throttleTape );
+
+        if (!preloadArmDown) {
+            telemetry.addData("Preload Arm", "Up");
+        }
+
+        if (!leftWallIn) {
+            telemetry.addData("Left Wall", "Open");
+        }
+        if (!rightWallIn) {
+            telemetry.addData("Right Wall", "Open");
+        }
+        if (!sideArmLeftIn) {
+            telemetry.addData("Left Arm In", "Open");
+        }
+        if (!sideArmRightIn) {
+            telemetry.addData("Right Arm", "Open");
+        }
+        if (trackStateText != "Off") {
+            telemetry.addData("trackStateText", trackStateText);
+        }
+        telemetry.addData("trackState", trackState);
+
+        telemetry.addData("tapethrottle", throttleTape);
+        telemetry.addData("trackStateText", trackStateText);
+
+        telemetry.addData("", "");
+        //  telemetry.addData("speed right", actualSpeedRight);
+        //  telemetry.addData("speed left", actualSpeedLeft);
+        //  telemetry.addData("target speed right", targetSpeedRight);
+//        telemetry.addData("tape speed", throttleTape);
+
+        Log.i("trackLoop", String.valueOf(trackState));
+
     }
 
     @Override
@@ -287,7 +367,6 @@ public class teleop extends OpMode {
      * @param key
      * @return If the user is holding is still holding down the key
      */
-
     public boolean pressed(String key, boolean pressed) {
         int index = Arrays.asList(pressedKeys).indexOf(key);
         if (pressed == false) {
@@ -312,17 +391,63 @@ public class teleop extends OpMode {
 
     }
 
+    /**
+     * Transitions speed from current to target.
+     * It gradually changes the power every time the loop runs.
+     *
+     * @param currentSpeed - the current power applied to motor
+     * @param finalSpeed   - the target power
+     * @param faster       - if the change should be faster. If true, the final speed will
+     *                     be reached quicker
+     * @return power to give motor
+     */
+    private float transitionSpeed(float currentSpeed, float finalSpeed, boolean... faster) {
+        float result = 0;
+        float change = 0.02f;
+        //Optional parameter. This might not actually work
+        if (faster.length > 0 && faster[0]) {
+            // speed up change
+            change = change * 5;
+        }
+
+        if (currentSpeed == finalSpeed) {
+            // we have reached the final speed
+            result = finalSpeed;
+        } else if (currentSpeed < finalSpeed) {
+            // we are slower than the final speed
+            if (Math.abs(currentSpeed + finalSpeed) < change) {
+                // the difference is smaller than the change
+                Log.i("test", "2) difference is small" + currentSpeed + ", " + finalSpeed);
+                result = finalSpeed;
+            } else {
+                result = currentSpeed + change;
+            }
+        } else if (currentSpeed > finalSpeed) {
+            // we are faster than the final speed
+            if (currentSpeed - finalSpeed < change) {
+                Log.i("test", "difference is small" + currentSpeed + ", " + finalSpeed);
+                //difference is bigger than change
+                result = finalSpeed;
+            } else {
+                result = currentSpeed - change;
+            }
+        }
+
+        return result;
+    }
+
     /*
      * This method scales the joystick input so for low joystick values, the
 	 * scaled value is less than linear.  This is to make it easier to drive
 	 * the robot more precisely at slower speeds.
 	 */
     double scaleInput(double dVal) {
-        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+        double[] scaleArray = {0, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.42,
+                0.46, 0.48, 0.50, 0.52, 0.65, 0.77, 0.89, .97, 1.00};
 
         // get the corresponding index for the scaleInput array.
         int index = (int) (dVal * 16.0);
+        Log.i("index", String.valueOf(index));
 
         // index should be positive.
         if (index < 0) {

@@ -41,6 +41,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -86,11 +87,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
+//import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera;
 
 public class FtcRobotControllerActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
+    //private Camera autonomousCamera = com.qualcomm.ftcrobotcontroller.opmodes.autonomous.Camera.getInstance();
     private boolean showedDevImage = false;
 
     private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
@@ -99,6 +100,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
 
     public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
 
+    protected WifiManager.WifiLock wifiLock;
     protected SharedPreferences preferences;
 
     protected UpdateUI.Callback callback;
@@ -167,7 +169,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         //Rect roi = new Rect(1, 1, mRgbaT.cols() - 200 , mRgbaT.rows());
         //Mat cropped = new Mat(mRgbaT, roi);
 
-        autonomousCamera.picture = mRgbaT;
+       // autonomousCamera.picture = mRgbaT;
 //        if (autonomousCamera.isFixed && autonomousCamera.isFixedShown == false && autonomousCamera.getFixedPicture() != null) {
 //            Mat _picture = autonomousCamera.getFixedPicture();
 //            final Bitmap img = Bitmap.createBitmap(_picture.cols(),_picture.rows(),Bitmap.Config.ARGB_8888);
@@ -216,9 +218,11 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_ftc_controller);
+
 
         Log.i("test", "called onCreate");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -228,6 +232,7 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         mOpenCvCameraView.setCameraIndex(1);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView2 = (ImageView) findViewById(R.id.Camera2);
+
         super.onCreate(savedInstanceState);
 
 
@@ -263,13 +268,15 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
+
         hittingMenuButtonBrightensScreen();
 
         if (USE_DEVICE_EMULATION) {
             HardwareFactory.enableDeviceEmulation();
         }
     }
-
 
     @Override
     protected void onStart() {
@@ -293,12 +300,14 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
             }
         });
 
+        wifiLock.acquire();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
+
 
     @Override
     protected void onStop() {
@@ -307,6 +316,8 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         if (controllerService != null) unbindService(connection);
 
         RobotLog.cancelWriteLogcatToDisk(this);
+
+        wifiLock.release();
     }
 
     @Override
@@ -337,7 +348,6 @@ public class FtcRobotControllerActivity extends Activity implements CameraBridge
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
     }
-
 
 
     @Override

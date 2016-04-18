@@ -3,28 +3,47 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import android.util.Log;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.*;
+import com.qualcomm.ftcrobotcontroller.opmodes.autonomous.findWhiteTape;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
+
+/**
+ * TODO: put slider in middle after finding middle
+ * TODO: detect side of beacon robot is on
+ * TODO: detect color detected
+ * TODO: decide side
+ * TODO: move slider
+ * TODO: move forward
+ * TODO: move back
+ */
 
 /**
  * TeleOp Mode
  * <p/>
  * Hardware:
  * Motors:
- * - motor_1
- * - motor_2
+ * - driveLeft
+ * - driveRight
  * Sensors:
- * - light_1
- *
+ * - ods
+ * <p/>
  * Autonomous program Version 2
- *
- * TODO: show message instead of throwing when hardware not found
  */
 public class Autonomous2 extends OpMode {
     AutonomousHardware hardware;
+
+    ArrayList<String> messages = new ArrayList<String>();
+
+    public void addMessage(String message) {
+        messages.add(message);
+    }
+
 
     /* === Steps ===
      * Each step is in it's own class. We create a variable to reference the class instance here
@@ -39,8 +58,8 @@ public class Autonomous2 extends OpMode {
     long startTime = 0;
 
     // used by steps
-    double redTape = .5;
-    double whiteTape = 0.6;
+    double[] floorColor = {0, 0, 0};
+    double floorBrightness = 0;
 
     boolean dev = false;
 
@@ -51,13 +70,23 @@ public class Autonomous2 extends OpMode {
 
     int stepIndex = 0;
 
+    // data steps can share with other steps
+    public HashMap<String, String> sharedData = new HashMap<String, String>();
+
+    public SlideHelpers slider;
+
     // array of step instances in order to be run.
     // If you create a step, make sure to add it here for it to be run
     step[] stepClasses = {
-            new FindCenterTape(),
-            new turnTowardBeacon(),
-            new driveTowardBeacon(),
-            new alignWithBeacon()
+            new findWhiteTape(),
+            new NormalizePosition(),
+            new followTape(),
+            new AlignWithBeacon(),
+            new DriveClose(),
+            new dumpClimbers(),
+            new AlignWithBeacon(),
+            new pushButton(),
+            new stop()
     };
 
     // feed
@@ -66,13 +95,35 @@ public class Autonomous2 extends OpMode {
     /**
      * Constructor
      */
-    public Autonomous2() {}
+    public Autonomous2() {
+    }
 
-    public boolean getIsBlue () {
+    /*
+     * Colors
+     */
+    public double[] getFloorColor() {
+        return floorColor;
+    }
+
+    public void setFloorColor(double red, double green, double blue) {
+        floorColor[0] = red;
+        floorColor[1] = green;
+        floorColor[2] = blue;
+    }
+
+    public double getFloorBrightness() {
+        return floorBrightness;
+    }
+
+    public void setFloorBrightness(double brightness) {
+        floorBrightness = brightness;
+    }
+
+    public boolean getIsBlue() {
         return isBlue;
     }
 
-    public boolean isDev () {
+    public boolean isDev() {
         return dev;
     }
 
@@ -94,11 +145,44 @@ public class Autonomous2 extends OpMode {
 		 * configured your robot and created the configuration file.
 		 */
         //hardware.initStep(this);
-        hardware.motorRight = hardwareMap.dcMotor.get("motor_1");
+        hardware.motorRight = hardwareMap.dcMotor.get("driveRight");
         hardware.motorRight.setDirection(DcMotor.Direction.REVERSE);
-        hardware.motorLeft = hardwareMap.dcMotor.get("motor_2");
+        hardware.motorLeft = hardwareMap.dcMotor.get("driveLeft");
         hardware.motorLeft.setDirection(DcMotor.Direction.FORWARD);
-        hardware.lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
+
+        hardware.collector = hardwareMap.dcMotor.get("collector");
+        hardware.topColor = hardwareMap.colorSensor.get("topColor");
+        hardware.bottomColor = hardwareMap.colorSensor.get("bottomColor");
+        hardware.ods = hardwareMap.opticalDistanceSensor.get("ods");
+        hardware.sonicLeft = hardwareMap.ultrasonicSensor.get("sonicLeft");
+        hardware.sonicRight = hardwareMap.ultrasonicSensor.get("sonicRight");
+        hardware.gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        hardware.touch = hardwareMap.touchSensor.get("touch");
+        hardware.preloadArm = hardwareMap.servo.get("preloadArm");
+        hardware.track = hardwareMap.dcMotor.get("track");
+        hardware.wallLeft = hardwareMap.servo.get("wallLeft");
+        hardware.wallRight = hardwareMap.servo.get("wallRight");
+        hardware.armLeft = hardwareMap.servo.get("sideArmLeft");
+        hardware.armRight = hardwareMap.servo.get("sideArmRight");
+        hardware.catcherDoor = hardwareMap.servo.get("catcherDoor");
+        hardware.slider = hardwareMap.servo.get("slider");
+
+        hardware.gyro.calibrate();
+        hardware.bottomColor.setI2cAddress(22);
+        hardware.bottomColor.enableLed(false);
+        hardware.topColor.setI2cAddress(16);
+        hardware.topColor.enableLed(false);
+
+        // put everything in closed position
+        hardware.wallRight.setPosition(1);
+        hardware.wallLeft.setPosition(0);
+
+        hardware.armRight.setPosition(0.79);
+        hardware.armLeft.setPosition(0.1);
+        hardware.preloadArm.setPosition(0.8);
+        hardware.catcherDoor.setPosition(0.43);
+        hardware.track.setPower(0);
+        hardware.slider.setPosition(0.5);
     }
 
     void nextStep() {
@@ -117,19 +201,80 @@ public class Autonomous2 extends OpMode {
         stepIndex = index;
     }
 
+
+    @Override
+    public void init_loop() {
+        sharedData.put("calculatedSlideTime", "0");
+
+        hardware.preloadArm.setPosition(0);
+
+        setFloorColor(hardware.bottomColor.red(), hardware.bottomColor.green(), hardware.bottomColor.blue());
+        setFloorBrightness(hardware.ods.getLightDetected());
+
+        telemetry.addData("stage", "init_loop");
+
+        hardware.bottomColor.enableLed(true);
+        hardware.topColor.enableLed(false);
+
+
+        slider = new SlideHelpers(hardware);
+        slider.addStep("calculateTime");
+        slider.addStep("moveTo .2");
+        //slider.addStep("moveLeft");
+        //slider.addStep("moveRight");
+        //slider.addStep("moveCenter");
+    }
+
+    boolean firstRun = false;
+
     /**
      * This method will be called repeatedly in a loop
      *
-     * @see OpMode#run()
+     * @see OpMode#loop()
      */
     @Override
     public void loop() {
+        hardware.slider.setPosition(0.5);
+
+
         if (startTime == 0) {
             startTime = new Date().getTime();
         }
+        if (!firstRun) {
+            if (getIsBlue()) {
+             //   hardware.wallLeft.setPosition(0.6);
+            } else {
+            //    hardware.wallRight.setPosition(0.4);
+            }
+            hardware.catcherDoor.setPosition(0.43);
+            hardware.armLeft.setPosition(0.1);
+            hardware.armRight.setPosition(0.79);
+
+            firstRun = true;
+        }
+
+        slider.run();
+
+        if (hardware.gyro.isCalibrating()) {
+            telemetry.addData("Gyro", "Is Calibrating. Please Wait");
+            return;
+        }
+
+
+
+        // Motors will keep following their last command
+        // until they receive a new command. It is easy to forget
+        // to stop a motor, so we will have it stop unless the
+        // step tells it to do otherwise.
+        hardware.motorLeft.setPower(0);
+        hardware.motorRight.setPower(0);
 
         // wait 8 seconds
+        // ==============================
+        //     Change delay time here
+        // ===============================
         telemetry.addData("dev", this.isDev());
+
         if (new Date().getTime() - startTime < 8000 && this.isDev() == false) {
             telemetry.addData("start time difference", new Date().getTime() - startTime);
             // not ready yet so we will return
@@ -137,14 +282,28 @@ public class Autonomous2 extends OpMode {
         }
 
         telemetry.addData("step", stepClasses[stepIndex].getClass().getName());
+        telemetry.addData("touch", sharedData.get("calculatedSlideTime"));
+        // run collector to get debris out of the way. We do this before the step so it can override it.
+        hardware.collector.setPower(1);
 
+
+        if (getIsBlue()) {
+            hardware.track.setPower(0.1);
+        } else {
+            hardware.track.setPower(-0.1);
+        }
         // run step
         step a = stepClasses[stepIndex];
-         a.initStep(this, hardware);
-         a.runStep(this, hardware);
+        a.initStep(this, hardware);
+        a.runStep(this, hardware);
+
+
         // log step time
-        telemetry.addData("step index", stepIndex);
-        telemetry.addData("step time", new Date().getTime() - a.stepStartTime);
+        for (int i = 0; i < messages.size(); i++) {
+            telemetry.addData(String.valueOf(i), messages.get(i));
+        }
+        messages.clear();
+
         if (a.shouldContinue()) {
             nextStep();
         }

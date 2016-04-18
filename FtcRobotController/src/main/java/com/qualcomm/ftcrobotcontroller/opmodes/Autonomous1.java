@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -56,7 +58,10 @@ public class Autonomous1 extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;
-    OpticalDistanceSensor lightSensor;
+    ColorSensor lightSensor;
+    ColorSensor lightSensor2;
+    OpticalDistanceSensor ods;
+    TelemetryHelpers th = new TelemetryHelpers();
     int count = 0;
 
     double lightAmount = 0;
@@ -71,73 +76,52 @@ public class Autonomous1 extends OpMode {
     /**
      * Code to run when the op mode is first enabled goes here
      *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
+     * @see OpMode#start()
      */
     @Override
     public void init() {
-        telemetry.addData("test", "init!");
-        drive = false;
-
 		/*
          * Use the hardwareMap to get the dc motors and servos by name. Note
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-        lightSensor = hardwareMap.opticalDistanceSensor.get("light_1");
-        motorRight = hardwareMap.dcMotor.get("motor_2");
-        motorLeft = hardwareMap.dcMotor.get("motor_1");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        lightSensor = hardwareMap.colorSensor.get("bottomColor");
+        lightSensor.setI2cAddress(22);
+        lightSensor2 = hardwareMap.colorSensor.get("topColor");
+        lightSensor2.setI2cAddress(16);
+        ods = hardwareMap.opticalDistanceSensor.get("ods");
+        lightSensor.enableLed(false);
+        lightSensor2.enableLed(false);
+
+        //ods = hardwareMap.opticalDistanceSensor.get("ods");
     }
 
     /**
      * This method will be called repeatedly in a loop
      *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
+     * @see OpMode#run()
      */
     @Override
     public void loop() {
         count += 1;
-        // The f turns it into a float number.
-        float right = 0.05f;
-        float left = 0.05f;
+        //Log.i("test", String.valueOf(lightSensor.argb()));
+        lightSensor2.enableLed(false);
+        telemetry.addData("0 count", count);
+        //telemetry.addData("1 ods", ods.getLightDetected());
+        //telemetry.addData("2      ", "1   | 2   ");
+        //telemetry.addData("3 -----", "----------");
+        //String redText = lightSensor.red() + " | " + lightSensor2.red();
+        telemetry.addData("2 red  ", lightSensor.red());
+        telemetry.addData("2 blue ", lightSensor.blue());
+        telemetry.addData("2 green", lightSensor.green());
+        //telemetry.addData("6 test ", lightSensor.getDeviceName());
 
-        lightAmount = lightSensor.getLightDetected();
+        //telemetry.addData("7 test2", lightSensor.argb());
 
-        if (lightAmount > 0.2) {
-            // tape brightness in the robotics room is 0.2
-            // TODO: figure out why it is so low
-            // don't move after we have found the tape
-            left = 0;
-            right = 0;
-            telemetry.addData("light material", "tape");
-        } else {
-            telemetry.addData("light material", "other");
-        }
-        //telemetry.addData("light connection", lightSensor.getConnectionInfo());
-        telemetry.addData("light brightness", lightSensor.getLightDetected());
-        telemetry.addData("light", lightSensor.getLightDetectedRaw());
-        //telemetry.addData("light status", lightSensor.status());
-
-		/*
-		 * Gamepad 1
-		 * 
-		 * Stops/starts the robot with Y
-		 */
-
-        // toggle drive when a is pressed
-        if (gamepad1.a) {
-
-            drive = !drive;
-        }
-
-        if (drive == false) {
-            // gamepad1.a was pressed. Don't move.
-            right = 0;
-            left = 0;
-        }
-
-        motorRight.setPower(right);
-        motorLeft.setPower(left);
+        telemetry.addData("8 red", lightSensor2.red());
+        telemetry.addData("8 blue", lightSensor2.blue());
+        telemetry.addData("8 green", lightSensor2.green());
+        //telemetry.addData("8test", lightSensor2.getDeviceName());
     }
 
     /*
@@ -148,6 +132,5 @@ public class Autonomous1 extends OpMode {
     @Override
     public void stop() {
         telemetry.addData("Text", "stop");
-        telemetry.addData("Light", lightSensor.getLightDetected());
     }
 }
