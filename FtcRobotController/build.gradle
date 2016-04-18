@@ -47,4 +47,5 @@ dependencies {
     compile(name: 'Analytics-release', ext: 'aar')
     compile(name: 'WirelessP2p-release', ext: 'aar')
     compile(name: 'app-debug', ext: 'aar')
+    compile 'com.koushikdutta.async:androidasync:2.+'
 }

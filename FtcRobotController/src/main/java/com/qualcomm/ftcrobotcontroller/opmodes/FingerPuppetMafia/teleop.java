@@ -204,7 +204,7 @@ public class teleop extends OpMode {
             if (rightWallIn) {
                 wallRight.setPosition(0.4);
             } else {
-                wallRight.setPosition(0.8);
+                wallRight.setPosition(0);
             }
             rightWallIn = !rightWallIn;
         }
