@@ -1,3 +1,7 @@
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import android.util.Log;
+
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.callback.DataCallback;
@@ -6,11 +10,11 @@ import com.koushikdutta.async.http.WebSocket;
 import com.koushikdutta.async.http.socketio.transport.SocketIOTransport;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-public class VocieControl extends OpMode {
+public class VoiceControl extends OpMode {
 
     @Override
     public void init() {
-        AsyncHttpClient.getDefaultInstance().websocket("echo.websocket.org", "ws", new AsyncHttpClient.WebSocketConnectCallback() {
+        AsyncHttpClient.getDefaultInstance().websocket("http://echo.websocket.org", "http", new AsyncHttpClient.WebSocketConnectCallback() {
             @Override
             public void onCompleted(Exception ex, WebSocket webSocket) {
                 if (ex != null) {
@@ -21,7 +25,7 @@ public class VocieControl extends OpMode {
                 webSocket.send(new byte[10]);
                 webSocket.setStringCallback(new WebSocket.StringCallback() {
                     public void onStringAvailable(String s) {
-                        System.out.println("I got a string: " + s);
+                        Log.i ("async","I got a string: " + s);
                     }
                 });
                 webSocket.setDataCallback(new DataCallback() {

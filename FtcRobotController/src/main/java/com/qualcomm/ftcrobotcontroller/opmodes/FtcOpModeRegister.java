@@ -56,6 +56,7 @@ public class FtcOpModeRegister implements OpModeRegister {
      * If two or more op modes are registered with the same name, the app will display an error.
      */
 
+    manager.register("Voice Control", VoiceControl.class);
 
     manager.register("Autonomous Blue", AutonomouseDebug.class);
     manager.register("Autonomous Blue Delay", Autonomous2.class);

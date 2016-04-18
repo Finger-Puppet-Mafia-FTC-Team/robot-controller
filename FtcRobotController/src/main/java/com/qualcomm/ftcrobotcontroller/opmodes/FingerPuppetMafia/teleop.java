@@ -251,11 +251,7 @@ public class teleop extends OpMode {
             if (rightWallIn) {
                 wallRight.setPosition(0.6);
             } else {
-<<<<<<< HEAD
-                wallRight.setPosition(0);
-=======
                 wallRight.setPosition(1);
->>>>>>> origin/autonomous
             }
             rightWallIn = !rightWallIn;
         }
